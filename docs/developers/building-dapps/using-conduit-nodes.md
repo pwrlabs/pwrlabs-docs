@@ -30,7 +30,7 @@ Create a new project in your preferred programming language, and add the necessa
     ```bash
     mkdir conduits && cd conduits
     npm init --yes
-    npm install @pwrjs/core dotenv readline
+    npm install @pwrjs/core dotenv readline express
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -38,13 +38,13 @@ Create a new project in your preferred programming language, and add the necessa
     mkdir conduits && cd conduits
     python3 -m venv venv
     source venv/bin/activate
-    pip3 install pwrpy python-dotenv
+    pip3 install pwrpy python-dotenv Flask
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
     ```bash
     cargo new conduits && cd conduits
-    cargo add pwr-rs dotenvy serde_json
+    cargo add pwr-rs dotenvy serde_json warp
     cargo add tokio@1.0 --features full
     ```
 </TabItem>
@@ -57,6 +57,8 @@ Create a new project in your preferred programming language, and add the necessa
     ```
 </TabItem>
 </Tabs>
+
+> **NOTE**: Rust developers will face some issues with file formatting compared to other languages, you can check out [this project on Github](https://github.com/keep-pwr-strong/rust-dapps/tree/main/conduits).
 
 ## Step 2: ENV setup to load the wallet
 
@@ -125,7 +127,7 @@ Create a `send_message` file in your project and add the following code:
     use std::env;
     use serde_json::json;
 
-    async fn send_message() {
+    pub async fn send_message() {
         dotenv().ok();
         // Setting up your wallet in the SDK
         let private_key = env::var("PRIVATE_KEY").unwrap();
@@ -155,6 +157,8 @@ Create a `send_message` file in your project and add the following code:
 The `Transactions` class manages the list of transactions awaiting approval:
 
 Once the data is fetched from PWR Chain the transactions associated with sending 100 pwr to the user will be stored in the transactionsAwaitingApproval array.
+
+Create a `transaction` file in your project and add the following code:
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
@@ -376,7 +380,7 @@ Create a `sync_messages` file in your project and add the following code:
     use std::time::Duration;
     use tokio::time::sleep;
     use serde_json::{Value, json};
-    use crate::conduits::transaction::Transactions;
+    use crate::transaction::Transactions;
     use dotenvy::dotenv;
     use std::env;
 
@@ -426,6 +430,7 @@ Create a `sync_messages` file in your project and add the following code:
                             }.serialize_for_broadcast(wallet.get_nonce().await, rpc.chain_id, &wallet);
                             // Checking if the transaction was successfully serialized, then adding it to the transactions
                             if let Ok(txn_hex) = transfer_tx.map_err(|e| e.to_string()) {
+                                // Convert each transaction (assumed to be a Buffer or Uint8Array) to a hexadecimal string
                                 let hex_string = format!("0x{}", txn_hex.iter().map(|byte| format!("{:02x}", byte)).collect::<String>());
                                 transactions.add(json!(hex_string));
                             }
@@ -456,6 +461,8 @@ Create a `sync_messages` file in your project and add the following code:
 
 Conduit nodes run instances of the virtual machine on their servers and make repetitive API calls to check if the application has any new transactions it wants submitted to the PWR Chain.
 
+Create a `app` file in your project and add the following code:
+
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
@@ -479,12 +486,9 @@ Conduit nodes run instances of the virtual machine on their servers and make rep
         // Map through each transaction in the pendingTransactions array
         const array = pendingTransactions.map(txn => {
             // Convert each transaction (assumed to be a Buffer or Uint8Array) to a hexadecimal string
-            // Array.from(txn) creates an array from the buffer, then each byte is converted to a hexadecimal string
-            // byte.toString(16) converts the byte to hex, and padStart(2, '0') ensures 2 characters per byte
-            // The hexadecimal string is then prefixed with '0x' and joined together
             const hexString = '0x' + Array.from(txn, byte => byte.toString(16).padStart(2, '0')).join(''); // Convert Buffer to hex string
             // Remove the transaction from the pending transactions list after processing
-            Transactions.remove(txn); // Assuming remove expects the exact Buffer object
+            Transactions.remove(txn);
             // Return the hexadecimal representation of the transaction
             return hexString;
         });
@@ -501,10 +505,84 @@ Conduit nodes run instances of the virtual machine on their servers and make rep
 </TabItem>
 <TabItem value="python" label="Python">
     ```py
+    from flask import Flask, jsonify
+    from transaction import Transactions
+    from conduit import sync
+    import threading
+
+    app = Flask(__name__)
+
+    # Add sync to fetch messages and add it to the pending txs
+    threading.Thread(target=sync, daemon=True).start()
+
+    # Define an HTTP GET route at '/pendingVmTransactions'
+    # When accessed, this route will return the list of pending transactions
+    @app.route('/pendingVmTransactions/', methods=['GET'])
+    def pending_vm_transactions():
+        # Retrieve the list of pending transactions using the getPendingTransactions method
+        pending_transactions = Transactions.get_pending_transactions()
+
+        array = []
+        # Map through each transaction in the pendingTransactions array
+        for txn in pending_transactions:
+            # Convert each transaction (assumed to be a Buffer or Uint8Array) to a hexadecimal string
+            hex_string = '0x' + ''.join(format(byte, '02x') for byte in txn)
+            # Return the hexadecimal representation of the transaction
+            Transactions.remove(txn)
+            array.append(hex_string)
+        # Send the resulting array of hex strings as a JSON response
+        return jsonify(array), 200
+
+    # Set the port number for the server to listen on
+    # Start the Flask server and listen for connections on the specified port
+    if __name__ == '__main__':
+        port = 8000
+        app.run(host='0.0.0.0', port=port, debug=False)
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
     ```rust
+    pub mod transaction;
+    pub mod sync_messages;
+    use transaction::Transactions;
+    use sync_messages::sync;
+    use warp::Filter;
+    use tokio;
+    use std::sync::Arc;
+
+    #[tokio::main]
+    pub async fn main() {
+        let txs = Arc::new(Transactions::new());
+
+        // Add sync to fetch messages and add it to the pending txs
+        tokio::spawn({
+            let txs = txs.clone();
+            async move {
+                sync(&txs).await;
+            }
+        });
+
+        // Define an HTTP GET route at '/pendingVmTransactions'
+        // When accessed, this route will return the list of pending transactions
+        let user_route = warp::path("pendingVmTransactions")
+            .map(move || {
+                // Retrieve the list of pending transactions using the getPendingTransactions method
+                let tx = txs.get_pending_transactions();
+                // Map through each transaction in the pendingTransactions array
+                for txn in tx.clone() {
+                    // Return the hexadecimal representation of the transaction
+                    txs.remove(&txn);
+                }
+                // Send the resulting array of hex strings as a JSON response
+                warp::reply::json(&tx)
+            });
+        
+        // Set the port number for the server to listen on
+        // Start the Warp server and listen for connections on the specified port
+        warp::serve(user_route)
+            .run(([127, 0, 0, 1], 8000)) // Bind to localhost:8000
+            .await;
+    }
     ```
 </TabItem>
 <TabItem value="java" label="Java">

@@ -56,6 +56,8 @@ Create a new project in your preferred programming language, and add the necessa
 </TabItem>
 </Tabs>
 
+> **NOTE**: Rust developers will face some issues with file formatting compared to other languages, you can check out [this project on Github](https://github.com/keep-pwr-strong/rust-dapps/tree/main/message_dapp).
+
 ## Step 2: ENV setup to load the wallet
 
 Create a `.env` file in your project folder and add your wallet's **`PRIVATE_KEY`** in the file.
