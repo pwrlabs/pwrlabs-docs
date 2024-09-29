@@ -75,8 +75,9 @@ html[data-theme="dark"] .header--github-link:before {
   box-shadow: 0 8px 15px 2px rgba(35, 37, 46, 0.2);
 }
 
+
 [data-theme="dark"] .card__header h3 {
-  color:  #648fe4;
+  color: #6492ee;
 }
 
 [data-theme="dark"] .link-body-container {
@@ -112,24 +113,17 @@ html[data-theme="dark"] .header--github-link:before {
 }
 
 .landing-tagline {
-  color: #1A0C6D;
+  color: #45143a;
 }
 
 [data-theme="dark"] .landing-tagline {
-  color:  white;
+  color: white;
 }
 
 .card__header h3 {
-  color: #1A0C6D;
-  padding-top: 20px;
-}
-
-.docs-landing {
-  border: 1px solid #1a0c6d;
-}
-
-[data-theme="dark"] .docs-landing {
-  border-color: white;
+  color: rgb(30, 12, 129);
+  padding-top: 13px;
+  padding-bottom: 7px;
 }
 
 .docs-landing-link:hover {
@@ -141,16 +135,15 @@ html[data-theme="dark"] .header--github-link:before {
 }
 
 .link-body-header {
-  padding-left: 27px;
+  padding-left: 20px;
   padding-right: 20px;
 }
 
 .link-body-container {
-  padding-left: 27px;
+  padding-left: 20px;
   padding-right: 20px;
-  padding-top: 10px;
-  color: black;
-  padding-bottom: 40px;
+  padding-top: 7px;
+  color: black;  
 }
 
 .landing-link-container {
@@ -159,42 +152,123 @@ html[data-theme="dark"] .header--github-link:before {
   padding-right: 0px;
 }
 
-.landing-link-container:nth-child(1) {
-  border-bottom: 1px solid #1a0c6d;
-  border-right: 1px solid #1a0c6d;
+.landing-page-boxes-con {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 33px;
+  margin: 0px 0px;
+  margin-top: 25px;
+  margin-bottom: 40px;
 }
 
-.landing-link-container:nth-child(2) {
-  border-bottom: 1px solid #1a0c6d;
-  border-right: 1px solid #1a0c6d;
+.box {
+  border-radius: 10px;
+  background-color: #ebedf0;
+  padding: 0px 8px;
+  width: 100%;
+  height: 140px;
+  animation: fadeInUp 400ms backwards;
+  animation-delay: 150ms;
+  transition-property: all;
+  transition-duration: 200ms;
+  align-items: start;
+  box-shadow: 0 8px 15px 2px rgba(86, 91, 115, 0.2);
 }
 
-.landing-link-container:nth-child(3) {
-  border-bottom: 1px solid #1a0c6d;
+[data-theme="dark"] .box {
+  background-color: #242526;
+  box-shadow: 0 8px 15px 2px #292929;
 }
 
-.landing-link-container:nth-child(4) {
-  border-right: 1px solid #1a0c6d;
-}
+@media screen and (max-width: 1440px) {
+  .card__header h3 {
+    padding-top: 2px;
+    padding-bottom: 7px;
+  }
 
-.landing-link-container:nth-child(5) {
-  border-right: 1px solid #1a0c6d;
-}
+  .link-body-header {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .link-body-container {
+    padding-left: 12px;
+    padding-top: 7px;
+  }
 
-[data-theme="dark"] .landing-link-container {
-  border-color: white;
+  .box {
+    height: 140px;
+  }
 }
 
 @media screen and (max-width: 996px) {
+  .card__header h3 {
+    padding-top: 0px;
+    padding-bottom: 7px;
+  }
+
+  .link-body-header {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .link-body-container {
+    padding-left: 12px;
+    padding-top: 5px;
+  }
+
+  .box {
+    height: 110px;
+  }
+
   .landing-link-container {
     border-right: 0px !important;
   }
   .landing-link-container:nth-child(4) {
     border-bottom: 1px solid #1a0c6d;
   }
-  
+
   .landing-link-container:nth-child(5) {
     border-bottom: 1px solid #1a0c6d;
+  }
+
+  .landing-page-boxes-con {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    margin: 0px 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .card__header h3 {
+    padding-top: 0px;
+    padding-bottom: 5px;
+  }
+
+  .link-body-header {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .link-body-container {
+    padding-left: 12px;
+    padding-top: 5px;
+  }
+
+  .box {
+    height: 130px;
+  }
+
+  .landing-page-boxes-con {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    margin: 0px 10px;
+    margin-top: 15px;
+    margin-bottom: 20px;
   }
 }
 
@@ -212,7 +286,7 @@ h2 {
 }
 
 h3 {
-  font-size: 24px !important;
+  font-size: 22px !important;
 }
 
 h4 {
