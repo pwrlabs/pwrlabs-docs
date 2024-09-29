@@ -160,6 +160,7 @@ html[data-theme="dark"] .header--github-link:before {
   gap: 33px;
   margin: 0px 0px;
   margin-top: 25px;
+  margin-bottom: 40px;
 }
 
 .box {
@@ -238,6 +239,7 @@ html[data-theme="dark"] .header--github-link:before {
     grid-auto-rows: auto;
     margin: 0px 15px;
     margin-top: 20px;
+    margin-bottom: 20px;
   }
 }
 
@@ -266,6 +268,7 @@ html[data-theme="dark"] .header--github-link:before {
     grid-auto-rows: auto;
     margin: 0px 10px;
     margin-top: 15px;
+    margin-bottom: 20px;
   }
 }
 
