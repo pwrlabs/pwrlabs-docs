@@ -10,6 +10,13 @@
   overflow: hidden;
 }
 
+.landing-page-boxes-con {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 @media screen and (max-width: 996px) {
   .heroBanner {
     padding: 2rem;
@@ -30,7 +37,6 @@
   margin-bottom: 50px;
   margin-top: 0px;
 }
-
 
 .features {
   display: flex;

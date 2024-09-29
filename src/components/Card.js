@@ -13,17 +13,13 @@ function Card({ to, header, body, externalIcon = false }) {
   */
 
   return (
-    <div className={clsx("col col--4 landing-link-container", styles.feature)}>
+    <div className={clsx(" box ", styles.feature)}>
       <Link to={to} className="docs-landing-link">
         <div className="card__header link-body-header">
-          <h3>
-            {header.label}
-          </h3>
+          <h3>{header.label}</h3>
         </div>
         <div className="link-body-container">
-          <p>
-            {body.label}
-          </p>
+          <p>{body.label}</p>
         </div>
       </Link>
     </div>
