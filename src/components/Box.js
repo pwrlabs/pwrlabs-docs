@@ -19,7 +19,7 @@ function Card({ to, header, body, externalIcon = false }) {
           <h3>{header.label}</h3>
         </div>
         <div className="link-body-container">
-          <p>{body.label}</p>
+          <p style={{ fontSize:"15.2px", lineHeight:"1.4rem" }}>{body.label}</p>
         </div>
       </Link>
     </div>
