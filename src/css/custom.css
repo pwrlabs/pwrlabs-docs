@@ -77,7 +77,7 @@ html[data-theme="dark"] .header--github-link:before {
 
 
 [data-theme="dark"] .card__header h3 {
-  color: #648fe4;
+  color: #6492ee;
 }
 
 [data-theme="dark"] .link-body-container {
@@ -113,7 +113,7 @@ html[data-theme="dark"] .header--github-link:before {
 }
 
 .landing-tagline {
-  color: #1a0c6d;
+  color: #45143a;
 }
 
 [data-theme="dark"] .landing-tagline {
@@ -121,7 +121,7 @@ html[data-theme="dark"] .header--github-link:before {
 }
 
 .card__header h3 {
-  color: #1a0c6d;
+  color: rgb(30, 12, 129);
   padding-top: 13px;
   padding-bottom: 7px;
 }
