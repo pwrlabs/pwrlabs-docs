@@ -77,9 +77,8 @@ Create a `send_message` file in your project and add the following code:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRWallet } from "@pwrjs/core";
-    import dotenv from 'dotenv';
-    dotenv.config();
+    const { PWRWallet } = require("@pwrjs/core");
+    require('dotenv').config();
 
     // Setting up your wallet in the SDK
     const privateKey = process.env.PRIVATE_KEY;
@@ -163,7 +162,7 @@ Create a `transaction` file in your project and add the following code:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    export class Transactions {
+    class Transactions {
         static transactionsAwaitingApproval = [];
 
         static add(txn) {
@@ -180,6 +179,7 @@ Create a `transaction` file in your project and add the following code:
             return [...this.transactionsAwaitingApproval];
         }
     }
+    module.exports = { Transactions };
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -258,10 +258,9 @@ Create a `sync_messages` file in your project and add the following code:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRJS, PWRWallet, TransactionBuilder } from "@pwrjs/core";
-    import { Transactions } from "./transaction.js"
-    import dotenv from 'dotenv';
-    dotenv.config();
+    const { PWRJS, PWRWallet, TransactionBuilder } = require("@pwrjs/core");
+    const { Transactions } = require("./transaction.js");
+    require('dotenv').config();
 
     // Setting up your wallet in the SDK
     const privateKey = process.env.PRIVATE_KEY;
@@ -269,7 +268,7 @@ Create a `sync_messages` file in your project and add the following code:
     // Setting up the rpc api
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
 
-    export async function sync() {
+    async function sync() {
         let startingBlock = 876040; // Adjust starting block as needed
         const vmId = 123;
 
@@ -314,6 +313,7 @@ Create a `sync_messages` file in your project and add the following code:
         }
         loop();
     }
+    module.exports = { sync };
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -398,7 +398,7 @@ Create a `sync_messages` file in your project and add the following code:
         // Starting an infinite loop to continuously fetch and process transactions
         loop {
             // Fetch the latest block number without explicit error handling
-            let latest_block = rpc.lates_block_number().await.unwrap();
+            let latest_block = rpc.get_latest_block_number().await.unwrap();
             // Defining the effective block range for the next batch of transactions, limiting to 1000 blocks at a time
             let effective_latest_block = if latest_block > starting_block + 1000 {
                 starting_block + 1000
@@ -408,7 +408,7 @@ Create a `sync_messages` file in your project and add the following code:
             // Checking if there are new blocks to process
             if effective_latest_block >= starting_block {
                 // Fetching VM data transactions between the starting block and the effective latest block for a given VM ID
-                let txns = rpc.vm_data_transactions(starting_block, effective_latest_block, vm_id).await.unwrap();
+                let txns = rpc.get_vm_data_transactions(starting_block, effective_latest_block, vm_id).await.unwrap();
                 // Iterating through each transaction
                 for txn in txns {
                     let sender = txn.sender;
@@ -466,9 +466,9 @@ Create a `app` file in your project and add the following code:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import express from "express";
-    import { Transactions } from "./transaction.js"
-    import { sync } from "./conduit.js"
+    const express = require("express");
+    const { Transactions } = require("./transaction.js");
+    const { sync } = require("./sync_messages.js");
 
     // Initialize the Express application by creating an app object
     const app = express();
@@ -500,7 +500,7 @@ Create a `app` file in your project and add the following code:
     // Start the Express server and listen for connections on the specified port
     app.listen(port, () => {
         console.log(`Server running on http://localhost:${port}`);
-    })
+    });
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -621,14 +621,69 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
+    import { PWRWallet } from "@pwrjs/core";
+    import dotenv from 'dotenv';
+    dotenv.config();
+
+    // Setting up your wallet in the SDK
+    const privateKey = process.env.PRIVATE_KEY;
+    const wallet = new PWRWallet(privateKey);
+
+    async function conduits() {
+        const conduits = [
+            Buffer.from("conduit_node_address", "hex"),
+        ];
+        const vmId = "your_vm_id";
+
+        const res = await wallet.setConduits(vmId, conduits);
+        console.log(res.transactionHash);
+    }
+    conduits();
     ```
 </TabItem>
 <TabItem value="python" label="Python">
     ```py
+    from pwrpy.pwrwallet import PWRWallet
+    from dotenv import load_dotenv
+    import os
+    load_dotenv()
+
+    # Setting up your wallet in the SDK
+    private_key = os.getenv("PRIVATE_KEY")
+    wallet = PWRWallet(private_key)
+
+    def conduits():
+        conduits = [
+            bytes.fromhex("conduit_node_address"),
+        ]
+        vm_id = "your_vm_id"
+
+        res = wallet.set_conduits(vm_id, conduits)
+        print(res.data)
+
+    conduits()
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
     ```rust
+    use pwr_rs::Wallet;
+    use dotenvy::dotenv;
+    use std::env;
+
+    async fn conduits() {
+        dotenv().ok();
+        // Setting up your wallet in the SDK
+        let private_key = env::var("PRIVATE_KEY").unwrap();
+        let wallet = Wallet::from_hex(&private_key).unwrap();
+
+        let conduits: Vec<String> = vec![
+            "conduit_node_address".to_string(),
+        ];
+        let vm_id: u64 = "your_vm_id";
+
+        let res = wallet.set_conduits(vm_id, conduits).await;
+        println!("{}", res);
+    }
     ```
 </TabItem>
 <TabItem value="java" label="Java">

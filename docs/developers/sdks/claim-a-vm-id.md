@@ -31,7 +31,7 @@ To claim a VM ID on the PWR Chain, follow these steps:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRWallet } from "@pwrjs/core";
+    const { PWRWallet } = require('@pwrjs/core');
 
     // Setting up your wallet in the SDK
     const privateKey = "YOUR_PRIVATE_KEY_HERE";
@@ -74,6 +74,7 @@ To claim a VM ID on the PWR Chain, follow these steps:
             print("Transaction Hash:", tx_hash.data)
         else:
             print("Error:", tx_hash.message)
+    claim()
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -83,7 +84,7 @@ To claim a VM ID on the PWR Chain, follow these steps:
     async fn claim() {
         // Setting up your wallet in the SDK
         let private_key = "YOUR_PRIVATE_KEY_HERE";
-        let wallet = Wallet::from_hex(private_key).unwrap();
+        let wallet = Wallet::from_hex(&private_key).unwrap();
 
         // Add a unique VM ID
         let vm_id = 102032;
@@ -122,4 +123,4 @@ When claiming VM IDs on the PWR Chain, consider the following best practices:
 
 By following these best practices and leveraging the PWR SDK's VM ID claiming capabilities, you can securely claim a VM ID for your application on the PWR Chain, establish ownership, and receive transaction fee rewards for your dApp's usage.
 
-## How to Claim and Configure a VM ID on PWR Chain
+<!-- ## How to Claim and Configure a VM ID on PWR Chain -->

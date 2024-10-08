@@ -33,7 +33,7 @@ To create a wallet in your software application using the PWR SDK. You can use y
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRWallet } from "@pwrjs/core";
+    const { PWRWallet } = require('@pwrjs/core');
 
     // Create a wallet with a new randomly generated private key
     const randomWallet = new PWRWallet();
@@ -68,7 +68,7 @@ To create a wallet in your software application using the PWR SDK. You can use y
         // Create a wallet from an existing private key (String || str || ByteArray || Int)
         // in this example we will store the private key as a string (&str)
         let private_key = "YOUR_PRIVATE_KEY_HERE";
-        let wallet = Wallet::from_hex(private_key).unwrap();
+        let wallet = Wallet::from_hex(&private_key).unwrap();
     }
     ```
 </TabItem>

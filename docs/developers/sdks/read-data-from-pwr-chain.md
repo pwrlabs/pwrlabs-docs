@@ -22,7 +22,7 @@ To retrieve the PWR balance or nonce of a specific account.
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRJS } from "@pwrjs/core";
+    const { PWRJS } = require('@pwrjs/core');
 
     // Setting up the rpc api
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
@@ -56,6 +56,7 @@ To retrieve the PWR balance or nonce of a specific account.
         # get nonce of address
         nonce = pwr.get_nonce_of_address(address)
         print(f"Nonce: {nonce}")
+    account()
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -67,10 +68,10 @@ To retrieve the PWR balance or nonce of a specific account.
         let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
         let address = "0x3b3b69093879e7b6f28366fa3c32762590ff547e";
         // get balance of address
-        let balance = rpc.balance_of_address(address).await.unwrap();
+        let balance = rpc.get_balance_of_address(address).await.unwrap();
         println!("Balance: {balance}");
         // get nonce of address
-        let nonce = rpc.nonce_of_address(address).await.unwrap();
+        let nonce = rpc.get_nonce_of_address(address).await.unwrap();
         println!("Nonce: {nonce}");
     }
     ```
@@ -93,7 +94,7 @@ Blocks will help us access a lot of data through the set of transactions they co
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRJS } from "@pwrjs/core";
+    const { PWRJS } = require('@pwrjs/core');
 
     // Setting up the rpc api
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
@@ -127,6 +128,7 @@ Blocks will help us access a lot of data through the set of transactions they co
         # prints the sender address from every transaction in the block
         for index, txs in enumerate(block.transactions):
             print(f"Sender {index}: {txs.sender}")
+    get_block()
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -139,7 +141,7 @@ Blocks will help us access a lot of data through the set of transactions they co
         // the block number we want fetch
         let block_number = 20000;
         // get the block by number
-        let block = rpc.block_by_number(block_number).await.unwrap();
+        let block = rpc.get_block_by_number(block_number).await.unwrap();
 
         // prints the sender address from every transaction in the block
         for (index, txs) in block.transactions.iter().enumerate() {
@@ -169,7 +171,7 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRJS } from "@pwrjs/core";
+    const { PWRJS } = require('@pwrjs/core');
 
     // Setting up the rpc api
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
@@ -207,6 +209,7 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
         # prints the trasnactions data
         for txs in transactions:
             print("Data:", txs.data)
+    get_vm_data()
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -222,7 +225,7 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
         let vm_id = 123;
 
         // fetch the transactions sent from `startBlock` to `endBlock` in `vmId`
-        let transactions = rpc.vm_data_transactions(start_block, end_block, vm_id).await.unwrap();
+        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vm_id).await.unwrap();
         // prints the trasnactions data
         for txs in transactions {
             println!("Data: {:?}", txs.data);
@@ -275,6 +278,7 @@ For example, if you are working with hexadecimal-encoded data in `Java`, you can
         string_data = decoded_data.decode('utf-8')
 
         print(f'Outputs: {string_data}') # Outputs: Hello World!
+    decoding()
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -309,7 +313,7 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRJS } from "@pwrjs/core";
+    const { PWRJS } = require('@pwrjs/core');
 
     // Setting up the rpc api
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
@@ -373,6 +377,7 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
             elif string_data.startswith("Hello"):
                 word = string_data[6:]
                 print(f'{sender}: {word}')
+    get_vm_data_active()
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -387,7 +392,7 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
         let vm_id = 123;
 
         // fetch the transactions sent from `startBlock` to `endBlock` in `vmId`
-        let transactions = rpc.vm_data_transactions(start_block, end_block, vm_id).await.unwrap();
+        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vm_id).await.unwrap();
 
         for txs in transactions {
             let sender = txs.sender;

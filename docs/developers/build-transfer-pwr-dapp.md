@@ -174,7 +174,7 @@ npm run dev
 
 This will start the Next.js server and your website should be accessible at [http://localhost:3000/](http://localhost:3000/)
 
-Go through the app, try out different things - connect wallet, transfer pwr and send transactios, change accounts, and disconnect and see all the things happening on [PWR Chain Explorer](explorer.pwrlabs.io) as well.
+Go through the app, try out different things - connect wallet, transfer pwr and send transactios, change accounts, and disconnect and see all the things happening on [PWR Chain Explorer](https://explorer.pwrlabs.io) as well.
 
 Submit your first transaction using your app - what should appear after submitting the transaction:
 

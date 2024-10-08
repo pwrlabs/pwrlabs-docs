@@ -90,9 +90,11 @@ You will install the PWR JS SDK as we did in previous guides - [Installing & Imp
 You can connect to the wallet and disconnect via PWR SDK.
 
 ```js
-import { connect, disconnect, getConnection, isInstalled, getEvent } from "@pwrjs/core";
+const { 
+  connect, disconnect, getConnection, isInstalled, getEvent 
+} = require('@pwrjs/core');
 
-// connect wallet with website
+// connect wallet with the website
 connect().then(console.log); // you will use `await` instead of `.then()`
 
 // disconnect wallet from the website
@@ -106,8 +108,8 @@ isInstalled() // it will return `boolean`
 
 // listen if the user changes accounts
 getEvent("onAccountChange", (accounts) => {
-    // check if already connected
-    (accounts.length) && console.log(`Account address: ${accounts[0]}`);
+  // check if already connected
+  (accounts.length) && console.log(`Account address: ${accounts[0]}`);
 })
 ```
 
@@ -116,38 +118,38 @@ getEvent("onAccountChange", (accounts) => {
 The difference from the way we send transactions to PWR Wallet using `private key` is that we will add `true` to the functions mentioned above and present in PWRWallet to send transactions from the `PWR Wallet`.
 
 ```js
-import { PWRWallet } from "@pwrjs/core";
+const { PWRWallet } = require('@pwrjs/core');
 const privateKey = "YOUR_PRIVATE_KEY_HERE";
 const wallet = new PWRWallet(privateKey);
 
 // `transferPWR` from your wallet (private key)
 wallet.transferPWR(recipientAddress, amount).then(console.log);
-// `transferPWR` from PWR Wallet
+// `transferPWR` from PWR Wallet in the browser
 wallet.transferPWR(recipientAddress, amount, true).then(console.log);
 
 // `sendVMDataTxn` from your wallet (private key)
 wallet.sendVMDataTxn(vmId, data).then(console.log);
-// `sendVMDataTxn` from PWR Wallet
+// `sendVMDataTxn` from PWR Wallet in the browser
 wallet.sendVMDataTxn(vmId, data, true).then(console.log);
 
 // `sendPayableVmDataTransaction` from your wallet (private key)
 wallet.sendPayableVmDataTransaction(vmId, amount, data).then(console.log);
-// `sendPayableVmDataTransaction` from PWR Wallet
+// `sendPayableVmDataTransaction` from PWR Wallet in the browser
 wallet.sendPayableVmDataTransaction(vmId, amount, data, true).then(console.log);
 
 // `delegate` from your wallet (private key)
 wallet.delegate(validator, amount).then(console.log);
-// `delegate` from PWR Wallet
+// `delegate` from PWR Wallet in the browser
 wallet.delegate(validator, amount, true).then(console.log);
 
 // `withdraw` from your wallet (private key)
 wallet.withdraw(validator, amount).then(console.log);
-// `withdraw` from PWR Wallet
+// `withdraw` from PWR Wallet in the browser
 wallet.withdraw(validator, amount, true).then(console.log);
 
 // `moveStake` from your wallet (private key)
 wallet.moveStake(amount, fromValidator, toValidator).then(console.log);
-// `moveStake` from PWR Wallet
+// `moveStake` from PWR Wallet in the browser
 wallet.moveStake(amount, fromValidator, toValidator, true).then(console.log);
 
 // and others...
