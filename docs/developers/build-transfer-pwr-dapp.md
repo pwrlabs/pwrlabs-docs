@@ -50,7 +50,7 @@ In this part we will build, connect wallet, disconnect, listen for events and se
 
 Building the homepage (`src/app/page.js`) which will show everything. The code is explained in the comments, take the time to write it yourself and understand it.
 
-```js
+```jsx
 "use client";
 
 import { useState, useEffect } from "react";
