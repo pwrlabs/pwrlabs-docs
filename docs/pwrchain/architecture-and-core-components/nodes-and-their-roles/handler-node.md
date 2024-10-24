@@ -1,9 +1,9 @@
 ---
-title: Handler Nodes
+title: Handler Node
 sidebar_position: 5
 ---
 
-# Handler Nodes
+# Handler Node
 
 Handler nodes are an essential component of the PWR Chain ecosystem, serving as intermediaries between the PWR Chain and virtual machines (VMs) or decentralized applications (dApps).
 

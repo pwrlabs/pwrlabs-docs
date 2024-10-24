@@ -18,7 +18,7 @@ Before starting, make sure you have the following:
 
 - A development environment set up for your preferred programming language.
 - PWR SDK installed and configured in your project.
-- You've finished reading about [**Conduits** Nodes](/pwrchain/architecture-of-pwr-chain/nodes-and-their-roles/conduits-nodes/about).
+- You've finished reading about [**Conduits** Nodes](/pwrchain/architecture-and-core-components/nodes-and-their-roles/conduits-node).
 - You have finished reading the [**SDK** guides](/developers/sdks/installing-and-importing-pwr-sdk).
 
 ## Step 1: Set Up the Project

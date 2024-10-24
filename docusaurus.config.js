@@ -58,23 +58,6 @@ const config = {
           },
 
           {
-            from: "/benefits-of-pwr-chain/",
-            to: "/pwrchain/benefits-of-pwr-chain/for-developers",
-          },
-          {
-            from: "/pwrchain/benefits-of-pwr-chain/",
-            to: "/pwrchain/benefits-of-pwr-chain/for-developers",
-          },
-          {
-            from: "/architecture-of-pwr-chain/",
-            to: "/pwrchain/architecture-of-pwr-chain/base-layer",
-          },
-          {
-            from: "/pwrchain/architecture-of-pwr-chain/",
-            to: "/pwrchain/architecture-of-pwr-chain/base-layer",
-          },
-
-          {
             from: "/developers/",
             to: "/developers/developing-on-pwr-chain/what-is-a-decentralized-application/",
           },

@@ -1,6 +1,6 @@
 ---
-title: How to Run a Conduit Node
-sidebar_position: 2
+title: Conduits Node
+sidebar_position: 3
 ---
 
 # How to Run a Conduit Node

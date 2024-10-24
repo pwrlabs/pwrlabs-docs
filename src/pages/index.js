@@ -39,7 +39,7 @@ function Home() {
               />
 
               <Box
-                to="pwrchain/architecture-of-pwr-chain/base-layer"
+                to="pwrchain/architecture-and-core-components/how-pwr-chain-works"
                 header={{
                   label: "Architecture of PWR",
                 }}
@@ -50,7 +50,7 @@ function Home() {
               />
 
               <Box
-                to="pwrchain/core-technology/consensus-mechanism/proof-of-power"
+                to="pwrchain/architecture-and-core-components/consensus-mechanism/proof-of-power"
                 header={{
                   label: "Core Technology",
                 }}
@@ -83,7 +83,7 @@ function Home() {
               />
 
               <Box
-                to="pwrchain/governance-and-economics/tokenomics/pwr-utility-and-value"
+                to="pwrchain/governance-and-economics/pwr-utility-and-value"
                 header={{
                   label: "Governance",
                 }}

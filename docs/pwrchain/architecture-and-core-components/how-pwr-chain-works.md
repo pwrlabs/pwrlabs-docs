@@ -1,11 +1,23 @@
 ---
-title: Processing Layer
-sidebar_position: 2
+title: How PWR Chain Works
+sidebar_position: 1
 ---
 
-# Processing Layer
+# How PWR Chain Works
 
-## What is the Processing Layer in PWR Chain? 
+Foundational component designed to support high-performance applications while maintaining security and decentralization.
+
+## Base Layer
+
+[PWR Chain](/pwrchain/overview/) is a revolutionary blockchain infrastructure that focuses on enhancing the scalability, interoperability, and efficiency of decentralized applications. At its core, the Base Layer is a decentralized blockchain dedicated to managing consensus, handling transactions, organizing blocks, and ensuring network security. This layer is designed to perform these functions without the burden of processing smart contracts or other smart applications, thereby maintaining high throughput and security.
+
+<img src="/img/overview-pwrchain.avif" />
+
+### How Does It Work?
+
+The Base Layer operates primarily through [validator nodes](/pwrchain/architecture-and-core-components/nodes-and-their-roles/validator-node), which are responsible for proposing and validating new blocks. These nodes are crucial in maintaining the integrity and continuity of the blockchain. Unlike traditional blockchains where smart contracts are processed at the base layer, PWR Chain ensures that these operations are handled above the base layer, and any application built on PWR Chain can receive transactions and info through independent [RPC nodes](/pwrchain/architecture-and-core-components/nodes-and-their-roles/rpc-node) without bothering the base layer, allowing for an infinite number of [virtual machines](/) and [applications](/) to run without affecting the core network’s performance.
+
+## Processing Layer 
 
 The processing layer in PWR Chain is positioned above the base layer and consists of a diverse array of virtual machines (VMs) and software applications. This layer is dynamic and is designed to efficiently execute the specific tasks assigned to each VM or application without interfering with the operations of the base layer.
 
@@ -13,7 +25,7 @@ The processing layer in PWR Chain is positioned above the base layer and consist
   <img src="/img/processing-layer.png"  />
 </div>
 
-## How Does It Work?
+### How Does It Work?
 
 The processing layer of PWR Chain functions through a highly organized and efficient system that enables distinct operational environments for various virtual machines (VMs) and software applications. Here’s a detailed breakdown of how it works:
 

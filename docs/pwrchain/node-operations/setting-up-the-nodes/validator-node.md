@@ -1,6 +1,6 @@
 ---
-title: How to Run a Validator Node
-sidebar_position: 2
+title: Validator Node
+sidebar_position: 1
 ---
 
 # How to Run a Validator Node

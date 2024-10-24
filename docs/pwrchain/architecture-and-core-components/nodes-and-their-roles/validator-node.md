@@ -1,9 +1,9 @@
 ---
-title: About
+title: Validator Node
 sidebar_position: 1
 ---
 
-# About Validator Nodes
+# Validator Node
 
 ## What are Validator Nodes?
 
@@ -24,3 +24,4 @@ Validator nodes are crucial components of the [PWR Chain](/pwrchain/overview/)â€
 - **Decentralized Management**: Operating in a distributed manner, they prevent any single point of failure.
 - **Finality**: They ensure transactions are permanently recorded with instant finality.
 - **Governance Participation**: Validator nodes also have a role in governance decisions, influencing network upgrades and protocol changes.
+

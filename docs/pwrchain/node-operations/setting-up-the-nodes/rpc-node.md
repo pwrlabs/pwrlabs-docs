@@ -1,5 +1,5 @@
 ---
-title: How to Run an RPC Node
+title: RPC Node
 sidebar_position: 2
 ---
 

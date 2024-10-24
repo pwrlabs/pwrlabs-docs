@@ -1,9 +1,9 @@
 ---
-title: About
-sidebar_position: 1
+title: Conduits Node
+sidebar_position: 3
 ---
 
-# About Conduits Nodes
+# Conduits Node
 
 ## How Conduit Nodes Came to Be?
 
@@ -24,7 +24,7 @@ An employer wants to use application A to automatically pay his employee's every
 
 Application A's developer agrees with some validators on PWR Chain to serve as the conduit nodes of his application. Once he sets them as conduit nodes, these validators would run application A, and at the end of every month application A would emit a request to the conduits to send a transaction to applciation B.
 
-The conduit nodes of application A send transactions to the [base layer](/pwrchain/architecture-of-pwr-chain/base-layer) informing it that application A wants to send transcation X and they vote on it. Once the base layer receives approval votes from 2/3 of the conduits it accepts transaction X and puts it on the blockchain.
+The conduit nodes of application A send transactions to the [base layer](/pwrchain/architecture-and-core-components/how-pwr-chain-works#base-layer) informing it that application A wants to send transcation X and they vote on it. Once the base layer receives approval votes from 2/3 of the conduits it accepts transaction X and puts it on the blockchain.
 
 This transaction is unique from other transactions because it doesn't have a signature but is rather assigned an owner address (address of application A) and is backed by the votes of its conduits.
 

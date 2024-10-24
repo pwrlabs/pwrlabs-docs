@@ -1,9 +1,9 @@
 ---
-title: Wrapper Nodes
+title: Wrapper Node
 sidebar_position: 4
 ---
 
-# Wrapper Nodes
+# Wrapper Node
 
 Wrapper nodes are a versatile component of the PWR Chain ecosystem that enable various functionalities and enhance the user experience.
 

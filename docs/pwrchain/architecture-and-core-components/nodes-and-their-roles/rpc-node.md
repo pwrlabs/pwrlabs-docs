@@ -1,9 +1,9 @@
 ---
-title: About
-sidebar_position: 1
+title: RPC Node
+sidebar_position: 2
 ---
 
-# About RPC Nodes
+# RPC Node
 
 ## What are RPC Nodes?
 
