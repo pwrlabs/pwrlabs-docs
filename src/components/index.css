@@ -252,3 +252,24 @@
         font-size: 2rem;
     }
 }
+
+.hero-svg-light {
+    display: block;
+}
+[data-theme="dark"] .hero-svg-light {
+    display: none;
+}
+
+.hero-svg-dark {
+    display: none;
+}
+[data-theme="dark"] .hero-svg-dark {
+    display: block;
+}
+
+.stroke-svg {
+    --svg-stroke: #1E1F31
+}
+[data-theme="dark"] .stroke-svg {
+    --svg-stroke: #FFFFFF
+}

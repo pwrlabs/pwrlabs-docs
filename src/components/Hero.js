@@ -26,11 +26,11 @@ export default function Hero() {
                     <div className="hero-img">
                         <img 
                             src="/homepage/hero-light.svg"
-                            style={{ display: colorMode === "dark" ? 'none' : 'block' }}
+                            className='hero-svg-light'
                         />
                         <img 
                             src="/homepage/hero-dark.svg"
-                            style={{ display: colorMode === "dark" ? 'block' : 'none' }}
+                            className='hero-svg-dark'
                         />
                     </div>
                 </div>
