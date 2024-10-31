@@ -108,12 +108,40 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+        "fmt"
+    )
+
+    // Add your private key here
+    var privateKey = "YOUR_PRIVATE_KEY_HERE"
+
+    func transfer() {
+        // Setting up your wallet in the SDK
+        wallet := wallet.FromPrivateKey(privateKey)
+
+        // Tokens recipient address
+        recipientAddress := "0x3B3b69093879e7B6F28366Fa3c32762590Ff547e"
+        // Tokens amount - 1 PWR = 1e9 = 1000000000
+        amount := int(1e3)
+        // Transfer pwr tokens from the wallet
+        tx := wallet.TransferPWR(recipientAddress, amount)
+
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -197,12 +225,40 @@ Sends data to a specific virtual machine for storage and processing purposes.
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+        "fmt"
+    )
+
+    // Add your private key here
+    var privateKey = "YOUR_PRIVATE_KEY_HERE"
+
+    func sendData() {
+        // Setting up your wallet in the SDK
+        wallet := wallet.FromPrivateKey(privateKey)
+        // VM id used to send the transaction to
+        vmId := 123
+        // Buffer data to be included in the transaction
+        data := []byte("Hello world")
+
+        // Send the data at vmID 123 to the chain
+        tx := wallet.SendVMData(vmId, data)
+
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -294,12 +350,42 @@ Sends data to a specific virtual machine (VM ID) and transfers PWR tokens to the
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+        "fmt"
+    )
+
+    // Add your private key here
+    var privateKey = "YOUR_PRIVATE_KEY_HERE"
+
+    func sendPayableData() {
+        // Setting up your wallet in the SDK
+        wallet := wallet.FromPrivateKey(privateKey)
+        // VM id used to send the transaction to
+        vmId := 919
+        // Tokens amount - 1 PWR = 1e9 = 1000000000
+        amount := 10
+        // Buffer data to be included in the transaction
+        data := []byte("Hello world")
+
+        // Send the data at vmID 919 and pay 1e3
+        tx := wallet.SendPayableVMData(vmId, amount, data)
+
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -382,12 +468,41 @@ Delegates a specified amount of PWR tokens to a validator, contributing to their
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+        "fmt"
+    )
+
+    // Add your private key here
+    var privateKey = "YOUR_PRIVATE_KEY_HERE"
+
+    func delegate() {
+        // Setting up your wallet in the SDK
+        wallet := wallet.FromPrivateKey(privateKey)
+
+        // Validator address
+        validator := "VALIDATOR_ADDRESS"
+        // Tokens amount - 1 PWR = 1e9 = 1000000000
+        amount := int(1e9)
+
+        // Delegate the validator
+        tx := wallet.Delegate(validator, amount)
+
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -470,12 +585,41 @@ Withdraws PWR tokens that were previously delegated to a validator, returning th
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+        "fmt"
+    )
+
+    // Add your private key here
+    var privateKey = "YOUR_PRIVATE_KEY_HERE"
+
+    func withdraw() {
+        // Setting up your wallet in the SDK
+        wallet := wallet.FromPrivateKey(privateKey)
+
+        // Validator address
+        validator := "VALIDATOR_ADDRESS"
+        // Tokens amount - 1 PWR = 1e9 = 1000000000
+        amount := int(1e9)
+
+        // Withdraw the delegated pwr tokens
+        tx := wallet.Withdraw(validator, amount)
+
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -558,12 +702,41 @@ To move delegated stake from one validator to another.
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+        "fmt"
+    )
+
+    // Add your private key here
+    var privateKey = "YOUR_PRIVATE_KEY_HERE"
+
+    func moveStake() {
+        // Setting up your wallet in the SDK
+        wallet := wallet.FromPrivateKey(privateKey)
+
+        fromValidator := "FROM_VALIDATOR_ADDRESS"
+        toValidator := "TO_VALIDATOR_ADDRESS"
+        // Tokens amount - 1 PWR = 1e9 = 1000000000
+        amount := int(1e9)
+
+        // Move stake token from validator to another
+        tx := wallet.MoveStake(amount, fromValidator, toValidator)
+
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -670,12 +843,43 @@ Here's how the guardian process works:
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+        "fmt"
+        "time"
+    )
+
+    // Add your private key here
+    var privateKey = "YOUR_PRIVATE_KEY_HERE"
+
+    func setGuardian() {
+        // Setting up your wallet in the SDK
+        wallet := wallet.FromPrivateKey(privateKey)
+
+        // Guardian address that will verify your transactions
+        guardian := "0x34bfe9c609ca72d5a4661889033a221fa07ef61a"
+        // Guardian validity period - 30 minutes
+        futureDate := time.Now().Add(30 * time.Minute) // 30 minutes from now
+        expiryDate := int(futureDate.Unix()) // Get the Unix timestamp in seconds
+
+        // Set your wallet guardian
+        tx := wallet.SetGuardian(guardian, expiryDate)
+
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -745,12 +949,36 @@ Remove the guardian assigned to the wallet, removing their access or control.
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+        "fmt"
+    )
+
+    // Add your private key here
+    var privateKey = "YOUR_PRIVATE_KEY_HERE"
+
+    func removeGuardian() {
+        // Setting up your wallet in the SDK
+        wallet := wallet.FromPrivateKey(privateKey)
+
+        // Remove your wallet guardian
+        tx := wallet.RemoveGuardian()
+
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>

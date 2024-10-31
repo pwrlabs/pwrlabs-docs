@@ -48,12 +48,13 @@ Create a new project in your preferred programming language, and add the necessa
     cargo add tokio@1.0 --features full
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    go get github.com/pwrlabs/pwrgo github.com/joho/godotenv
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -141,12 +142,40 @@ Create a `send_message` file in your project and add the following code:
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "fmt"
+        "os"
+        "encoding/json"
+        "github.com/joho/godotenv"
+        "github.com/pwrlabs/pwrgo/wallet"
+    )
+
+    func SendMessage() {
+        // Setting up your wallet in the SDK
+        godotenv.Load()
+        privateKey := os.Getenv("PRIVATE_KEY")
+        wallet := wallet.FromPrivateKey(privateKey)
+
+        vmId := 123
+        data, _ := json.Marshal(map[string]string{"message": "please send me pwr"})
+
+        // Sending the VM data transaction
+        tx := wallet.SendVMData(vmId, data)
+
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Printf("Failed to send transaction: %s\n", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -239,12 +268,51 @@ Create a `transaction` file in your project and add the following code:
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "sync"
+    )
+
+    type Transactions struct {
+        transactionsAwaitingApproval [][]byte
+        mu                           sync.Mutex
+    }
+
+    var PendingTransactions = &Transactions{}
+
+    // Add adds a transaction in []byte format to the list of awaiting approvals.
+    func (t *Transactions) Add(txn []byte) {
+        t.mu.Lock()
+        defer t.mu.Unlock()
+        t.transactionsAwaitingApproval = append(t.transactionsAwaitingApproval, txn)
+    }
+
+    // Remove removes a transaction in []byte format from the list of awaiting approvals.
+    func (t *Transactions) Remove(txn []byte) {
+        t.mu.Lock()
+        defer t.mu.Unlock()
+        newList := [][]byte{}
+        for _, tx := range t.transactionsAwaitingApproval {
+            if string(tx) != string(txn) {
+                newList = append(newList, tx)
+            }
+        }
+        t.transactionsAwaitingApproval = newList
+    }
+
+    // GetPendingTransactions retrieves a copy of the transactions awaiting approval.
+    func (t *Transactions) GetPendingTransactions() [][]byte {
+        t.mu.Lock()
+        defer t.mu.Unlock()
+        return append([][]byte{}, t.transactionsAwaitingApproval...)
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -447,12 +515,87 @@ Create a `sync_messages` file in your project and add the following code:
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "encoding/hex"
+        "encoding/json"
+        "fmt"
+        "os"
+        "log"
+        "time"
+        "github.com/joho/godotenv"
+        "github.com/pwrlabs/pwrgo/rpc"
+        "github.com/pwrlabs/pwrgo/wallet"
+        "github.com/pwrlabs/pwrgo/encode"
+    )
+
+    func Sync() {
+        // Setting up your wallet in the SDK
+        godotenv.Load()
+        privateKey := os.Getenv("PRIVATE_KEY")
+        wallet := wallet.FromPrivateKey(privateKey)
+
+        startingBlock := 876040 // Adjust starting block as needed
+        vmId := 123
+
+        // Defining an asynchronous loop function that fetches and processes new transactions
+        go func() {
+            for {
+                // Fetching the latest block number from the blockchain via the RPC API
+                latestBlock := rpc.GetLatestBlockNumber()
+                // Defining the effective block range for the next batch of transactions, limiting to 1000 blocks at a time
+                effectiveLatestBlock := latestBlock
+                if latestBlock > startingBlock+1000 {
+                    effectiveLatestBlock = startingBlock + 1000
+                }
+
+                // Checking if there are new blocks to process
+                if effectiveLatestBlock > startingBlock {
+                    // Fetching VM data transactions between the starting block and the effective latest block for a given VM ID
+                    txns := rpc.GetVmDataTransactions(startingBlock, effectiveLatestBlock, vmId)
+                    // Looping through the transactions fetched from the blockchain
+                    for _, txn := range txns {
+                        sender := txn.Sender
+                        dataHex := txn.Data
+                        nonce := wallet.GetNonce()
+
+                        // Converting the hex data to a buffer and then to a UTF-8 string
+                        dataBytes, _ := hex.DecodeString(dataHex[2:])
+                        var obj map[string]interface{}
+                        if err := json.Unmarshal(dataBytes, &obj); err != nil {
+                            log.Println("Error parsing JSON:", err)
+                            continue
+                        }
+
+                        // Iterating over each key in the object to check for specific conditions
+                        if message, ok := obj["message"].(string); ok && message == "please send me pwr" {
+                            var buffer []byte
+                            // Building a transfer transaction to send PWR tokens
+                            buffer, err := encode.TransferTxBytes(100, sender, nonce)
+                            if err != nil {
+                                log.Println("Error encoding transaction:", err)
+                                continue
+                            }
+                            // Adding the transaction to the Transactions struct
+                            PendingTransactions.Add(buffer)
+                            // Logging the message and the sender to the console
+                            fmt.Printf("\nMessage from %s: %s\n", sender, message)
+                        }
+                    }
+                    // Updating the starting block number for the next loop iteration
+                    startingBlock = effectiveLatestBlock + 1
+                }
+                time.Sleep(1 * time.Second) // Wait 1 second before the next loop
+            }
+        }()
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -585,12 +728,59 @@ Create a `app` file in your project and add the following code:
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "fmt"
+        "log"
+        "encoding/hex"
+        "encoding/json"
+        "net/http"
+    )
+
+    func App() {
+        // Add sync to fetch messages and add it to the pending txs
+        go Sync()
+
+        // Define an HTTP GET route at '/pendingVmTransactions'
+        // When accessed, this route will return the list of pending transactions
+        http.HandleFunc("/pendingVmTransactions", func(w http.ResponseWriter, r *http.Request) {
+            // Set the response header to ensure the response is sent as JSON data
+            w.Header().Set("Content-Type", "application/json")
+            // Retrieve the list of pending transactions using the getPendingTransactions method
+            pending := PendingTransactions.GetPendingTransactions()
+
+            var hexStrings []string
+            // Map through each transaction in the pendingTransactions array
+            for _, txn := range pending {
+                // Convert each transaction (assumed to be a Buffer or Uint8Array) to a hexadecimal string
+                hexString := "0x" + hex.EncodeToString(txn)
+                hexStrings = append(hexStrings, hexString)
+                // Remove the transaction from the pending transactions list after processing
+                PendingTransactions.Remove(txn)
+            }
+
+            // Send the resulting array of hex strings as a JSON response
+            if err := json.NewEncoder(w).Encode(hexStrings); err != nil {
+                http.Error(w, "Failed to encode JSON response", http.StatusInternalServerError)
+                return
+            }
+        })
+
+        // Set the port number for the server to listen on
+        port := ":8000"
+        fmt.Printf("Server running on http://localhost%s\n", port)
+        // Start the HTTP server and listen for connections on the specified port
+        if err := http.ListenAndServe(port, nil); err != nil {
+            log.Fatalf("Failed to start server: %v", err)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -686,12 +876,38 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "fmt"
+        "os"
+        "github.com/joho/godotenv"
+        "github.com/pwrlabs/pwrgo/wallet"
+    )
+
+    func SetConduits() {
+        // Setting up your wallet in the SDK
+        godotenv.Load()
+        privateKey := os.Getenv("PRIVATE_KEY")
+        wallet := wallet.FromPrivateKey(privateKey)
+
+        vmIds := "your_vm_id"
+        conduits := []string{"conduit_node_address"}
+
+        tx := wallet.SetConduits(vmIds, conduits)
+
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>

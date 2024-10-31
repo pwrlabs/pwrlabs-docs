@@ -96,12 +96,39 @@ To claim a VM ID on the PWR Chain, follow these steps:
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+        "fmt"
+    )
+
+    // Add your private key here
+    var privateKey = "YOUR_PRIVATE_KEY_HERE"
+
+    func ClaimVmId() {
+        // Setting up your wallet in the SDK
+        wallet := wallet.FromPrivateKey(privateKey)
+
+        // Add a unique VM ID
+        vmId := 102030
+
+        // Claim the VM ID
+        tx := wallet.ClaimVMId(vmId)
+
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>

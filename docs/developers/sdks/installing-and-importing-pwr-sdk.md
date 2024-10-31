@@ -37,6 +37,11 @@ You will install the PWR Chain SDK library the same way you do for each language
     cargo add pwr-rs
     ```
 </TabItem>
+<TabItem value="go" label="Go">
+    ```go
+    go get github.com/pwrlabs/pwrgo
+    ```
+</TabItem>
 <TabItem value="java-maven" label="Java Maven">
     ```html
         <repositories>
@@ -70,10 +75,6 @@ You will install the PWR Chain SDK library the same way you do for each language
         }
     ```
 </TabItem>
-<TabItem value="go" label="Go">
-    ```go
-    ```
-</TabItem>
 </Tabs>
 
 ## Importing SDKs
@@ -99,16 +100,20 @@ After you have installed sdks, you can import them in your project:
     use pwr_rs::{ Wallet, RPC };
     ```
 </TabItem>
+<TabItem value="go" label="Go">
+    ```go
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+        "github.com/pwrlabs/pwrgo/rpc"
+    )
+    ```
+</TabItem>
 <TabItem value="java" label="Java">
     ```java
     import com.github.pwrlabs.pwrj.protocol.PWRJ;
     import com.github.pwrlabs.pwrj.protocol.TransactionBuilder;
     import com.github.pwrlabs.pwrj.record.validator.Validator;
     import com.github.pwrlabs.pwrj.wallet.PWRWallet;
-    ```
-</TabItem>
-<TabItem value="go" label="Go">
-    ```go
     ```
 </TabItem>
 </Tabs>

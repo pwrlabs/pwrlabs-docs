@@ -72,12 +72,27 @@ To create a wallet in your software application using the PWR SDK. You can use y
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+    )
+
+    func main() {
+        // Create a wallet with a new randomly generated private key
+        var random = wallet.NewWallet()
+
+        // Create a wallet from an existing private key
+        // in this example we will store the private key as a string
+        privateKey := "YOUR_PRIVATE_KEY_HERE"
+        wallet := wallet.FromPrivateKey(PrivateKey)
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -154,12 +169,36 @@ In this example we will fetch the wallet data:
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "github.com/pwrlabs/pwrgo/wallet"
+    )
+
+    func main() {
+        // Create a new wallet
+        random := wallet.NewWallet()
+        // Get the wallet address
+        fmt.Println("Address:", random.GetAddress())
+
+        // Get the wallet's private key
+        privateKey := random.GetPrivateKey()
+        fmt.Println("PrivateKey:", privateKey)
+
+        // Get the wallet balance
+        balance := random.GetBalance()
+        fmt.Println("Balance:", balance)
+
+        // Get the wallet's current nonce
+        nonce := random.GetNonce()
+        fmt.Println("Nonce:", nonce)
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>

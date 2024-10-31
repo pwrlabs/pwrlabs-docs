@@ -46,12 +46,13 @@ Create a new project in your preferred programming language, and add the necessa
     cargo add tokio@1.0 --features full
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    go get github.com/pwrlabs/pwrgo github.com/joho/godotenv
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -142,12 +143,39 @@ Create a `send_message` file in your project and add the following code:
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "fmt"
+        "os"
+        "encoding/json"
+        "github.com/joho/godotenv"
+        "github.com/pwrlabs/pwrgo/wallet"
+    )
+
+    func SendMessage() {
+        // Setting up your wallet in the SDK
+        godotenv.Load()
+        privateKey := os.Getenv("PRIVATE_KEY")
+        wallet := wallet.FromPrivateKey(privateKey)
+
+        vmId := 123
+        data, _ := json.Marshal(map[string]string{"message": "Hello World!"})
+
+        tx := wallet.SendVMData(vmId, data)
+
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Printf("Failed to send transaction: %s\n", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -295,12 +323,68 @@ Create a `sync_messages` file in your project and add the following code:
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "fmt"
+        "log"
+        "time"
+        "encoding/json"
+        "encoding/hex"
+        "github.com/pwrlabs/pwrgo/rpc"
+    )
+
+    func Sync() {
+        startingBlock := 880920
+        vmId := 1234
+
+        loop := func() {
+            for {
+                latestBlock := rpc.GetLatestBlockNumber()
+
+                effectiveLatestBlock := latestBlock
+                if latestBlock > startingBlock+1000 {
+                    effectiveLatestBlock = startingBlock + 1000
+                }
+
+                if effectiveLatestBlock > startingBlock {
+                    // fetch the transactions in `vmId = 1234`
+                    transactions := rpc.GetVmDataTransactions(startingBlock, effectiveLatestBlock, vmId)
+
+                    for _, txn := range transactions {
+                        sender := txn.Sender
+                        dataHex := txn.Data
+                        // Remove the '0x' prefix and decode the hexadecimal data to bytes data
+                        dataBytes, _ := hex.DecodeString(dataHex[2:])
+                        // convert the bytes data to UTF-8 string as json
+                        var obj map[string]interface{}
+                        if err := json.Unmarshal(dataBytes, &obj); err != nil {
+                            log.Println("Error parsing JSON:", err)
+                            continue
+                        }
+
+                        if message, ok := obj["message"]; ok {
+                            fmt.Printf("\nMessage from %s: %s\n", sender, message)
+                        } else {
+                            // Handle other data fields if needed
+                        }
+                    }
+
+                    startingBlock = effectiveLatestBlock + 1
+                }
+
+                time.Sleep(1 * time.Second) // Wait 1 second before the next loop
+            }
+        }
+
+        go loop()
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -418,12 +502,55 @@ Create a `dapp` file in your project and add the following code:
     }
     ```
 </TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
 <TabItem value="go" label="Go">
     ```go
+    package main
+
+    import (
+        "fmt"
+        "bufio"
+        "os"
+        "encoding/json"
+        "github.com/joho/godotenv"
+        "github.com/pwrlabs/pwrgo/wallet"
+    )
+
+    func main() {
+        // Setting up your wallet in the SDK
+        godotenv.Load()
+        privateKey := os.Getenv("PRIVATE_KEY")
+        wallet := wallet.FromPrivateKey(privateKey)
+        vmId := 1234
+
+        go Sync()
+
+        reader := bufio.NewReader(os.Stdin)
+
+        for {
+            fmt.Print("Enter your message: ")
+            message, _ := reader.ReadString('\n')
+            message = message[:len(message)-1]
+
+            object := map[string]string{"message": message}
+            jsonData, err := json.Marshal(object)
+            if err != nil {
+                fmt.Println("Failed to encode message:", err)
+                continue
+            }
+
+            // Send the VM data
+            tx := wallet.SendVMData(vmId, jsonData)
+            if tx.Success {
+                fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+            } else {
+                fmt.Println("Error:", tx.Error)
+            }
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="java" label="Java">
+    ```java
     ```
 </TabItem>
 </Tabs>
@@ -450,11 +577,12 @@ To run the messaging application, add the following command:
     cargo run
     ```
 </TabItem>
-<TabItem value="java" label="Java">
+<TabItem value="go" label="Go">
     ```bash
+    go run dapp.go
     ```
 </TabItem>
-<TabItem value="go" label="Go">
+<TabItem value="java" label="Java">
     ```bash
     ```
 </TabItem>
