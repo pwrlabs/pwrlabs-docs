@@ -3,6 +3,8 @@ title: Gas Sponsorship Feature on PWR Chain EVMs
 sidebar_position: 2
 ---
 
+# Gas Sponsorship Feature on PWR Chain EVMs
+
 Gas sponsorship is a unique and practical feature available on the PWR Chain EVMs. It allows users to sponsor gas fees for other accounts, making transactions easier for sponsees. This guide explains how the `GasSponsorshipManager` contract works and provides a step-by-step approach to interact with it. By the end of this guide, you'll understand how to sponsor transactions, remove sponsorships, and query sponsorship information.
 
 ## What is Gas Sponsorship?
