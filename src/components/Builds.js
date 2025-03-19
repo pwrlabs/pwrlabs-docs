@@ -13,7 +13,7 @@ export default () => {
             )
         },
         {
-            title: "Virtual Machines (VMs)",
+            title: "Verifiable Immutable Data Applications (VIDAs)",
             description: "Create, configure and manage custom virtual machines on PWR Chain, enabling specialized use cases and seamless integration.",
             img: (
                 <svg className="stroke-svg" width="38" height="38" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M35 12.5046L20 3.75464L5 12.5046M35 12.5046L20 21.2546M35 12.5046V27.5046L20 36.2546M5 12.5046L20 21.2546M5 12.5046V27.5046L20 36.2546M20 21.2546V36.2546" stroke="var(--svg-stroke)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>

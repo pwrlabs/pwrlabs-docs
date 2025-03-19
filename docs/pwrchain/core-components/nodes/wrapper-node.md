@@ -17,7 +17,7 @@ Wrapper nodes are a versatile component of the PWR Chain ecosystem that enable v
 ## Key Use Cases
 
 - **Fee Delegation**: Wrapper nodes can be used to implement fee delegation mechanisms, where the transaction fees are paid by a third party on behalf of the user, enhancing user onboarding and experience.
-- **Custom VM Integration**: Wrapper nodes can be utilized by custom virtual machines (VMs) to accept and process transactions in their native format from existing wallets like Metamask, Trustwallet, and others, expanding the possibilities for building specialized applications on PWR Chain.
+- **Custom VIDAs Integration**: Wrapper nodes can be utilized by custom VIDAs to accept and process transactions in their native format from existing wallets like Metamask, Trustwallet, and others, expanding the possibilities for building specialized applications on PWR Chain.
 
 ## Transaction Flow
 

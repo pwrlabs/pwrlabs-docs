@@ -1,6 +1,6 @@
 ---
 title: Gossip of Power
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Gossip of Power

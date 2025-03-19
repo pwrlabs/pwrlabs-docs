@@ -1,6 +1,6 @@
 ---
 title: Delegated Proof of Power
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # Delegated Proof of Power

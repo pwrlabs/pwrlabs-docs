@@ -17,13 +17,8 @@ The core of PWR Chain is its base layer, operated by validator nodes, which is s
 
 PWR Chain supports an inclusive development environment where developers can utilize familiar programming languages and tools without needing to adapt to new blockchain-specific languages or environments.
 
-This flexibility extends to the deployment of virtual machines and software applications that can interact seamlessly on the chain, further supported by the network’s robust security measures and efficient transaction processing. [Check the Benefits of PWR Chain for Developers](/).
+This flexibility extends to the deployment of virtual machines and software applications that can interact seamlessly on the chain, further supported by the network’s robust security measures and efficient transaction processing.
 
 Moreover, PWR Chain employs a fixed fee model for transactions, which are charged based on the amount of data processed, rather than using a gas system, making costs predictable and tied directly to resource usage. This model, combined with the blockchain's high scalability and developer-friendly approach, positions PWR Chain as a powerful infrastructure for the next generation of decentralized applications​​​​.
 
-To read more about the overall architecture of PWR Chain, check out our Whitepaper   
-
-To check the different benefits and use cases of PWR Chain, check:
-- Benefits of PWR Chain for Developers
-- Benefits of PWR Chain for Enterprises
-- Benefits of PWR Chain for End Users
+To read more about the overall architecture of PWR Chain, check out our [Whitepaper](https://docsend.com/view/vyubv8zbd7zrvx4u).

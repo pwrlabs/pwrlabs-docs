@@ -4,7 +4,7 @@ title: Role of Validators & Delegators
 sidebar_position: 2
 ---
 
-# How Decisions are Made
+# Role of Validators & Delegators
 
 In the PWR Chain ecosystem, validators and delegators play crucial roles in ensuring the security, stability, and governance of the network. Their participation and collaboration are essential for the smooth operation and decision-making processes of the PWR Chain.
 

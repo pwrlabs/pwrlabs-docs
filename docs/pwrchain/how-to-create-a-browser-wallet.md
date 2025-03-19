@@ -1,7 +1,6 @@
 ---
 title: How to Create a Browser Wallet
-
-sidebar_position: 5
+sidebar_position: 7
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -72,7 +71,6 @@ Click on the PWR Wallet icon anytime to open your wallet. You can now send, rece
     <img src="/img/wallet-using.png" />
 </div>
 
-You can get some [PWR testing coins](/pwrchain/claim-testing-coins) from PWR faucet.
 
 ## How to Import an Existing Wallet
 
@@ -82,6 +80,20 @@ If you already have a PWR Wallet, you can import it using your secret phrase or 
 - Enter your secret phrase or private key.
 - Set up a new password for the browser wallet.
 - Your wallet will be restored with all its existing balances and transactions.
+
+## Claim Testing Coins
+
+To start testing or building projects on PWR Chain you need some PWR coins.
+
+## Using the faucet
+
+Go to [https://faucet.pwrlabs.io](https://faucet.pwrlabs.io).
+
+Make sure that PWR blockchain is selected, enter your wallet address and click on `Give Me x PWR` button:
+
+<img src="/img/faucet.png" style={{marginBottom: "20px"}}/>
+
+**After correctly claiming the tokens you should see your new balance in the wallet.**
 
 ## Security Tips
 
