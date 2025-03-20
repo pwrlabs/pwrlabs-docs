@@ -1,11 +1,11 @@
 ---
-title: Claim a VM ID
+title: Claim a VIDA
 sidebar_position: 4
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Claim a VM ID
+# Claim a VIDA
 
 In the PWR Chain ecosystem, Virtual Machines (VMs) play a crucial role in enabling developers to build and deploy decentralized applications (dApps). Each VM is identified by a unique ID, known as the VM ID. As a developer, you need to claim a VM ID to indicate that it is being used by your application and to receive certain benefits.
 
@@ -38,11 +38,11 @@ To claim a VM ID on the PWR Chain, follow these steps:
     const wallet = new PWRWallet(privateKey);
 
     async function claim() {
-        // Add a unique VM ID
-        const vmId = 102030;
+        // Add a unique VIDA ID
+        const vida = 102030;
 
-        // Claim the VM ID
-        const txHash = await wallet.claimVmId(vmId);
+        // Claim the VIDA ID
+        const txHash = await wallet.claimVmId(vida);
 
         // Error handling
         if (txHash.success) {
@@ -64,16 +64,16 @@ To claim a VM ID on the PWR Chain, follow these steps:
 
     def claim():
         # Add a unique VM ID
-        vm_id = 102030
+        vida = 102030
 
         # Claim the VM ID
-        tx_hash = wallet.claim_vm_id(vm_id)
+        tx = wallet.claim_vm_id(vida)
 
         # Error handling
-        if tx_hash.success:
-            print("Transaction Hash:", tx_hash.data)
+        if tx.success:
+            print("Transaction Hash:", tx.data)
         else:
-            print("Error:", tx_hash.message)
+            print("Error:", tx.message)
     claim()
     ```
 </TabItem>
@@ -86,13 +86,18 @@ To claim a VM ID on the PWR Chain, follow these steps:
         let private_key = "YOUR_PRIVATE_KEY_HERE";
         let wallet = Wallet::from_hex(&private_key).unwrap();
 
-        // Add a unique VM ID
-        let vm_id = 102032;
+        // Add a unique VIDA ID
+        let vida = 102030;
 
-        // Claim the VM ID
-        let tx_hash = wallet.claim_vm_id(vm_id).await;
+        // Claim the VIDA ID
+        let tx = wallet.claim_vm_id(vida).await;
 
-        println!("Transaction Hash: {tx_hash}")
+        // Error handling
+        if tx.success {
+            println!("Transaction Hash: {tx.data.unwrap()}");
+        } else {
+            println!("Error: {tx.error}");
+        }
     }
     ```
 </TabItem>
@@ -112,11 +117,11 @@ To claim a VM ID on the PWR Chain, follow these steps:
         // Setting up your wallet in the SDK
         wallet := wallet.FromPrivateKey(privateKey)
 
-        // Add a unique VM ID
-        vmId := 102030
+        // Add a unique VIDA ID
+        vida := 102030
 
-        // Claim the VM ID
-        tx := wallet.ClaimVMId(vmId)
+        // Claim the VIDA ID
+        tx := wallet.ClaimVMId(vida)
 
         // Error handling
         if tx.Success {
@@ -127,13 +132,43 @@ To claim a VM ID on the PWR Chain, follow these steps:
     }
     ```
 </TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using PWR.Models;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Add your private key here
+            string privateKey = "YOUR_PRIVATE_KEY_HERE";
+            // Setting up your wallet in the SDK
+            var wallet = new PwrWallet(privateKey);
+
+            // Add a unique VIDA ID
+            ulong vida = 102030;
+
+            // Claim the VIDA ID
+            WalletResponse tx = await wallet.ClaimVMId(vida);
+
+            // Error handling
+            if (tx.Success) {
+                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
+            } else {
+                Console.WriteLine($"Error: {tx.Error}");
+            }
+        }
+    }
+    ```
+</TabItem>
 <TabItem value="java" label="Java">
     ```java
     ```
 </TabItem>
 </Tabs>
 
-Using the wallet's claimVmId method, we claim the VM ID by providing the vmId. The SDK will handle the creation and signing of the "Claim VM ID" transaction.
+Using the wallet's claimVmId method, we claim the VM ID by providing the vida. The SDK will handle the creation and signing of the "Claim VM ID" transaction.
 
 If the transaction is successfully sent, we receive a response containing the transaction hash. Otherwise, we handle the error accordingly.
 

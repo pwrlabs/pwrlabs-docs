@@ -72,6 +72,19 @@ To create a wallet in your software application using the PWR SDK. You can use y
     }
     ```
 </TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+
+    // Create a wallet with a new randomly generated private key
+    var randomWallet = new PwrWallet();
+
+    // Create a wallet from an existing private key
+    // in this example we will store the private key as a string
+    string privateKey = "YOUR_PRIVATE_KEY_HERE";
+    var wallet = new PwrWallet(privateKey);
+    ```
+</TabItem>
 <TabItem value="go" label="Go">
     ```go
     package main
@@ -82,7 +95,7 @@ To create a wallet in your software application using the PWR SDK. You can use y
 
     func main() {
         // Create a wallet with a new randomly generated private key
-        var random = wallet.NewWallet()
+        var randomWallet = wallet.NewWallet()
 
         // Create a wallet from an existing private key
         // in this example we will store the private key as a string
@@ -179,21 +192,43 @@ In this example we will fetch the wallet data:
 
     func main() {
         // Create a new wallet
-        random := wallet.NewWallet()
+        randomWallet := wallet.NewWallet()
         // Get the wallet address
         fmt.Println("Address:", random.GetAddress())
 
         // Get the wallet's private key
-        privateKey := random.GetPrivateKey()
+        privateKey := randomWallet.GetPrivateKey()
         fmt.Println("PrivateKey:", privateKey)
 
         // Get the wallet balance
-        balance := random.GetBalance()
+        balance := randomWallet.GetBalance()
         fmt.Println("Balance:", balance)
 
         // Get the wallet's current nonce
-        nonce := random.GetNonce()
+        nonce := randomWallet.GetNonce()
         fmt.Println("Nonce:", nonce)
+    }
+    ```
+</TabItem>
+<TabItem value="c#" label="C#">
+    ```csharp
+    using PWR;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            var randomWallet = new PwrWallet();
+
+            string address = randomWallet.GetAddress();
+            Console.WriteLine($"Address: {address}");
+
+            ulong balance = await randomWallet.GetBalance();
+            Console.WriteLine($"Balance: {balance}");
+
+            uint nonce = await randomWallet.GetNonce();
+            Console.WriteLine($"Nonce: {nonce}");
+        }
     }
     ```
 </TabItem>

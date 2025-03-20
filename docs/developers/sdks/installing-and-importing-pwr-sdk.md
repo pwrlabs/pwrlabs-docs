@@ -38,8 +38,13 @@ You will install the PWR Chain SDK library the same way you do for each language
     ```
 </TabItem>
 <TabItem value="go" label="Go">
-    ```go
+    ```bash
     go get github.com/pwrlabs/pwrgo
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```bash
+    dotnet add package PWR
     ```
 </TabItem>
 <TabItem value="java-maven" label="Java Maven">
@@ -106,6 +111,12 @@ After you have installed sdks, you can import them in your project:
         "github.com/pwrlabs/pwrgo/wallet"
         "github.com/pwrlabs/pwrgo/rpc"
     )
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using PWR.Models;
     ```
 </TabItem>
 <TabItem value="java" label="Java">

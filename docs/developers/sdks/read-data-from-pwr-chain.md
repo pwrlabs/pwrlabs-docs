@@ -86,7 +86,7 @@ To retrieve the PWR balance or nonce of a specific account.
     )
 
     func account() {
-        address := "0xA4710E3D79E1ED973AF58E0F269E9B21DD11BC64"
+        address := "0x3b3b69093879e7b6f28366fa3c32762590ff547e"
 
         // get balance of address
         balance := rpc.GetBalanceOfAddress(address)
@@ -95,6 +95,28 @@ To retrieve the PWR balance or nonce of a specific account.
         // get nonce of address
         nonce := rpc.GetNonceOfAddress(address)
         fmt.Println("Nonce:", nonce)
+    }
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Setting up the rpc api
+            var rpc = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
+
+            string address = "0x3b3b69093879e7b6f28366fa3c32762590ff547e";
+
+            ulong balance = await rpc.GetBalanceOfAddress(address);
+            Console.WriteLine($"Balance: {balance}");
+
+            uint nonce = await rpc.GetNonceOfAddress(address);
+            Console.WriteLine($"Nonce: {nonce}");
+        }
     }
     ```
 </TabItem>
@@ -119,7 +141,7 @@ Blocks will help us access a lot of data through the set of transactions they co
 
     async function getBlock() {
         // the block number we want fetch
-        const blockNumber = 20000;
+        const blockNumber = 100;
         // get the block by number
         const block = await rpc.getBlockByNumber(blockNumber);
 
@@ -139,7 +161,7 @@ Blocks will help us access a lot of data through the set of transactions they co
 
     def get_block():
         # the block number we want fetch
-        block_number = 20000
+        block_number = 100
         # get the block by number
         block = pwr.get_block_by_number(block_number)
         
@@ -157,7 +179,7 @@ Blocks will help us access a lot of data through the set of transactions they co
         // Setting up the rpc api
         let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
         // the block number we want fetch
-        let block_number = 20000;
+        let block_number = 100;
         // get the block by number
         let block = rpc.get_block_by_number(block_number).await.unwrap();
 
@@ -179,13 +201,38 @@ Blocks will help us access a lot of data through the set of transactions they co
 
     func getBlock() {
         // the block number we want fetch
-        blockNumber := 10
+        blockNumber := 100
 
         // get the block by number
         block := rpc.GetBlockByNumber(blockNumber)
 
         for i, transaction := range block.Transactions {
             fmt.Printf("Sender %d: %s\n", i, transaction.Sender)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Setting up the rpc api
+            var rpc = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
+
+            // the block number we want fetch
+            uint blockNumber = 100;
+
+            // get the block by number
+            var block = await rpc.GetBlockByNumber(blockNumber);
+            
+            for (int i = 0; i < block.Transactions.Count; i++)
+            {
+                Console.WriteLine($"Sender {i}: {block.Transactions[i].Sender}");
+            }
         }
     }
     ```
@@ -202,7 +249,7 @@ You can access and process the block data according to your application's needs,
 
 One of the fetch operations that you will need a lot is fetching VM transactions to process data and sender and many more ideas that we will explain in the upcoming lessons.
 
-In this example, we retrieve all VM data transactions sent to a specific VM (identified by `vmId`) within a given block range (`startBlock` to `endBlock`):
+In this example, we retrieve all VM data transactions sent to a specific VM (identified by `vida`) within a given block range (`startBlock` to `endBlock`):
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
@@ -213,12 +260,12 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
 
     async function getVmData() {
-        const startBlock = 843500;
-        const endBlock = 843750;
-        const vmId = 123;
+        const startBlock = 146809;
+        const endBlock = 146945;
+        const vida = 123;
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vmId`
-        const transactions = await rpc.getVMDataTransactions(startBlock, endBlock, vmId);
+        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
+        const transactions = await rpc.getVMDataTransactions(startBlock, endBlock, vida);
 
         // prints the trasnactions data
         for (let txs of transactions) {
@@ -236,12 +283,12 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
     pwr = PWRPY()
 
     def get_vm_data():
-        start_block = 843500
-        end_block = 843750
-        vm_id = 123
+        start_block = 146809
+        end_block = 146945
+        vida = 123
 
-        # fetch the transactions sent from `startBlock` to `endBlock` in `vmId`
-        transactions = pwr.get_vm_data_txns(start_block, end_block, vm_id)
+        # fetch the transactions sent from `startBlock` to `endBlock` in `vida`
+        transactions = pwr.get_vm_data_txns(start_block, end_block, vida)
         # prints the trasnactions data
         for txs in transactions:
             print("Data:", txs.data)
@@ -256,12 +303,12 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
         // Setting up the rpc api
         let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
 
-        let start_block = 843500;
-        let end_block = 843750;
-        let vm_id = 123;
+        let start_block = 146809;
+        let end_block = 146945;
+        let vida = 123;
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vmId`
-        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vm_id).await.unwrap();
+        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
+        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vida).await.unwrap();
         // prints the trasnactions data
         for txs in transactions {
             println!("Data: {:?}", txs.data);
@@ -279,15 +326,39 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
     )
 
     func getVmData() {
-        startBlock := 843500
-        endBlock := 843750
-        vmId := 123
+        startBlock := 146809
+        endBlock := 146945
+        vida := 123
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vmId`
-        transactions := rpc.GetVmDataTransactions(startBlock, endBlock, vmId)
+        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
+        transactions := rpc.GetVmDataTransactions(startBlock, endBlock, vida)
 
         for _, tx := range transactions {
             fmt.Println("Data:", tx.Data)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Setting up the rpc api
+            var rpc = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
+
+            ulong startBlock = 146809;
+            ulong endBlock = 146945;
+            ulong vida = 123;
+
+            var transactions = await rpc.GetVmDataTransactions(startBlock, endBlock, vida);
+            foreach (var txn in transactions)
+            {
+                Console.WriteLine($"Data: {txn.Data}");
+            }
         }
     }
     ```
@@ -372,6 +443,28 @@ For example, if you are working with hexadecimal-encoded data in `Java`, you can
     }
     ```
 </TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using System.Text;
+
+    class Program
+    {
+        static void Main()
+        {
+            string hexData = "0x48656C6C6F20576F726C6421";
+
+            // Remove the '0x' prefix and decode the hexadecimal data to bytes data
+            string hexWithoutPrefix = hexData.StartsWith("0x") ? hexData[2..] : hexData;
+            byte[] bytes = Extensions.HexStringToByteArray(hexWithoutPrefix);
+            // Convert the decoded data to a UTF-8 string
+            string stringData = Encoding.UTF8.GetString(bytes);
+
+            Console.WriteLine($"Outputs: {stringData}");
+        }
+    }
+    ```
+</TabItem>
 <TabItem value="java" label="Java">
     ```java
     ```
@@ -391,12 +484,12 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
 
     async function getVmDataActive() {
-        const startBlock = 843500;
-        const endBlock = 843750;
-        const vmId = 123;
+        const startBlock = 146809;
+        const endBlock = 146945;
+        const vida = 123;
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vmId`
-        const transactions = await rpc.getVMDataTransactions(startBlock, endBlock, vmId);
+        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
+        const transactions = await rpc.getVMDataTransactions(startBlock, endBlock, vida);
 
         for (let txs of transactions) {
             const sender = txs.sender;
@@ -428,11 +521,11 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
     pwr = PWRPY()
 
     def get_vm_data_active():
-        start_block = 843500
-        end_block = 843750
-        vm_id = 123
-        # fetch the transactions sent from `startBlock` to `endBlock` in `vmId`
-        transactions = pwr.get_vm_data_txns(start_block, end_block, vm_id)
+        start_block = 146809
+        end_block = 146945
+        vida = 123
+        # fetch the transactions sent from `startBlock` to `endBlock` in `vida`
+        transactions = pwr.get_vm_data_txns(start_block, end_block, vida)
 
         for txs in transactions:
             sender = txs.sender
@@ -459,12 +552,12 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
     async fn get_vm_data_active() {
         // Setting up the rpc api
         let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
-        let start_block = 843500;
-        let end_block = 843750;
-        let vm_id = 123;
+        let start_block = 146809;
+        let end_block = 146945;
+        let vida = 123;
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vmId`
-        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vm_id).await.unwrap();
+        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
+        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vida).await.unwrap();
 
         for txs in transactions {
             let sender = txs.sender;
@@ -497,12 +590,12 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
     )
 
     func getVmDataActive() {
-        startBlock := 843500
-        endBlock := 843750
-        vmId := 123
+        startBlock := 146809
+        endBlock := 146945
+        vida := 123
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vmId`
-        transactions := rpc.GetVmDataTransactions(startBlock, endBlock, vmId)
+        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
+        transactions := rpc.GetVmDataTransactions(startBlock, endBlock, vida)
 
         for _, tx := range transactions {
             sender := tx.Sender
@@ -524,6 +617,51 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
             } else if strings.HasPrefix(stringData, "Hello") {
                 word := stringData[5:]
                 fmt.Printf("%s: %s\n", sender, word)
+            }
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using System.Text;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Setting up the rpc api
+            var rpc = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
+
+            ulong startBlock = 146809;
+            ulong endBlock = 146945;
+            ulong vida = 123;
+
+            // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
+            var transactions = await rpc.GetVmDataTransactions(startBlock, endBlock, vida);
+
+            foreach (var txn in transactions)
+            {
+                string sender = txn.Sender;
+                string data = txn.Data;
+
+                // Remove the '0x' prefix and decode the hexadecimal data to bytes data
+                string hexWithoutPrefix = data.StartsWith("0x") ? data[2..] : data;
+                byte[] bytes = Extensions.HexStringToByteArray(hexWithoutPrefix);
+                // Convert the bytes data to a UTF-8 string
+                string stringData = Encoding.UTF8.GetString(bytes);
+
+                if (stringData.StartsWith("Hi"))
+                {
+                    string word = stringData[3..];
+                    Console.WriteLine($"{sender}: {word}");
+                }
+                else if (stringData.StartsWith("Hello"))
+                {
+                    string word = stringData[6..];
+                    Console.WriteLine($"{sender}: {word}");
+                }
             }
         }
     }

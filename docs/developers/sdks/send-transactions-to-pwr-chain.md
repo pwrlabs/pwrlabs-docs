@@ -15,8 +15,6 @@ To send transactions to PWR Chain you need to have some coins in your wallet. Yo
 
 Just add your wallet address and then claim your coins by clicking on "Give Me 10 PWR".
 
-<!-- <img src="/img/faucet.png" /> -->
-
 ## PWR Chain Transactions
 
 To send transactions to PWR Chain, all what you need's setup the PWR SDK in your project and create wallet as we did in the previous lessons, and check the address balance so that you have enough gas fees.
@@ -25,7 +23,7 @@ Types of PWR Chain transactions - there are many types of PWR SDKs, in this guid
 
 - [**`Transfer PWR`**](#transfer-pwr): Transfers PWR tokens from one wallet to another, facilitating token movement within the network.
 - [**`Send VM Data`**](#send-vm-data): Sends data to a specific virtual machine for storage and processing purposes.
-- [**`Send Payable VM Data`**](#send-payable-vm-data): Sends data to a specific virtual machine (VM ID) and transfers PWR tokens to the VM as part of the operation.
+- [**`Send Payable VM Data`**](#send-payable-vm-data): Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the VM as part of the operation.
 - [**`Delegate`**](#delegate-pwr-tokens): Delegates a specified amount of PWR tokens to a validator, contributing to their staking power.
 - [**`Withdraw`**](#withdraw-delegated-pwr-tokens): Withdraws PWR tokens that were previously delegated to a validator, returning them to the user’s wallet.
 - [**`Move Stake`**](#move-stake-between-validators): Moves staked PWR tokens from one validator to another, allowing for flexibility in staking management.
@@ -51,13 +49,13 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         const amount = 1e3;
         // Transfer pwr tokens from the wallet
-        const txHash = await wallet.transferPWR(recipientAddress, amount);
+        const tx = await wallet.transferPWR(recipientAddress, amount);
         
         // Error handling
-        if (txHash.success) {
-            console.log("Transaction Hash:", txHash.transactionHash);
+        if (tx.success) {
+            console.log("Transaction Hash:", tx.transactionHash);
         } else {
-            console.log("Error:", txHash.message);
+            console.log("Error:", tx.message);
         }
     }
     transfer();
@@ -77,13 +75,13 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
         # Tokens amount - 1 PWR = 1e9 = 1000000000
         amount = 1000
         # Transfer pwr tokens from the wallet
-        tx_hash = wallet.transfer_pwr(recipient_address, amount)
+        tx = wallet.transfer_pwr(recipient_address, amount)
 
         # Error handling
-        if tx_hash.success:
-            print("Transaction Hash:", tx_hash.data)
+        if tx.success:
+            print("Transaction Hash:", tx.data)
         else:
-            print("Error:", tx_hash.message)
+            print("Error:", tx.message)
     transfer()
     ```
 </TabItem>
@@ -102,9 +100,14 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
         let amount = 1000;
 
         // Transfer pwr tokens from the wallet
-        let tx_hash = wallet.transfer_pwr(recipient_address, amount).await;
+        let tx = wallet.transfer_pwr(recipient_address, amount).await;
 
-        println!("Transaction Hash: {tx_hash}");
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
     }
     ```
 </TabItem>
@@ -125,7 +128,7 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
         wallet := wallet.FromPrivateKey(privateKey)
 
         // Tokens recipient address
-        recipientAddress := "0x3B3b69093879e7B6F28366Fa3c32762590Ff547e"
+        recipientAddress := "RECIPIENT_ADDRESS"
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         amount := int(1e3)
         // Transfer pwr tokens from the wallet
@@ -136,6 +139,38 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
             fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
         } else {
             fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using PWR.Models;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Add your private key here
+            string privateKey = "YOUR_PRIVATE_KEY_HERE";
+            // Setting up your wallet in the SDK
+            var wallet = new PwrWallet(privateKey);
+
+            // Tokens recipient address
+            string recipientAddress = "RECIPIENT_ADDRESS";
+            // Tokens amount - 1 PWR = 1e9 = 1000000000
+            ulong amount = 1000;
+
+            // Transfer pwr tokens from the wallet
+            WalletResponse tx = await wallet.TransferPWR(recipientAddress, amount);
+
+            // Error handling
+            if (tx.Success) {
+                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
+            } else {
+                Console.WriteLine($"Error: {tx.Error}");
+            }
         }
     }
     ```
@@ -160,19 +195,19 @@ Sends data to a specific virtual machine for storage and processing purposes.
     const wallet = new PWRWallet(privateKey);
 
     async function sendData() {
-        // VM id used to send the transaction to
-        const vmId = 123;
+        // VIDA used to send the transaction to
+        const vida = 123;
         // Buffer data to be included in the transaction
         const data = Buffer.from('Hello World!');
         
-        // Send the data at vmID 123 to the chain
-        const txHash = await wallet.sendVMDataTxn(vmId, data);
+        // Send the data at vida 123 to the chain
+        const tx = await wallet.sendVMDataTxn(vida, data);
 
         // Error handling
-        if (txHash.success) {
-            console.log("Transaction Hash:", txHash.transactionHash);
+        if (tx.success) {
+            console.log("Transaction Hash:", tx.transactionHash);
         } else {
-            console.log("Error:", txHash.message);
+            console.log("Error:", tx.message);
         }
     }
     sendData()
@@ -187,19 +222,19 @@ Sends data to a specific virtual machine for storage and processing purposes.
     wallet = PWRWallet(private_key)
 
     def send_data():
-        # VM id used to send the transaction to
-        vm_id = 123
+        # VIDA used to send the transaction to
+        vida = 123
         # Buffer data to be included in the transaction
         data = "Hello World!".encode()
 
-        # Send the data at vmID 123 to the chain
-        tx_hash = wallet.send_vm_data_transaction(vm_id, data)
+        # Send the data at vida 123 to the chain
+        tx = wallet.send_vm_data_transaction(vida, data)
 
         # Error handling
-        if tx_hash.success:
-            print("Transaction Hash:", tx_hash.data)
+        if tx.success:
+            print("Transaction Hash:", tx.data)
         else:
-            print("Error:", tx_hash.message)
+            print("Error:", tx.message)
     send_data()
     ```
 </TabItem>
@@ -212,16 +247,21 @@ Sends data to a specific virtual machine for storage and processing purposes.
         let private_key = "YOUR_PRIVATE_KEY_HERE";
         let wallet = Wallet::from_hex(&private_key).unwrap();
 
-        // VM id used to send the transaction to
-        let vm_id = 123;
+        // VIDA used to send the transaction to
+        let vida = 123;
         // Buffer data to be included in the transaction
         let data = vec!["Hello World!"];
         let data_as_bytes: Vec<u8> = data.into_iter().flat_map(|s| s.as_bytes().to_vec()).collect();
 
-        // Send the data at vmID 123 to the chain
-        let tx_hash = wallet.send_vm_data(vm_id, data_as_bytes).await;
+        // Send the data at vida 123 to the chain
+        let tx = wallet.send_vm_data(vida, data_as_bytes).await;
 
-        println!("Transaction Hash: {tx_hash}");
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
     }
     ```
 </TabItem>
@@ -240,13 +280,13 @@ Sends data to a specific virtual machine for storage and processing purposes.
     func sendData() {
         // Setting up your wallet in the SDK
         wallet := wallet.FromPrivateKey(privateKey)
-        // VM id used to send the transaction to
-        vmId := 123
+        // VIDA used to send the transaction to
+        vida := 123
         // Buffer data to be included in the transaction
         data := []byte("Hello world")
 
-        // Send the data at vmID 123 to the chain
-        tx := wallet.SendVMData(vmId, data)
+        // Send the data at vida 123 to the chain
+        tx := wallet.SendVMData(vida, data)
 
         // Error handling
         if tx.Success {
@@ -257,17 +297,50 @@ Sends data to a specific virtual machine for storage and processing purposes.
     }
     ```
 </TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using PWR.Models;
+    using System.Text;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Add your private key here
+            string privateKey = "YOUR_PRIVATE_KEY_HERE";
+            // Setting up your wallet in the SDK
+            var wallet = new PwrWallet(privateKey);
+
+            // VIDA used to send the transaction to
+            uint vida = 123;
+            // Byte data to be included in the transaction
+            byte[] data = Encoding.UTF8.GetBytes("Hello, World!");
+
+            // Send the data at vida 123 to the chain
+            WalletResponse tx = await wallet.SendVMData(vida, data);
+
+            // Error handling
+            if (tx.Success) {
+                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
+            } else {
+                Console.WriteLine($"Error: {tx.Error}");
+            }
+        }
+    }
+    ```
+</TabItem>
 <TabItem value="java" label="Java">
     ```java
     ```
 </TabItem>
 </Tabs>
 
-You must have wondered, why doesn’t the VM ID work specifically to suit my needs and the rules I want? It seems random? Of course not, we will explain this in the next guide on [**Claim a VM ID**](/developers/sdks/claim-a-vm-id). KEEP DIVING IN.
+You must have wondered, why doesn’t the VIDA work specifically to suit my needs and the rules I want? It seems random? Of course not, we will explain this in the next guide on [**Claim a VIDA**](/developers/sdks/claim-a-vida). KEEP DIVING IN.
 
 ### Send Payable VM Data
 
-Sends data to a specific virtual machine (VM ID) and transfers PWR tokens to the VM as part of the operation.
+Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the VM as part of the operation.
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
@@ -279,21 +352,21 @@ Sends data to a specific virtual machine (VM ID) and transfers PWR tokens to the
     const wallet = new PWRWallet(privateKey);
 
     async function sendPayableData() {
-        // VM id used to send the transaction to
-        const vmId = 919;
+        // VIDA used to send the transaction to
+        const vida = 919;
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         const amount = 1000;
         // Buffer data to be included in the transaction
         const data = Buffer.from('Hello World!');
         
-        // Send the data at vmID 919 and pay 1e3
-        const txHash = await wallet.sendPayableVmDataTransaction(vmId, amount, data);
+        // Send the data at vida 919 and pay 1e3
+        const tx = await wallet.sendPayableVmDataTransaction(vida, amount, data);
 
         // Error handling
-        if (txHash.success) {
-            console.log("Transaction Hash:", txHash.transactionHash);
+        if (tx.success) {
+            console.log("Transaction Hash:", tx.transactionHash);
         } else {
-            console.log("Error:", txHash.message);
+            console.log("Error:", tx.message);
         }
     }
     sendPayableData()
@@ -308,21 +381,21 @@ Sends data to a specific virtual machine (VM ID) and transfers PWR tokens to the
     wallet = PWRWallet(private_key)
 
     def send_payable_data():
-        # VM id used to send the transaction to
-        vm_id = 919
+        # VIDA used to send the transaction to
+        vida = 919
         # Tokens amount - 1 PWR = 1e9 = 1000000000
         amount = 1000
         # Buffer data to be included in the transaction
         data = "Hello World!".encode()
 
-        # Send the data at vmID 919 and pay 1e3
-        tx_hash = wallet.send_payable_vm_data_transaction(vm_id, amount, data)
+        # Send the data at vida 919 and pay 1e3
+        tx = wallet.send_payable_vm_data_transaction(vida, amount, data)
 
         # Error handling
-        if tx_hash.success:
-            print("Transaction Hash:", tx_hash.data)
+        if tx.success:
+            print("Transaction Hash:", tx.data)
         else:
-            print("Error:", tx_hash.message)
+            print("Error:", tx.message)
     send_payable_data()
     ```
 </TabItem>
@@ -335,18 +408,23 @@ Sends data to a specific virtual machine (VM ID) and transfers PWR tokens to the
         let private_key = "YOUR_PRIVATE_KEY_HERE";
         let wallet = Wallet::from_hex(&private_key).unwrap();
 
-        // VM id used to send the transaction to
-        let vm_id = 919;
+        // VIDA used to send the transaction to
+        let vida = 919;
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         let amount = 1000;
         // Buffer data to be included in the transaction
         let data = vec!["Hello World!"];
         let data_as_bytes: Vec<u8> = data.into_iter().flat_map(|s| s.as_bytes().to_vec()).collect();
 
-        // Send the data at vmID 919 and pay 1e3
-        let tx_hash = wallet.send_payable_vm_data(vm_id, amount, data_as_bytes).await;
+        // Send the data at vida 919 and pay 1e3
+        let tx = wallet.send_payable_vm_data(vida, amount, data_as_bytes).await;
 
-        println!("Transaction Hash: {tx_hash}");
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
     }
     ```
 </TabItem>
@@ -365,21 +443,56 @@ Sends data to a specific virtual machine (VM ID) and transfers PWR tokens to the
     func sendPayableData() {
         // Setting up your wallet in the SDK
         wallet := wallet.FromPrivateKey(privateKey)
-        // VM id used to send the transaction to
-        vmId := 919
+        // VIDA used to send the transaction to
+        vida := 919
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         amount := 10
         // Buffer data to be included in the transaction
         data := []byte("Hello world")
 
-        // Send the data at vmID 919 and pay 1e3
-        tx := wallet.SendPayableVMData(vmId, amount, data)
+        // Send the data at vida 919 and pay 1e3
+        tx := wallet.SendPayableVMData(vida, amount, data)
 
         // Error handling
         if tx.Success {
             fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
         } else {
             fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using PWR.Models;
+    using System.Text;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Add your private key here
+            string privateKey = "YOUR_PRIVATE_KEY_HERE";
+            // Setting up your wallet in the SDK
+            var wallet = new PwrWallet(privateKey);
+
+            // VIDA used to send the transaction to
+            ulong vida = 919;
+            // Tokens amount - 1 PWR = 1e9 = 1000000000
+            ulong amount = 1000;
+            // Byte data to be included in the transaction
+            byte[] data = Encoding.UTF8.GetBytes("Hello, World!");
+
+            // Send the data at vida 919 and pay 1e3
+            WalletResponse tx = await wallet.SendPayableVMData(vida, amount, data);
+
+            // Error handling
+            if (tx.Success) {
+                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
+            } else {
+                Console.WriteLine($"Error: {tx.Error}");
+            }
         }
     }
     ```
@@ -410,13 +523,13 @@ Delegates a specified amount of PWR tokens to a validator, contributing to their
         const amount = 1e9;
         
         // Delegate the validator
-        const txHash = await wallet.delegate(validator, amount);
+        const tx = await wallet.delegate(validator, amount);
 
         // Error handling
-        if (txHash.success) {
-            console.log("Transaction Hash:", txHash.transactionHash);
+        if (tx.success) {
+            console.log("Transaction Hash:", tx.transactionHash);
         } else {
-            console.log("Error:", txHash.message);
+            console.log("Error:", tx.message);
         }
     }
     delegate()
@@ -437,13 +550,13 @@ Delegates a specified amount of PWR tokens to a validator, contributing to their
         amount = 1000000000
 
         # Delegate the validator
-        tx_hash = wallet.delegate(validator, amount)
+        tx = wallet.delegate(validator, amount)
 
         # Error handling
-        if tx_hash.success:
-            print("Transaction Hash:", tx_hash.data)
+        if tx.success:
+            print("Transaction Hash:", tx.data)
         else:
-            print("Error:", tx_hash.message)
+            print("Error:", tx.message)
     delegate()
     ```
 </TabItem>
@@ -462,9 +575,14 @@ Delegates a specified amount of PWR tokens to a validator, contributing to their
         let amount = 1000000000;
 
         // Delegate the validator
-        let tx_hash = wallet.delegate(validator, amount).await;
+        let tx = wallet.delegate(validator, amount).await;
 
-        println!("Transaction Hash: {tx_hash}");
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
     }
     ```
 </TabItem>
@@ -501,6 +619,38 @@ Delegates a specified amount of PWR tokens to a validator, contributing to their
     }
     ```
 </TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using PWR.Models;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Add your private key here
+            string privateKey = "YOUR_PRIVATE_KEY_HERE";
+            // Setting up your wallet in the SDK
+            var wallet = new PwrWallet(privateKey);
+            
+            // Validator address
+            string validator = "VALIDATOR_ADDRESS";
+            // Tokens amount - 1 PWR = 1e9 = 1000000000
+            ulong amount = 1000000000;
+
+            // Delegate the validator
+            WalletResponse tx = await wallet.Delegate(validator, amount);
+
+            // Error handling
+            if (tx.Success) {
+                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
+            } else {
+                Console.WriteLine($"Error: {tx.Error}");
+            }
+        }
+    }
+    ```
+</TabItem>
 <TabItem value="java" label="Java">
     ```java
     ```
@@ -527,13 +677,13 @@ Withdraws PWR tokens that were previously delegated to a validator, returning th
         const amount = 1e9;
         
         // Withdraw the delegated pwr tokens
-        const txHash = await wallet.withdraw(validator, amount);
+        const tx = await wallet.withdraw(validator, amount);
 
         // Error handling
-        if (txHash.success) {
-            console.log("Transaction Hash:", txHash.transactionHash);
+        if (tx.success) {
+            console.log("Transaction Hash:", tx.transactionHash);
         } else {
-            console.log("Error:", txHash.message);
+            console.log("Error:", tx.message);
         }
     }
     withdraw()
@@ -554,13 +704,13 @@ Withdraws PWR tokens that were previously delegated to a validator, returning th
         amount = 1000000000
 
         # Withdraw the delegated pwr tokens
-        tx_hash = wallet.withdraw(validator, amount)
+        tx = wallet.withdraw(validator, amount)
 
         # Error handling
-        if tx_hash.success:
-            print("Transaction Hash:", tx_hash.data)
+        if tx.success:
+            print("Transaction Hash:", tx.data)
         else:
-            print("Error:", tx_hash.message)
+            print("Error:", tx.message)
     withdraw()
     ```
 </TabItem>
@@ -579,9 +729,14 @@ Withdraws PWR tokens that were previously delegated to a validator, returning th
         let amount = 1000000000;
 
         // Withdraw the delegated pwr tokens
-        let tx_hash = wallet.withdraw(validator, amount).await;
+        let tx = wallet.withdraw(validator, amount).await;
 
-        println!("Transaction Hash: {tx_hash}");
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
     }
     ```
 </TabItem>
@@ -618,6 +773,38 @@ Withdraws PWR tokens that were previously delegated to a validator, returning th
     }
     ```
 </TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using PWR.Models;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Add your private key here
+            string privateKey = "YOUR_PRIVATE_KEY_HERE";
+            // Setting up your wallet in the SDK
+            var wallet = new PwrWallet(privateKey);
+            
+            // Validator address you delegated
+            string validator = "VALIDATOR_ADDRESS";
+            // Tokens amount - 1 PWR = 1e9 = 1000000000
+            ulong amount = 1000000000;
+
+            // Withdraw the delegated pwr tokens
+            WalletResponse tx = await wallet.Withdraw(validator, amount);
+
+            // Error handling
+            if (tx.Success) {
+                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
+            } else {
+                Console.WriteLine($"Error: {tx.Error}");
+            }
+        }
+    }
+    ```
+</TabItem>
 <TabItem value="java" label="Java">
     ```java
     ```
@@ -644,13 +831,13 @@ To move delegated stake from one validator to another.
         const amount = 1e9;
         
         // Move stake token from validator to another
-        const txHash = await wallet.moveStake(amount, fromValidator, toValidator);
+        const tx = await wallet.moveStake(amount, fromValidator, toValidator);
 
         // Error handling
-        if (txHash.success) {
-            console.log("Transaction Hash:", txHash.transactionHash);
+        if (tx.success) {
+            console.log("Transaction Hash:", tx.transactionHash);
         } else {
-            console.log("Error:", txHash.message);
+            console.log("Error:", tx.message);
         }
     }
     moveStake()
@@ -671,13 +858,13 @@ To move delegated stake from one validator to another.
         amount = 1000000000
 
         # Move stake token from validator to another
-        tx_hash = wallet.move_stake(amount, from_validator, to_validator)
+        tx = wallet.move_stake(amount, from_validator, to_validator)
 
         # Error handling
-        if tx_hash.success:
-            print("Transaction Hash:", tx_hash.data)
+        if tx.success:
+            print("Transaction Hash:", tx.data)
         else:
-            print("Error:", tx_hash.message)
+            print("Error:", tx.message)
     move_stake()
     ```
 </TabItem>
@@ -696,9 +883,14 @@ To move delegated stake from one validator to another.
         let amount = 1000000000;
 
         // Move stake token from validator to another
-        let tx_hash = wallet.move_stake(amount, from_validator, to_validator).await;
+        let tx = wallet.move_stake(amount, from_validator, to_validator).await;
 
-        println!("Transaction Hash: {tx_hash}");
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
     }
     ```
 </TabItem>
@@ -731,6 +923,38 @@ To move delegated stake from one validator to another.
             fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
         } else {
             fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using PWR.Models;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Add your private key here
+            string privateKey = "YOUR_PRIVATE_KEY_HERE";
+            // Setting up your wallet in the SDK
+            var wallet = new PwrWallet(privateKey);
+            
+            string fromValidator = "FROM_VALIDATOR_ADDRESS";
+            string toValidator = "TO_VALIDATOR_ADDRESS";
+            // Tokens amount - 1 PWR = 1e9 = 1000000000
+            ulong amount = 100000000;
+
+            // Move stake token from validator to another
+            WalletResponse tx = await wallet.MoveStake(amount, fromValidator, toValidator);
+
+            // Error handling
+            if (tx.Success) {
+                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
+            } else {
+                Console.WriteLine($"Error: {tx.Error}");
+            }
         }
     }
     ```
@@ -775,13 +999,13 @@ Here's how the guardian process works:
         const expiryDate = Math.floor(futureDate.getTime() / 1000);
         
         // Set your wallet guardian
-        const txHash = await wallet.setGuardian(guardian, expiryDate);
+        const tx = await wallet.setGuardian(guardian, expiryDate);
 
         // Error handling
-        if (txHash.success) {
-            console.log("Transaction Hash:", txHash.transactionHash);
+        if (tx.success) {
+            console.log("Transaction Hash:", tx.transactionHash);
         } else {
-            console.log("Error:", txHash.message);
+            console.log("Error:", tx.message);
         }
     }
     setGuardian()
@@ -807,13 +1031,13 @@ Here's how the guardian process works:
         expiry_date = int(time.mktime(future_time.timetuple()))
 
         # Set your wallet guardian
-        tx_hash = wallet.set_guardian(guardian, expiry_date)
+        tx = wallet.set_guardian(guardian, expiry_date)
 
         # Error handling
-        if tx_hash.success:
-            print("Transaction Hash:", tx_hash.data)
+        if tx.success:
+            print("Transaction Hash:", tx.data)
         else:
-            print("Error:", tx_hash.message)
+            print("Error:", tx.message)
     set_guardian()
     ```
 </TabItem>
@@ -837,9 +1061,14 @@ Here's how the guardian process works:
         let expiry_date = future_time.timestamp() as u64;
 
         // Set your wallet guardian
-        let tx_hash = wallet.set_guardian(guardian, expiry_date).await;
+        let tx = wallet.set_guardian(guardian, expiry_date).await;
 
-        println!("Transaction Hash: {tx_hash}");
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
     }
     ```
 </TabItem>
@@ -861,7 +1090,7 @@ Here's how the guardian process works:
         wallet := wallet.FromPrivateKey(privateKey)
 
         // Guardian address that will verify your transactions
-        guardian := "0x34bfe9c609ca72d5a4661889033a221fa07ef61a"
+        guardian := "GUARDIAN_ADDRESS"
         // Guardian validity period - 30 minutes
         futureDate := time.Now().Add(30 * time.Minute) // 30 minutes from now
         expiryDate := int(futureDate.Unix()) // Get the Unix timestamp in seconds
@@ -874,6 +1103,39 @@ Here's how the guardian process works:
             fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
         } else {
             fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using PWR.Models;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Add your private key here
+            string privateKey = "YOUR_PRIVATE_KEY_HERE";
+            // Setting up your wallet in the SDK
+            var wallet = new PwrWallet(privateKey);
+            
+            // Guardian address that will verify your transactions
+            string guardian = "GUARDIAN_ADDRESS";
+            // Guardian validity period - 30 minutes
+            DateTime futureDate = DateTime.UtcNow.AddMinutes(30); // 30 minutes from now
+            ulong expiryDate = (ulong)((DateTimeOffset)futureDate).ToUnixTimeMilliseconds();
+
+            // Set your wallet guardian
+            WalletResponse tx = await wallet.SetGuardian(guardian, expiryDate);
+
+            // Error handling
+            if (tx.Success) {
+                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
+            } else {
+                Console.WriteLine($"Error: {tx.Error}");
+            }
         }
     }
     ```
@@ -901,13 +1163,13 @@ Remove the guardian assigned to the wallet, removing their access or control.
 
     async function removeGuardian() {
         // Remove your wallet guardian
-        const txHash = await wallet.removeGuardian();
+        const tx = await wallet.removeGuardian();
 
         // Error handling
-        if (txHash.success) {
-            console.log("Transaction Hash:", txHash.transactionHash);
+        if (tx.success) {
+            console.log("Transaction Hash:", tx.transactionHash);
         } else {
-            console.log("Error:", txHash.message);
+            console.log("Error:", tx.message);
         }
     }
     removeGuardian()
@@ -923,13 +1185,13 @@ Remove the guardian assigned to the wallet, removing their access or control.
 
     def remove_guardian():
         # Remove your wallet guardian
-        tx_hash = wallet.remove_guardian()
+        tx = wallet.remove_guardian()
 
         # Error handling
-        if tx_hash.success:
-            print("Transaction Hash:", tx_hash.data)
+        if tx.success:
+            print("Transaction Hash:", tx.data)
         else:
-            print("Error:", tx_hash.message)
+            print("Error:", tx.message)
     remove_guardian()
     ```
 </TabItem>
@@ -943,9 +1205,14 @@ Remove the guardian assigned to the wallet, removing their access or control.
         let wallet = Wallet::from_hex(&private_key).unwrap();
 
         // Remove your wallet guardian
-        let tx_hash = wallet.remove_guardian().await;
+        let tx = wallet.remove_guardian().await;
 
-        println!("Transaction Hash: {tx_hash}");
+        // Error handling
+        if tx.Success {
+            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+        } else {
+            fmt.Println("Error:", tx.Error)
+        }
     }
     ```
 </TabItem>
@@ -973,6 +1240,33 @@ Remove the guardian assigned to the wallet, removing their access or control.
             fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
         } else {
             fmt.Println("Error:", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+    using PWR.Models;
+
+    class Program
+    {
+        static async Task Main()
+        {
+            // Add your private key here
+            string privateKey = "YOUR_PRIVATE_KEY_HERE";
+            // Setting up your wallet in the SDK
+            var wallet = new PwrWallet(privateKey);
+
+            // Remove your wallet guardian
+            WalletResponse tx = await wallet.RemoveGuardian();
+
+            // Error handling
+            if (tx.Success) {
+                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
+            } else {
+                Console.WriteLine($"Error: {tx.Error}");
+            }
         }
     }
     ```
