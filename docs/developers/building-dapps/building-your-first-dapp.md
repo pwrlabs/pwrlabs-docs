@@ -94,9 +94,9 @@ Create a `send_message` file in your project and add the following code:
     async function sendMessage() {
         const obj = { message: "Hello World!" };
         const data = Buffer.from(JSON.stringify(obj), 'utf8');
-        const vmId = 1234;
+        const vidaId = 1234;
 
-        const res = await wallet.sendVMDataTxn(vmId, data);
+        const res = await wallet.sendVMDataTxn(vidaId, data);
         console.log(res.transactionHash);
     }
     sendMessage();
@@ -117,10 +117,10 @@ Create a `send_message` file in your project and add the following code:
     def send_message():
         obj = {"message": "cool"}
         data = json.dumps(obj).encode('utf-8')
-        vm_id = 1234
+        vida_id = 1234
 
-        # Sending the VM data transaction
-        res = wallet.send_vm_data_transaction(vm_id, data)
+        # Sending the VIDA data transaction
+        res = wallet.send_vm_data_transaction(vida_id, data)
         print(res.data)
     send_message()
     ```
@@ -140,8 +140,8 @@ Create a `send_message` file in your project and add the following code:
 
         let obj = json!({ "message": "lfg" });
         let data = serde_json::to_vec(&obj).unwrap(); // Serialize to JSON bytes
-        let vm_id = 1234;
-        let res = wallet.send_vm_data(vm_id, data).await;
+        let vida_id = 1234;
+        let res = wallet.send_vm_data(vida_id, data).await;
         println!("{}", res);
     }
 
@@ -169,10 +169,10 @@ Create a `send_message` file in your project and add the following code:
         privateKey := os.Getenv("PRIVATE_KEY")
         wallet := wallet.FromPrivateKey(privateKey)
 
-        vmId := 123
+        vidaId := 123
         data, _ := json.Marshal(map[string]string{"message": "Hello World!"})
 
-        tx := wallet.SendVMData(vmId, data)
+        tx := wallet.SendVMData(vidaId, data)
 
         if tx.Success {
             fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
@@ -240,7 +240,7 @@ Create a `sync_messages` file in your project and add the following code:
 
     async function sync() {
         let startingBlock = 880920;
-        const vmId = 1234;
+        const vidaId = 1234;
 
         const loop = async () => {
             try {
@@ -248,8 +248,8 @@ Create a `sync_messages` file in your project and add the following code:
                 let effectiveLatestBlock = latestBlock > startingBlock + 1000 ? startingBlock + 1000 : latestBlock;
 
                 if (effectiveLatestBlock > startingBlock) {
-                    // fetch the transactions in `vmId = 1234`
-                    const txns = await rpc.getVMDataTransactions(startingBlock, effectiveLatestBlock, vmId);
+                    // fetch the transactions in `vidaId = 1234`
+                    const txns = await rpc.getVMDataTransactions(startingBlock, effectiveLatestBlock, vidaId);
                     for (let txn of txns) {
                         const sender = txn.sender;
                         const dataHex = txn.data;
@@ -289,7 +289,7 @@ Create a `sync_messages` file in your project and add the following code:
 
     def sync():
         starting_block = 880920 
-        vm_id = 1234
+        vida_id = 1234
 
         while True:
             try:
@@ -297,8 +297,8 @@ Create a `sync_messages` file in your project and add the following code:
                 effective_latest_block = min(latest_block, starting_block + 1000)
 
                 if effective_latest_block >= starting_block:
-                    # Fetch the transactions in `vmId = 1234`
-                    txns = pwr.get_vm_data_txns(starting_block, effective_latest_block, vm_id)
+                    # Fetch the transactions in `vidaId = 1234`
+                    txns = pwr.get_vm_data_txns(starting_block, effective_latest_block, vida_id)
                     for txn in txns:
                         sender = txn.sender
                         data_hex = txn.data
@@ -329,7 +329,7 @@ Create a `sync_messages` file in your project and add the following code:
         let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
 
         let mut starting_block: u64 = 880920;
-        let vm_id: u64 = 1234;
+        let vida_id: u64 = 1234;
 
         loop {
             let latest_block = rpc.get_latest_block_number().await.unwrap();
@@ -340,8 +340,8 @@ Create a `sync_messages` file in your project and add the following code:
             };
 
             if effective_latest_block >= starting_block {
-                // Fetch the transactions in `vmId = 1234`
-                let txns = rpc.get_vm_data_transactions(starting_block, effective_latest_block, vm_id).await.unwrap();
+                // Fetch the transactions in `vidaId = 1234`
+                let txns = rpc.get_vm_data_transactions(starting_block, effective_latest_block, vida_id).await.unwrap();
                 for txn in txns {
                     let sender = txn.sender;
                     let data = txn.data; // txn.data is Vec<u8>
@@ -382,7 +382,7 @@ Create a `sync_messages` file in your project and add the following code:
 
     func Sync() {
         startingBlock := 880920
-        vmId := 1234
+        vidaId := 1234
 
         loop := func() {
             for {
@@ -394,8 +394,8 @@ Create a `sync_messages` file in your project and add the following code:
                 }
 
                 if effectiveLatestBlock > startingBlock {
-                    // fetch the transactions in `vmId = 1234`
-                    transactions := rpc.GetVmDataTransactions(startingBlock, effectiveLatestBlock, vmId)
+                    // fetch the transactions in `vidaId = 1234`
+                    transactions := rpc.GetVmDataTransactions(startingBlock, effectiveLatestBlock, vidaId)
 
                     for _, txn := range transactions {
                         sender := txn.Sender
@@ -532,14 +532,14 @@ Create a `dapp` file in your project and add the following code:
     });
 
     async function main() {
-        const vmId = 1234;
+        const vidaId = 1234;
         await sync();
 
         const messageLoop = () => {
             rl.question("", async (message) => {
                 const object = { message };
-                // Send the VM data
-                const response = await wallet.sendVMDataTxn(vmId, Buffer.from(JSON.stringify(object), 'utf8'));
+                // Send the VIDA data
+                const response = await wallet.sendVMDataTxn(vidaId, Buffer.from(JSON.stringify(object), 'utf8'));
                 !response.success && console.log('FAILED!');
                 messageLoop(); // Recursively ask for the next message
             });
@@ -563,7 +563,7 @@ Create a `dapp` file in your project and add the following code:
     # Setting up your wallet in the SDK
     private_key = os.getenv("PRIVATE_KEY")
     wallet = PWRWallet(private_key)
-    vm_id = 1234
+    vida_id = 1234
 
     def main():
         threading.Thread(target=sync, daemon=True).start()
@@ -573,8 +573,8 @@ Create a `dapp` file in your project and add the following code:
             obj = {"message": message}
             data = json.dumps(obj).encode('utf-8')
             
-            # Send the VM data
-            response = wallet.send_vm_data_transaction(vm_id, data)
+            # Send the VIDA data
+            response = wallet.send_vm_data_transaction(vida_id, data)
             if response.success==False:
                 print('FAILED!')
     main()
@@ -596,7 +596,7 @@ Create a `dapp` file in your project and add the following code:
         // Setting up your wallet in the SDK
         let private_key = env::var("PRIVATE_KEY").unwrap();
         let wallet = Wallet::from_hex(&private_key).unwrap();
-        let vm_id: u64 = 1234;
+        let vida_id: u64 = 1234;
         let stdin = io::stdin();
         let reader = BufReader::new(stdin);
         let mut lines = reader.lines();
@@ -607,8 +607,8 @@ Create a `dapp` file in your project and add the following code:
             let obj = serde_json::json!({ "message": message });
             let data = serde_json::to_vec(&obj)?;
 
-            // Send the VM data
-            wallet.send_vm_data(vm_id, data).await;
+            // Send the VIDA data
+            wallet.send_vm_data(vida_id, data).await;
         }
         Ok(())
     }
@@ -632,7 +632,7 @@ Create a `dapp` file in your project and add the following code:
         godotenv.Load()
         privateKey := os.Getenv("PRIVATE_KEY")
         wallet := wallet.FromPrivateKey(privateKey)
-        vmId := 1234
+        vidaId := 1234
 
         go Sync()
 
@@ -650,8 +650,8 @@ Create a `dapp` file in your project and add the following code:
                 continue
             }
 
-            // Send the VM data
-            tx := wallet.SendVMData(vmId, jsonData)
+            // Send the VIDA data
+            tx := wallet.SendVMData(vidaId, jsonData)
             if tx.Success {
                 fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
             } else {
@@ -693,7 +693,7 @@ Create a `dapp` file in your project and add the following code:
                     var messageData = new { message = message };
                     byte[] dataBytes = JsonSerializer.SerializeToUtf8Bytes(messageData);
 
-                    // Send the VM data
+                    // Send the VIDA data
                     WalletResponse response = await wallet.SendVMData(vidaId, dataBytes);
 
                     if (response.Success)

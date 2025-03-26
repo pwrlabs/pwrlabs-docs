@@ -11,7 +11,7 @@ Glossary of terms that will be used throughout the documentation
 
 - **Base Layer**: The foundational layer of PWR Blockchain dedicated to managing consensus, handling transactions, organizing blocks, and ensuring network security without processing smart contracts or applications.
 
-- **Virtual Machine (VM)**: Independent operational entities on PWR Chain that can process smart contracts and run applications with distinct states, without burdening the base layer's throughput or security.
+- **Verifiable Immutable Data Applications (VIDAs)**: is a self-contained software program that leverages PWR Chain’s immutable transaction ledger to operate transparently, securely, and at scale.
 
 - **Software Applications**: Applications built on PWR Chain using established programming languages, capable of sophisticated operations, including automation and internet interaction, functioning beyond the traditional constraints of smart contracts.
 

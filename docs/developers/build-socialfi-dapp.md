@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 
 # Build SocialFi DApp using Next.js
 
-In this lesson, you will learn how to build a small SocialFi project that allows users to share posts and like it using Next.js. This DApp will provide a seamless interface for users to connect their wallets, send data to our VM and fetch the data securely and efficiently.
+In this lesson, you will learn how to build a small SocialFi project that allows users to share posts and like it using Next.js. This DApp will provide a seamless interface for users to connect their wallets, send data to our VIDA and fetch the data securely and efficiently.
 
 ## Prerequisites
 
@@ -63,7 +63,7 @@ const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
 
 export async function syncPosts(setPosts) {
     let startingBlock = "YOUR_STARTING_BLOCK";
-    const vmId = "YOUR_VM_ID";
+    const vidaId = "YOUR_VIDA_ID";
 
     const loop = async () => {
         try {
@@ -71,8 +71,8 @@ export async function syncPosts(setPosts) {
             let effectiveLatestBlock = latestBlock > startingBlock + 1000 ? startingBlock + 1000 : latestBlock;
 
             if (effectiveLatestBlock > startingBlock) {
-                // Fetch the transactions in `vmId = 1234`
-                const txns = await rpc.getVMDataTransactions(startingBlock, effectiveLatestBlock, vmId);
+                // Fetch the transactions in `vidaId = 1234`
+                const txns = await rpc.getVMDataTransactions(startingBlock, effectiveLatestBlock, vidaId);
                 const likesMap = {}; // Initialize a likes map
                 const likesSet = new Set(); // Initialize a set to track unique likes
 
@@ -136,7 +136,7 @@ export async function syncPosts(setPosts) {
 
 ## Build the homepage
 
-In this part we will build, connect wallet, disconnect, listen for events, send VM data (posts and likes), and fetch posts to the homepage.
+In this part we will build, connect wallet, disconnect, listen for events, send VIDA data (posts and likes), and fetch posts to the homepage.
 
 Building the homepage (`src/app/page.js`) which will show everything. The code is explained in the comments, take the time to write it yourself and understand it.
 
@@ -150,7 +150,7 @@ import {
 } from "@pwrjs/core";
 import { syncPosts } from "../components/getPosts";
 
-const vmId = 5544;
+const vidaId = 5544;
 const timestamp = new Date().getTime();
 
 // Format post timestamp
@@ -203,8 +203,8 @@ export default function Home() {
     const post = Buffer.from(JSON.stringify(data), 'utf8');
 
     try {
-      // Send `post` to our vmId
-      const tx = await pwr.sendVMDataTxn2(vmId, post, true);
+      // Send `post` to our vidaId
+      const tx = await pwr.sendVMDataTxn2(vidaId, post, true);
       alert(`SENT POST! ${tx.slice(0, 6)}...${tx.slice(-6)}`);
     } catch (err) {
       console.error(err);
@@ -227,8 +227,8 @@ export default function Home() {
           // Convert data type to `Buffer`
           const likes = Buffer.from(JSON.stringify(data), 'utf8');
 
-          // Send `like` to our vmId
-          const tx = await pwr.sendVMDataTxn2(vmId, likes, true);
+          // Send `like` to our vidaId
+          const tx = await pwr.sendVMDataTxn2(vidaId, likes, true);
           alert(`SENT LIKE! ${tx.slice(0, 6)}...${tx.slice(-6)}`);
         }
       }

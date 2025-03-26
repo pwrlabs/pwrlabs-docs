@@ -22,8 +22,8 @@ To send transactions to PWR Chain, all what you need's setup the PWR SDK in your
 Types of PWR Chain transactions - there are many types of PWR SDKs, in this guide we will focus on the following:
 
 - [**`Transfer PWR`**](#transfer-pwr): Transfers PWR tokens from one wallet to another, facilitating token movement within the network.
-- [**`Send VM Data`**](#send-vm-data): Sends data to a specific virtual machine for storage and processing purposes.
-- [**`Send Payable VM Data`**](#send-payable-vm-data): Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the VM as part of the operation.
+- [**`Send VIDA Data`**](#send-vm-data): Sends data to a specific virtual machine for storage and processing purposes.
+- [**`Send Payable VIDA Data`**](#send-payable-vm-data): Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the VIDA as part of the operation.
 - [**`Delegate`**](#delegate-pwr-tokens): Delegates a specified amount of PWR tokens to a validator, contributing to their staking power.
 - [**`Withdraw`**](#withdraw-delegated-pwr-tokens): Withdraws PWR tokens that were previously delegated to a validator, returning them to the user’s wallet.
 - [**`Move Stake`**](#move-stake-between-validators): Moves staked PWR tokens from one validator to another, allowing for flexibility in staking management.
@@ -181,7 +181,7 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
 </TabItem>
 </Tabs>
 
-### Send VM Data
+### Send VIDA Data
 
 Sends data to a specific virtual machine for storage and processing purposes.
 
@@ -196,12 +196,12 @@ Sends data to a specific virtual machine for storage and processing purposes.
 
     async function sendData() {
         // VIDA used to send the transaction to
-        const vida = 123;
+        const vidaId = 123;
         // Buffer data to be included in the transaction
         const data = Buffer.from('Hello World!');
         
-        // Send the data at vida 123 to the chain
-        const tx = await wallet.sendVMDataTxn(vida, data);
+        // Send the data at vidaId 123 to the chain
+        const tx = await wallet.sendVMDataTxn(vidaId, data);
 
         // Error handling
         if (tx.success) {
@@ -223,12 +223,12 @@ Sends data to a specific virtual machine for storage and processing purposes.
 
     def send_data():
         # VIDA used to send the transaction to
-        vida = 123
+        vida_id = 123
         # Buffer data to be included in the transaction
         data = "Hello World!".encode()
 
-        # Send the data at vida 123 to the chain
-        tx = wallet.send_vm_data_transaction(vida, data)
+        # Send the data at vida_id 123 to the chain
+        tx = wallet.send_vm_data_transaction(vida_id, data)
 
         # Error handling
         if tx.success:
@@ -248,13 +248,13 @@ Sends data to a specific virtual machine for storage and processing purposes.
         let wallet = Wallet::from_hex(&private_key).unwrap();
 
         // VIDA used to send the transaction to
-        let vida = 123;
+        let vida_id = 123;
         // Buffer data to be included in the transaction
         let data = vec!["Hello World!"];
         let data_as_bytes: Vec<u8> = data.into_iter().flat_map(|s| s.as_bytes().to_vec()).collect();
 
-        // Send the data at vida 123 to the chain
-        let tx = wallet.send_vm_data(vida, data_as_bytes).await;
+        // Send the data at vida_id 123 to the chain
+        let tx = wallet.send_vm_data(vida_id, data_as_bytes).await;
 
         // Error handling
         if tx.Success {
@@ -281,12 +281,12 @@ Sends data to a specific virtual machine for storage and processing purposes.
         // Setting up your wallet in the SDK
         wallet := wallet.FromPrivateKey(privateKey)
         // VIDA used to send the transaction to
-        vida := 123
+        vidaId := 123
         // Buffer data to be included in the transaction
         data := []byte("Hello world")
 
-        // Send the data at vida 123 to the chain
-        tx := wallet.SendVMData(vida, data)
+        // Send the data at vidaId 123 to the chain
+        tx := wallet.SendVMData(vidaId, data)
 
         // Error handling
         if tx.Success {
@@ -313,12 +313,12 @@ Sends data to a specific virtual machine for storage and processing purposes.
             var wallet = new PwrWallet(privateKey);
 
             // VIDA used to send the transaction to
-            uint vida = 123;
+            uint vidaId = 123;
             // Byte data to be included in the transaction
             byte[] data = Encoding.UTF8.GetBytes("Hello, World!");
 
-            // Send the data at vida 123 to the chain
-            WalletResponse tx = await wallet.SendVMData(vida, data);
+            // Send the data at vidaId 123 to the chain
+            WalletResponse tx = await wallet.SendVMData(vidaId, data);
 
             // Error handling
             if (tx.Success) {
@@ -338,9 +338,9 @@ Sends data to a specific virtual machine for storage and processing purposes.
 
 You must have wondered, why doesn’t the VIDA work specifically to suit my needs and the rules I want? It seems random? Of course not, we will explain this in the next guide on [**Claim a VIDA**](/developers/sdks/claim-a-vida). KEEP DIVING IN.
 
-### Send Payable VM Data
+### Send Payable VIDA Data
 
-Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the VM as part of the operation.
+Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the VIDA as part of the operation.
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
@@ -353,14 +353,14 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
 
     async function sendPayableData() {
         // VIDA used to send the transaction to
-        const vida = 919;
+        const vidaId = 919;
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         const amount = 1000;
         // Buffer data to be included in the transaction
         const data = Buffer.from('Hello World!');
         
-        // Send the data at vida 919 and pay 1e3
-        const tx = await wallet.sendPayableVmDataTransaction(vida, amount, data);
+        // Send the data at vidaId 919 and pay 1e3
+        const tx = await wallet.sendPayableVmDataTransaction(vidaId, amount, data);
 
         // Error handling
         if (tx.success) {
@@ -382,14 +382,14 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
 
     def send_payable_data():
         # VIDA used to send the transaction to
-        vida = 919
+        vida_id = 919
         # Tokens amount - 1 PWR = 1e9 = 1000000000
         amount = 1000
         # Buffer data to be included in the transaction
         data = "Hello World!".encode()
 
-        # Send the data at vida 919 and pay 1e3
-        tx = wallet.send_payable_vm_data_transaction(vida, amount, data)
+        # Send the data at vida_id 919 and pay 1e3
+        tx = wallet.send_payable_vm_data_transaction(vida_id, amount, data)
 
         # Error handling
         if tx.success:
@@ -409,15 +409,15 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
         let wallet = Wallet::from_hex(&private_key).unwrap();
 
         // VIDA used to send the transaction to
-        let vida = 919;
+        let vida_id = 919;
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         let amount = 1000;
         // Buffer data to be included in the transaction
         let data = vec!["Hello World!"];
         let data_as_bytes: Vec<u8> = data.into_iter().flat_map(|s| s.as_bytes().to_vec()).collect();
 
-        // Send the data at vida 919 and pay 1e3
-        let tx = wallet.send_payable_vm_data(vida, amount, data_as_bytes).await;
+        // Send the data at vida_id 919 and pay 1e3
+        let tx = wallet.send_payable_vm_data(vida_id, amount, data_as_bytes).await;
 
         // Error handling
         if tx.Success {
@@ -444,14 +444,14 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
         // Setting up your wallet in the SDK
         wallet := wallet.FromPrivateKey(privateKey)
         // VIDA used to send the transaction to
-        vida := 919
+        vidaId := 919
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         amount := 10
         // Buffer data to be included in the transaction
         data := []byte("Hello world")
 
-        // Send the data at vida 919 and pay 1e3
-        tx := wallet.SendPayableVMData(vida, amount, data)
+        // Send the data at vidaId 919 and pay 1e3
+        tx := wallet.SendPayableVMData(vidaId, amount, data)
 
         // Error handling
         if tx.Success {
@@ -478,14 +478,14 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
             var wallet = new PwrWallet(privateKey);
 
             // VIDA used to send the transaction to
-            ulong vida = 919;
+            ulong vidaId = 919;
             // Tokens amount - 1 PWR = 1e9 = 1000000000
             ulong amount = 1000;
             // Byte data to be included in the transaction
             byte[] data = Encoding.UTF8.GetBytes("Hello, World!");
 
-            // Send the data at vida 919 and pay 1e3
-            WalletResponse tx = await wallet.SendPayableVMData(vida, amount, data);
+            // Send the data at vidaId 919 and pay 1e3
+            WalletResponse tx = await wallet.SendPayableVMData(vidaId, amount, data);
 
             // Error handling
             if (tx.Success) {

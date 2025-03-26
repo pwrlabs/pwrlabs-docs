@@ -128,14 +128,14 @@ wallet.transferPWR(recipientAddress, amount).then(console.log);
 wallet.transferPWR(recipientAddress, amount, true).then(console.log);
 
 // `sendVMDataTxn` from your wallet (private key)
-wallet.sendVMDataTxn(vmId, data).then(console.log);
+wallet.sendVMDataTxn(vidaId, data).then(console.log);
 // `sendVMDataTxn` from PWR Wallet in the browser
-wallet.sendVMDataTxn(vmId, data, true).then(console.log);
+wallet.sendVMDataTxn(vidaId, data, true).then(console.log);
 
 // `sendPayableVmDataTransaction` from your wallet (private key)
-wallet.sendPayableVmDataTransaction(vmId, amount, data).then(console.log);
+wallet.sendPayableVmDataTransaction(vidaId, amount, data).then(console.log);
 // `sendPayableVmDataTransaction` from PWR Wallet in the browser
-wallet.sendPayableVmDataTransaction(vmId, amount, data, true).then(console.log);
+wallet.sendPayableVmDataTransaction(vidaId, amount, data, true).then(console.log);
 
 // `delegate` from your wallet (private key)
 wallet.delegate(validator, amount).then(console.log);

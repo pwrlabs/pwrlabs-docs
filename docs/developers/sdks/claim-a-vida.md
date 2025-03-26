@@ -39,10 +39,10 @@ To claim a VIDA on the PWR Chain, follow these steps:
 
     async function claim() {
         // Add a unique VIDA ID
-        const vida = 102030;
+        const vidaId = 102030;
 
         // Claim the VIDA ID
-        const txHash = await wallet.claimVmId(vida);
+        const txHash = await wallet.claimVmId(vidaId);
 
         // Error handling
         if (txHash.success) {
@@ -64,10 +64,10 @@ To claim a VIDA on the PWR Chain, follow these steps:
 
     def claim():
         # Add a unique VIDA
-        vida = 102030
+        vida_id = 102030
 
         # Claim the VIDA
-        tx = wallet.claim_vm_id(vida)
+        tx = wallet.claim_vm_id(vida_id)
 
         # Error handling
         if tx.success:
@@ -87,10 +87,10 @@ To claim a VIDA on the PWR Chain, follow these steps:
         let wallet = Wallet::from_hex(&private_key).unwrap();
 
         // Add a unique VIDA ID
-        let vida = 102030;
+        let vida_id = 102030;
 
         // Claim the VIDA ID
-        let tx = wallet.claim_vm_id(vida).await;
+        let tx = wallet.claim_vm_id(vida_id).await;
 
         // Error handling
         if tx.success {
@@ -118,10 +118,10 @@ To claim a VIDA on the PWR Chain, follow these steps:
         wallet := wallet.FromPrivateKey(privateKey)
 
         // Add a unique VIDA ID
-        vida := 102030
+        vidaId := 102030
 
         // Claim the VIDA ID
-        tx := wallet.ClaimVMId(vida)
+        tx := wallet.ClaimVMId(vidaId)
 
         // Error handling
         if tx.Success {
@@ -147,10 +147,10 @@ To claim a VIDA on the PWR Chain, follow these steps:
             var wallet = new PwrWallet(privateKey);
 
             // Add a unique VIDA ID
-            ulong vida = 102030;
+            ulong vidaId = 102030;
 
             // Claim the VIDA ID
-            WalletResponse tx = await wallet.ClaimVMId(vida);
+            WalletResponse tx = await wallet.ClaimVMId(vidaId);
 
             // Error handling
             if (tx.Success) {
@@ -168,7 +168,7 @@ To claim a VIDA on the PWR Chain, follow these steps:
 </TabItem>
 </Tabs>
 
-Using the wallet's claimVmId method, we claim the VIDA by providing the vida. The SDK will handle the creation and signing of the "Claim VIDA" transaction.
+Using the wallet's claimVmId method, we claim the VIDA by providing the `VIDA ID`. The SDK will handle the creation and signing of the "Claim VIDA" transaction.
 
 If the transaction is successfully sent, we receive a response containing the transaction hash. Otherwise, we handle the error accordingly.
 

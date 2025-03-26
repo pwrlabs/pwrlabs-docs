@@ -88,10 +88,10 @@ Create a `send_message` file in your project and add the following code:
     async function sendMessage() {
         const obj = { message: "please send me pwr" };
         const data = Buffer.from(JSON.stringify(obj), 'utf8'); // Serialize to JSON bytes
-        const vmId = 123;
+        const vidaId = 123;
 
-        // Sending the VM data transaction
-        const res = await wallet.sendVMDataTxn(vmId, data);
+        // Sending the VIDA data transaction
+        const res = await wallet.sendVMDataTxn(vidaId, data);
         console.log(res.transactionHash);
     }
     sendMessage();
@@ -112,10 +112,10 @@ Create a `send_message` file in your project and add the following code:
     def send_message():
         obj = {"message": "please send me pwr"}
         data = json.dumps(obj).encode('utf-8') # Serialize to JSON bytes
-        vm_id = 123
+        vida_id = 123
 
-        # Sending the VM data transaction
-        res = wallet.send_vm_data_transaction(vm_id, data)
+        # Sending the VIDA data transaction
+        res = wallet.send_vm_data_transaction(vida_id, data)
         print(res.data)
     send_message()
     ```
@@ -135,9 +135,9 @@ Create a `send_message` file in your project and add the following code:
 
         let obj = json!({ "message": "please send me pwr" });
         let data = serde_json::to_vec(&obj).unwrap(); // Serialize to JSON bytes
-        let vm_id = 123;
-        // Sending the VM data transaction
-        let res = wallet.send_vm_data(vm_id, data).await;
+        let vida_id = 123;
+        // Sending the VIDA data transaction
+        let res = wallet.send_vm_data(vida_id, data).await;
         println!("{}", res);
     }
     ```
@@ -160,11 +160,11 @@ Create a `send_message` file in your project and add the following code:
         privateKey := os.Getenv("PRIVATE_KEY")
         wallet := wallet.FromPrivateKey(privateKey)
 
-        vmId := 123
+        vidaId := 123
         data, _ := json.Marshal(map[string]string{"message": "please send me pwr"})
 
-        // Sending the VM data transaction
-        tx := wallet.SendVMData(vmId, data)
+        // Sending the VIDA data transaction
+        tx := wallet.SendVMData(vidaId, data)
 
         if tx.Success {
             fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
@@ -338,7 +338,7 @@ Create a `sync_messages` file in your project and add the following code:
 
     async function sync() {
         let startingBlock = 876040; // Adjust starting block as needed
-        const vmId = 123;
+        const vidaId = 123;
 
         // Defining an asynchronous loop function that fetches and processes new transactions
         const loop = async () => {
@@ -349,8 +349,8 @@ Create a `sync_messages` file in your project and add the following code:
 
             // Checking if there are new blocks to process
             if (effectiveLatestBlock > startingBlock) {
-                // Fetching VM data transactions between the starting block and the effective latest block for a given VM ID
-                const txns = await rpc.getVMDataTransactions(startingBlock, effectiveLatestBlock, vmId);
+                // Fetching VIDA data transactions between the starting block and the effective latest block for a given VIDA ID
+                const txns = await rpc.getVMDataTransactions(startingBlock, effectiveLatestBlock, vidaId);
                 // Looping through the transactions fetched from the blockchain
                 for (let txn of txns) {
                     const sender = txn.sender;
@@ -404,7 +404,7 @@ Create a `sync_messages` file in your project and add the following code:
 
     def sync():
         starting_block = 876040 # Adjust starting block as needed
-        vm_id = 123
+        vida_id = 123
 
         # Starting an infinite loop to continuously fetch and process transactions
         while True:
@@ -416,7 +416,7 @@ Create a `sync_messages` file in your project and add the following code:
             # Checking if there are new blocks to process
             if effective_latest_block >= starting_block:
                 # Fetching the latest block number from the blockchain
-                txns = pwr.get_vm_data_txns(starting_block, effective_latest_block, vm_id)
+                txns = pwr.get_vm_data_txns(starting_block, effective_latest_block, vida_id)
                 # Looping through the transactions fetched from the blockchain
                 for txn in txns:
                     sender = txn.sender
@@ -461,7 +461,7 @@ Create a `sync_messages` file in your project and add the following code:
         let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
         
         let mut starting_block: u64 = 876040; // Adjust starting block as needed
-        let vm_id: u64 = 123;
+        let vida_id: u64 = 123;
 
         // Starting an infinite loop to continuously fetch and process transactions
         loop {
@@ -475,8 +475,8 @@ Create a `sync_messages` file in your project and add the following code:
             };
             // Checking if there are new blocks to process
             if effective_latest_block >= starting_block {
-                // Fetching VM data transactions between the starting block and the effective latest block for a given VM ID
-                let txns = rpc.get_vm_data_transactions(starting_block, effective_latest_block, vm_id).await.unwrap();
+                // Fetching VIDA data transactions between the starting block and the effective latest block for a given VIDA ID
+                let txns = rpc.get_vm_data_transactions(starting_block, effective_latest_block, vida_id).await.unwrap();
                 // Iterating through each transaction
                 for txn in txns {
                     let sender = txn.sender;
@@ -539,7 +539,7 @@ Create a `sync_messages` file in your project and add the following code:
         wallet := wallet.FromPrivateKey(privateKey)
 
         startingBlock := 876040 // Adjust starting block as needed
-        vmId := 123
+        vidaId := 123
 
         // Defining an asynchronous loop function that fetches and processes new transactions
         go func() {
@@ -554,8 +554,8 @@ Create a `sync_messages` file in your project and add the following code:
 
                 // Checking if there are new blocks to process
                 if effectiveLatestBlock > startingBlock {
-                    // Fetching VM data transactions between the starting block and the effective latest block for a given VM ID
-                    txns := rpc.GetVmDataTransactions(startingBlock, effectiveLatestBlock, vmId)
+                    // Fetching VIDA data transactions between the starting block and the effective latest block for a given VIDA ID
+                    txns := rpc.GetVmDataTransactions(startingBlock, effectiveLatestBlock, vidaId)
                     // Looping through the transactions fetched from the blockchain
                     for _, txn := range txns {
                         sender := txn.Sender
@@ -823,9 +823,9 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
         const conduits = [
             Buffer.from("conduit_node_address", "hex"),
         ];
-        const vmId = "your_vm_id";
+        const vidaId = "your_vida_id";
 
-        const res = await wallet.setConduits(vmId, conduits);
+        const res = await wallet.setConduits(vidaId, conduits);
         console.log(res.transactionHash);
     }
     conduits();
@@ -846,9 +846,9 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
         conduits = [
             bytes.fromhex("conduit_node_address"),
         ]
-        vm_id = "your_vm_id"
+        vida_id = "your_vida_id"
 
-        res = wallet.set_conduits(vm_id, conduits)
+        res = wallet.set_conduits(vida_id, conduits)
         print(res.data)
 
     conduits()
@@ -869,9 +869,9 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
         let conduits: Vec<String> = vec![
             "conduit_node_address".to_string(),
         ];
-        let vm_id: u64 = "your_vm_id";
+        let vida_id: u64 = "your_vida_id";
 
-        let res = wallet.set_conduits(vm_id, conduits).await;
+        let res = wallet.set_conduits(vida_id, conduits).await;
         println!("{}", res);
     }
     ```
@@ -893,10 +893,10 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
         privateKey := os.Getenv("PRIVATE_KEY")
         wallet := wallet.FromPrivateKey(privateKey)
 
-        vmIds := "your_vm_id"
+        vidaIds := "your_vida_id"
         conduits := []string{"conduit_node_address"}
 
-        tx := wallet.SetConduits(vmIds, conduits)
+        tx := wallet.SetConduits(vidaIds, conduits)
 
         if tx.Success {
             fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
@@ -912,7 +912,7 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
 </TabItem>
 </Tabs>
 
-Replace `your_vm_id` with the claimed VM ID from Step 1 and provide the addresses of the conduit nodes you have agreed with.
+Replace `your_vida_id` with the claimed VIDA ID from Step 1 and provide the addresses of the conduit nodes you have agreed with.
 
 When selecting conduit nodes, consider the following factors:
 

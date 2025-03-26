@@ -245,11 +245,11 @@ Blocks will help us access a lot of data through the set of transactions they co
 
 You can access and process the block data according to your application's needs, such as analyzing transaction patterns, tracking specific events, or updating your application's state based on the block information.
 
-### Retrieving VM Data Transactions
+### Retrieving VIDA Data Transactions
 
-One of the fetch operations that you will need a lot is fetching VM transactions to process data and sender and many more ideas that we will explain in the upcoming lessons.
+One of the fetch operations that you will need a lot is fetching VIDA transactions to process data and sender and many more ideas that we will explain in the upcoming lessons.
 
-In this example, we retrieve all VM data transactions sent to a specific VM (identified by `vida`) within a given block range (`startBlock` to `endBlock`):
+In this example, we retrieve all VIDA data transactions sent to a specific VIDA (identified by `vidaId`) within a given block range (`startBlock` to `endBlock`):
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
@@ -262,10 +262,10 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
     async function getVmData() {
         const startBlock = 146809;
         const endBlock = 146945;
-        const vida = 123;
+        const vidaId = 123;
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
-        const transactions = await rpc.getVMDataTransactions(startBlock, endBlock, vida);
+        // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
+        const transactions = await rpc.getVMDataTransactions(startBlock, endBlock, vidaId);
 
         // prints the trasnactions data
         for (let txs of transactions) {
@@ -285,10 +285,10 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
     def get_vm_data():
         start_block = 146809
         end_block = 146945
-        vida = 123
+        vida_id = 123
 
-        # fetch the transactions sent from `startBlock` to `endBlock` in `vida`
-        transactions = pwr.get_vm_data_txns(start_block, end_block, vida)
+        # fetch the transactions sent from `start_block` to `end_block` in `vida_id`
+        transactions = pwr.get_vm_data_txns(start_block, end_block, vida_id)
         # prints the trasnactions data
         for txs in transactions:
             print("Data:", txs.data)
@@ -305,10 +305,10 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
 
         let start_block = 146809;
         let end_block = 146945;
-        let vida = 123;
+        let vida_id = 123;
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
-        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vida).await.unwrap();
+        // fetch the transactions sent from `start_block` to `end_block` in `vida_id`
+        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vida_id).await.unwrap();
         // prints the trasnactions data
         for txs in transactions {
             println!("Data: {:?}", txs.data);
@@ -328,10 +328,10 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
     func getVmData() {
         startBlock := 146809
         endBlock := 146945
-        vida := 123
+        vidaId := 123
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
-        transactions := rpc.GetVmDataTransactions(startBlock, endBlock, vida)
+        // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
+        transactions := rpc.GetVmDataTransactions(startBlock, endBlock, vidaId)
 
         for _, tx := range transactions {
             fmt.Println("Data:", tx.Data)
@@ -352,9 +352,10 @@ In this example, we retrieve all VM data transactions sent to a specific VM (ide
 
             ulong startBlock = 146809;
             ulong endBlock = 146945;
-            ulong vida = 123;
+            ulong vidaId = 123;
 
-            var transactions = await rpc.GetVmDataTransactions(startBlock, endBlock, vida);
+            // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
+            var transactions = await rpc.GetVmDataTransactions(startBlock, endBlock, vidaId);
             foreach (var txn in transactions)
             {
                 Console.WriteLine($"Data: {txn.Data}");
@@ -486,10 +487,10 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
     async function getVmDataActive() {
         const startBlock = 146809;
         const endBlock = 146945;
-        const vida = 123;
+        const vidaId = 123;
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
-        const transactions = await rpc.getVMDataTransactions(startBlock, endBlock, vida);
+        // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
+        const transactions = await rpc.getVMDataTransactions(startBlock, endBlock, vidaId);
 
         for (let txs of transactions) {
             const sender = txs.sender;
@@ -523,9 +524,9 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
     def get_vm_data_active():
         start_block = 146809
         end_block = 146945
-        vida = 123
-        # fetch the transactions sent from `startBlock` to `endBlock` in `vida`
-        transactions = pwr.get_vm_data_txns(start_block, end_block, vida)
+        vida_id = 123
+        # fetch the transactions sent from `start_block` to `end_block` in `vida_id`
+        transactions = pwr.get_vm_data_txns(start_block, end_block, vida_id)
 
         for txs in transactions:
             sender = txs.sender
@@ -554,10 +555,10 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
         let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
         let start_block = 146809;
         let end_block = 146945;
-        let vida = 123;
+        let vida_id = 123;
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
-        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vida).await.unwrap();
+        // fetch the transactions sent from `start_block` to `end_block` in `vida_id`
+        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vida_id).await.unwrap();
 
         for txs in transactions {
             let sender = txs.sender;
@@ -592,10 +593,10 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
     func getVmDataActive() {
         startBlock := 146809
         endBlock := 146945
-        vida := 123
+        vidaId := 123
 
-        // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
-        transactions := rpc.GetVmDataTransactions(startBlock, endBlock, vida)
+        // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
+        transactions := rpc.GetVmDataTransactions(startBlock, endBlock, vidaId)
 
         for _, tx := range transactions {
             sender := tx.Sender
@@ -636,10 +637,10 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
 
             ulong startBlock = 146809;
             ulong endBlock = 146945;
-            ulong vida = 123;
+            ulong vidaId = 123;
 
-            // fetch the transactions sent from `startBlock` to `endBlock` in `vida`
-            var transactions = await rpc.GetVmDataTransactions(startBlock, endBlock, vida);
+            // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
+            var transactions = await rpc.GetVmDataTransactions(startBlock, endBlock, vidaId);
 
             foreach (var txn in transactions)
             {
