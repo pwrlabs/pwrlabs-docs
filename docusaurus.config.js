@@ -59,11 +59,11 @@ const config = {
 
           {
             from: "/developers/",
-            to: "/developers/developing-on-pwr-chain/what-is-a-decentralized-application/",
+            to: "/developers/sdks/overview/",
           },
           {
             from: "/developers/sdks/",
-            to: "/developers/sdks/installing-and-importing-pwr-sdk/",
+            to: "/developers/sdks/overview/",
           },
         ],
         createRedirects(existingPath) {
@@ -135,7 +135,7 @@ const config = {
             activeBasePath: 'pwrchain/',
           },
           {
-            to: "developers/developing-on-pwr-chain/what-is-a-decentralized-application",
+            to: "developers/sdks/overview",
             label: "Developers",
             position: "left",
             activeBasePath: 'developers/',
@@ -205,7 +205,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ["bash", "csharp", "java", "python", "go", "rust"],
+        additionalLanguages: ["bash", "csharp", "java", "python", "go", "rust", "json"],
       },
     }),
   themes: [

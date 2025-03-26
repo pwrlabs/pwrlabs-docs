@@ -83,7 +83,7 @@ In order to subscribe to wallet events, like the wallet connection, account chan
 
 ## PWR JS
 
-You will install the PWR JS SDK as we did in previous guides - [Installing & Importing PWR SDK](/developers/sdks/installing-and-importing-pwr-sdk) and [Wallets in PWR Chain](/developers/sdks/wallets-in-pwr-chain). 
+You will install the PWR JS SDK as we did in previous guides - [Installing & Importing PWR SDK](/developers/sdks/overview) and [Wallets in PWR Chain](/developers/sdks/wallets-in-pwr-chain). 
 
 ### Connections
 

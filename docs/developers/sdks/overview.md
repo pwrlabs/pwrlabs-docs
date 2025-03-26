@@ -1,11 +1,11 @@
 ---
-title: Installing & Importing PWR SDK
+title: Overview
 sidebar_position: 1
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Installing & Importing PWR SDK
+# Overview
 
 `Use PWR SDK to easily read, send transactions, and easily interact with the PWR Chain`
 

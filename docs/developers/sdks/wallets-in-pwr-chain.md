@@ -28,7 +28,7 @@ To create a wallet in your software application using the PWR SDK. You can use y
 
 > **Important:** Don't share or send your wallet's **private key**, so that no one can steal your money.
 
-[Install and import the PWR SDK](/developers/sdks/installing-and-importing-pwr-sdk) into your project.
+[Install and import the PWR SDK](/developers/sdks/overview) into your project.
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">

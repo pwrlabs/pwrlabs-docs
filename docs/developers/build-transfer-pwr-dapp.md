@@ -38,7 +38,7 @@ You will get options to create your project, select them as follows:
 ✔️ Would you like to customize the default import alias (@/*)? … (No)
 ```
 
-Once it's done, you'll need to install the [PWRJS library](/developers/sdks/installing-and-importing-pwr-sdk) into the project, run the following command:
+Once it's done, you'll need to install the [PWRJS library](/developers/sdks/overview) into the project, run the following command:
 
 ```bash
 npm install @pwrjs/core

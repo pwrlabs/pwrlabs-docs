@@ -17,7 +17,7 @@ Before starting, make sure you have the following:
 
 - A development environment set up for your preferred programming language.
 - PWR SDK installed and configured in your project.
-- You have finished reading the [**SDK** guides](/developers/sdks/installing-and-importing-pwr-sdk).
+- You have finished reading the [**SDK** guides](/developers/sdks/overview).
 
 ## Step 1: Set Up the Project
 
@@ -47,8 +47,16 @@ Create a new project in your preferred programming language, and add the necessa
     ```
 </TabItem>
 <TabItem value="go" label="Go">
-    ```go
+    ```bash
     go get github.com/pwrlabs/pwrgo github.com/joho/godotenv
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```bash
+    dotnet new console -o MyApp
+    cd MyApp
+    dotnet add package PWR
+    dotnet add package DotNetEnv
     ```
 </TabItem>
 <TabItem value="java" label="Java">
@@ -170,6 +178,42 @@ Create a `send_message` file in your project and add the following code:
             fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
         } else {
             fmt.Printf("Failed to send transaction: %s\n", tx.Error)
+        }
+    }
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using System;
+    using System.Text.Json;
+    using System.Threading.Tasks;
+    using PWR;
+    using PWR.Models;
+    using DotNetEnv;
+
+    public class MessageSender
+    {
+        static async Task Main()
+        {
+            // Setting up your wallet in the SDK
+            Env.Load();
+            string privateKey = Environment.GetEnvironmentVariable("PRIVATE_KEY");
+            var wallet = new PwrWallet(privateKey);
+            
+            const int vidaId = 123;
+            var data = new { message = "Hello World!" };
+            byte[] dataBytes = JsonSerializer.SerializeToUtf8Bytes(data);
+            
+            WalletResponse tx = await wallet.SendVMData(vidaId, dataBytes);
+            
+            if (tx.Success)
+            {
+                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to send transaction: {tx.Error}");
+            }
         }
     }
     ```
@@ -383,6 +427,74 @@ Create a `sync_messages` file in your project and add the following code:
     }
     ```
 </TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using System.Text.Json;
+    using PWR;
+
+    namespace MyApp;
+
+    public class Syncer
+    {
+        private static ulong _startingBlock = 254154;
+        private const ulong vidaId = 123;
+        private static readonly PwrApiSdk _sdk = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
+
+        public static async Task Sync()
+        {
+            while (true)
+            {
+                ulong latestBlock = await _sdk.GetLatestBlockNumber();
+                ulong effectiveLatestBlock = latestBlock;
+
+                if (latestBlock > _startingBlock + 1000)
+                {
+                    effectiveLatestBlock = _startingBlock + 1000;
+                }
+
+                if (effectiveLatestBlock > _startingBlock)
+                {
+                    // fetch the transactions in `vidaId = 123`
+                    var transactions = await _sdk.GetVmDataTransactions(
+                        _startingBlock, 
+                        effectiveLatestBlock, 
+                        vidaId
+                    );
+
+                    foreach (var transaction in transactions)
+                    {
+                        string data = transaction.Data;
+                        // Remove the '0x' prefix and decode the hexadecimal data to bytes data
+                        if (data.StartsWith("0x"))
+                        {
+                            data = data[2..];
+                        }
+                        byte[] dataBytes = Convert.FromHexString(data);
+                        // convert the bytes data to UTF-8 string as json
+                        var jsonDoc = JsonDocument.Parse(dataBytes);
+                        var root = jsonDoc.RootElement;
+
+                        if (root.TryGetProperty("message", out var messageElement))
+                        {
+                            string sender = transaction.Sender;
+                            string message = messageElement.GetString();
+                            Console.WriteLine($"\nMessage from {sender}: {message}");
+                        }
+                        else
+                        {
+                            // Handle other data fields if needed
+                        }
+                    }
+
+                    _startingBlock = effectiveLatestBlock + 1;
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(1)); // Wait 1 second before the next loop
+            }
+        }
+    }
+    ```
+</TabItem>
 <TabItem value="java" label="Java">
     ```java
     ```
@@ -549,6 +661,59 @@ Create a `dapp` file in your project and add the following code:
     }
     ```
 </TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using System.Text.Json;
+    using PWR;
+    using PWR.Models;
+    using DotNetEnv;
+
+    namespace MyApp;
+
+    public class Program
+    {
+        private const ulong vidaId = 123;
+
+        public static async Task Main()
+        {
+            // Setting up your wallet in the SDK
+            Env.Load();
+            string privateKey = Environment.GetEnvironmentVariable("PRIVATE_KEY");
+            var wallet = new PwrWallet(privateKey);
+
+            _ = Task.Run(async () => await Syncer.Sync());
+
+            while (true)
+            {
+                Console.Write("Enter your message: ");
+                string message = Console.ReadLine();
+
+                try
+                {
+                    var messageData = new { message = message };
+                    byte[] dataBytes = JsonSerializer.SerializeToUtf8Bytes(messageData);
+
+                    // Send the VM data
+                    WalletResponse response = await wallet.SendVMData(vidaId, dataBytes);
+
+                    if (response.Success)
+                    {
+                        Console.WriteLine($"Transaction Hash: {response.TxnHash}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error: {response.Error}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error processing message: {ex.Message}");
+                }
+            }
+        }
+    }
+    ```
+</TabItem>
 <TabItem value="java" label="Java">
     ```java
     ```
@@ -580,6 +745,11 @@ To run the messaging application, add the following command:
 <TabItem value="go" label="Go">
     ```bash
     go run dapp.go
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```bash
+    dotnet run
     ```
 </TabItem>
 <TabItem value="java" label="Java">
