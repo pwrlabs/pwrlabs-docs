@@ -11,7 +11,7 @@ Stateless VIDAs are lightweight, fast, and simple applications that do not requi
 
 ## Steps to Build a Stateless VIDA
 
-1. **Select an ID for Your VIDA**
+### 1. **Select an ID for Your VIDA**
 
 Every VIDA requires a unique identifier, which is an 8-byte variable. This ID ensures the PWR Chain knows which transactions belong to your application.
 
@@ -62,8 +62,8 @@ Every VIDA requires a unique identifier, which is an 8-byte variable. This ID en
         var vedaId int64
         err := binary.Read(rand.Reader, binary.LittleEndian, &vedaId)
         if err != nil {
-        fmt.Println("Error generating random number:", err)
-        return
+            fmt.Println("Error generating random number:", err)
+            return
         }
 
         fmt.Println(vedaId)
@@ -97,7 +97,7 @@ Every VIDA requires a unique identifier, which is an 8-byte variable. This ID en
 </TabItem>
 </Tabs>
 
-2. **Import the PWR SDK**
+### 2. **Import the PWR SDK**
 
 The PWR SDK is your toolkit for interacting with the PWR Chain. It allows you to create wallets, send transactions, and read data from the blockchain.
 
@@ -154,7 +154,7 @@ The PWR SDK is your toolkit for interacting with the PWR Chain. It allows you to
 </TabItem>
 </Tabs>
 
-3. **Initializing PWR with an RPC Endpoint**
+### 3. **Initializing PWR with an RPC Endpoint**
 
 To interact with the PWR Chain, initialize a PWR object (e.g., PWRJ for Java, PWRPY for Python). This object serves as your gateway to the blockchain.
 
@@ -192,7 +192,7 @@ An RPC (Remote Procedure Call) node processes blockchain requests, such as trans
 
 This setup enables seamless interaction with the PWR Chain for your VIDA.
 
-4. **Create and Fund a Wallet**
+### 4. **Create and Fund a Wallet**
 
 A wallet is essential for signing transactions and paying minimal fees on the PWR Chain.
 
@@ -306,11 +306,11 @@ A wallet is essential for signing transactions and paying minimal fees on the PW
 </TabItem>
 </Tabs>
 
-5. **Define Transaction Data Structure**
+### 5. **Define Transaction Data Structure**
 
 While PWR Chain stores all transaction data as raw byte arrays, VIDAs can encode this data into structured formats like JSON. Defining a **schema for your transactions** ensures consistency, simplifies development, and enables collaboration across teams.
 
-## Why Define a Schema?
+**Why Define a Schema?**
 
 - **Consistency**: Ensures all transactions follow a predictable format.
 - **Documentation**: Serves as a reference for developers interacting with your VIDA.
@@ -333,7 +333,7 @@ While PWR Chain stores all transaction data as raw byte arrays, VIDAs can encode
 ]
 ```
 
-6. **Send Data to PWR Chain**
+### 6. **Send Data to PWR Chain**
 
 After defining your transaction's data structure, you can start sending transactions to PWR Chain. Submit transactions to the PWR Chain to record user actions or data.
 
@@ -452,53 +452,63 @@ After defining your transaction's data structure, you can start sending transact
 </TabItem>
 </Tabs>
 
-7. **Read Data from PWR Chain & Handle it**
+### 7. **Read Data from PWR Chain & Handle it**
 
 The PWR SDK provides functions to easily read and handle data from PWR Chain.
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const pwrj = new PWRJS("https://pwrrpc.pwrlabs.io/");
+    import { PWRJS } from "@pwrjs/core";
+    import { hexToBytes } from '@noble/hashes/utils';
 
-    const vidaId = 1n; // Replace with your VIDA's ID
-
-    // Since our VIDA is global chat room and we don't care about historical messages, we will start reading transactions startng from the latest PWR Chain block/ long startingBlock = pwrj.getBlockNumber();
     function handler(transaction: VmDataTransaction){
-        
-        //Get the address of the transaction sender
-        const sender = VmDataTransaction.sender;
-        
-        //Get the data sent in the transaction (In Hex Format)
-        let data = VmDataTransaction.data;
+        // Get the address of the transaction sender
+        const sender = transaction.sender;
+        // Get the data sent in the transaction (In Hex Format)
+        let data = transaction.data;
         
         try {
-        
-        // convert data string to bytes 
-        if (data.startsWith("0x")) data = data.substring(2);
-        const bytes = hexToBytes(data);
-        const dataStr = new TextDecoder().decode(bytes);
-        const dataJson = JSON.parse(dataStr);
-        
-        //Check the action and execute the necessary cod
-        if (dataJson.action === "send-message-v1") {
-            const message = data.message;
-            console.log("Message from " + sender + ": " + message);
-        }
+            // Convert data string to bytes
+            if (data.startsWith("0x")) data = data.substring(2);
+            const bytes = hexToBytes(data);
+            const dataStr = new TextDecoder().decode(bytes);
+            const dataJson = JSON.parse(dataStr);
+            
+            // Check the action and execute the necessary code
+            if (dataJson.action === "send-message-v1") {
+                const message = data.message;
+                console.log("Message from " + sender + ": " + message);
+            }
         } catch (e) {
             console.error(e)
         }
     }
 
+    async function main() {
+        const pwrjs = new PWRJS("https://pwrrpc.pwrlabs.io/");
+        const vidaId = 1n; // Replace with your VIDA's ID
 
-    const subscription = pwrjs.subscribeToVidaTransactions(
-        pwrjs, 
-        vidaId, 
-        startingBlock, 
-        {handler}
-    );
-    //To pause, resume, and stop the subscription vidaTransactionSubscription.pause(); vidaTransactionSubscription.resume(); vidaTransactionSubscription.stop(); vidaTransactionSubscription.start();
-    //To get the block number of the latest checked PWR Chain block vidaTransactionSubscription.getLatestCheckedBlock();
+        // Since our VIDA is global chat room and we don't care about historical messages,
+        // we will start reading transactions startng from the latest PWR Chain block
+        const startingBlock = await pwrjs.getBlockNumber();
+        
+        const subscription = pwrjs.subscribeToVidaTransactions(
+            pwrjs,
+            BigInt(vidaId),
+            BigInt(startingBlock),
+            handler
+        );
+
+        // To pause, resume, and stop the subscription
+        subscription.pause();
+        subscription.resume();
+        // subscription.stop();
+
+        // To get the latest checked block
+        console.log(subscription.getLatestCheckedBlock());
+    }
+    main();
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -509,7 +519,7 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
     import time
 
     rpc = PWRPY()
-    vida_id = 1
+    vida_id = 1 # Replace with your VIDA's ID
 
     # Since our VIDA is global chat room and we don't care about historical messages,
     # we will start reading transactions startng from the latest PWR Chain block
@@ -517,21 +527,29 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
 
     def handle_transaction(txn: VmDataTransaction):
         try:
+            # Get the address of the transaction sender
             sender = txn.sender
+            # Get the data sent in the transaction (In Hex Format)
             data_hex = txn.data
+            # Convert data string to bytes 
             data_bytes = bytes.fromhex(data_hex[2:])
             obj = json.loads(data_bytes.decode('utf-8'))
 
+            # Check the action and execute the necessary code
             if obj["action"] == "send-message-v1":
                 print(f"Message from {sender}: {obj['message']}")
 
         except Exception as e:
             print(f"Error processing transaction: {e}")
 
-    rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler=handle_transaction)
+    # To pause, resume, and stop the subscription
+    subscription = rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler=handle_transaction)
+    subscription.pause()
+    subscription.resume()
+    # subscription.stop()
 
-    while True:
-        time.sleep(1)
+    # To get the latest checked block
+    print(subscription.get_latest_checked_block())
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -539,47 +557,56 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
     use pwr_rs::{
         RPC,
         transaction::types::VMDataTransaction,
-        rpc::tx_subscription::VidaTransactionHandler
     };
     use std::sync::Arc;
-    use serde_json::Value;
+
+    fn handler(txn: VMDataTransaction) {
+        // Get the address of the transaction sender
+        let sender = txn.sender;
+        // Get the data sent in the transaction (In Hex Format)
+        let data = txn.data;
+        // Convert data string to bytes
+        let data_str = String::from_utf8(data).unwrap();
+        let object: serde_json::Value = serde_json::from_str(&data_str).unwrap();
+        let obj_map = object.as_object().unwrap();
+
+        // Check the action and execute the necessary code
+        if obj_map.get("action").and_then(|val| val.as_str()) == Some("send-message-v1")
+        {
+            if let Some(message_str) = obj_map
+                .get("message")
+                .and_then(|val| val.as_str())
+            {
+                println!("Message from {}: {}", sender, message_str);
+            }
+        }
+    }
 
     #[tokio::main]
     async fn main() {
-        let rpc = Arc::new(RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap());
+        let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
+        let rpc = Arc::new(rpc);
+        let vida_id = 1; // Replace with your VIDA's ID
 
-        let vida_id = 1;
+        // Since our VIDA is global chat room and we don't care about historical messages,
+        // we will start reading transactions startng from the latest PWR Chain block
         let starting_block = rpc.get_latest_block_number().await.unwrap();
 
-        struct Handler(Box<dyn Fn(VMDataTransaction) + Send + Sync>);
-        impl VidaTransactionHandler for Handler {
-            fn process_vida_transactions(&self, tx: VMDataTransaction) {
-                (self.0)(tx)
-            }
-        }
+        let subscription = rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler);
 
-        let handler = Arc::new(Handler(Box::new(|txn: VMDataTransaction| {
-            let sender = txn.sender;
-            let data = txn.data;
-            let data_str = String::from_utf8(data).unwrap();
-            let object: Value = serde_json::from_str(&data_str).unwrap();
-            let obj_map = object.as_object().unwrap();
+        // To pause, resume, and stop the subscription
+        subscription.pause();
+        subscription.resume();
+        // subscription.stop();
 
-            if obj_map.get("action").and_then(|val| val.as_str()) == Some("send-message-v1")
-            {
-                if let Some(message_str) = obj_map
-                    .get("message")
-                    .and_then(|val| val.as_str())
-                {
-                    println!("Message from {}: {}", sender, message_str);
-                }
-            }
-        })));
+        // To get the latest checked block
+        println!("{}", subscription.get_latest_checked_block());
 
-        rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler, None);
-
-        loop {
-            tokio::time::sleep(std::time::Duration::from_millis(1)).await;
+        // To exit the program
+        if subscription.is_running() {
+            println!("Press Enter to exit...");
+            let mut buffer = String::new();
+            std::io::stdin().read_line(&mut buffer).unwrap();
         }
     }
     ```
@@ -594,19 +621,20 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
         "github.com/pwrlabs/pwrgo/rpc"
     )
 
-    type MyHandler struct{}
+    func handler(transaction rpc.VMDataTransaction) {
+        // Get the address of the transaction sender
+        sender := transaction.Sender
+        // Get the data sent in the transaction (In Hex Format)
+        data := transaction.Data
 
-    func (h *MyHandler) ProcessVidaTransactions(tx rpc.VMDataTransaction) {
-        sender := tx.Sender
-        data := tx.Data
-        
+        // Convert data string to bytes
         dataBytes, _ := hex.DecodeString(data[2:])
         var obj map[string]interface{}
-
         if err := json.Unmarshal(dataBytes, &obj); err != nil {
             fmt.Println("Error parsing JSON:", err)
         }
 
+        // Check the action and execute the necessary code
         if action, _ := obj["action"].(string); action == "send-message-v1" {
             message, _ := obj["message"].(string)
             fmt.Printf("Message from %s: %s\n", sender, message)
@@ -614,95 +642,80 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
     }
 
     func main() {
-        vidaId := 1
+        vidaId := 1  // Replace with your VIDA's ID
+
+        // Since our VIDA is global chat room and we don't care about historical messages,
+        // we will start reading transactions startng from the latest PWR Chain block
         startingBlock := rpc.GetLatestBlockNumber()
 
-        handler := &MyHandler{}
-
-        rpc.SubscribeToVidaTransactions(
+        subscription := rpc.SubscribeToVidaTransactions(
             vidaId,
             startingBlock,
             handler,
         )
 
-        select {}
+        // To pause, resume, and stop the subscription
+        subscription.Pause()
+        subscription.Resume()
+        // subscription.Stop()
+
+        // To get the latest checked block
+        fmt.Println("Latest checked blocked:", subscription.GetLatestCheckedBlock())
+
+        // To exit the program
+        if (subscription.IsRunning()) {
+            fmt.Println("Press Enter to exit...")
+            fmt.Scanln()
+        }
     }
     ```
 </TabItem>
 <TabItem value="csharp" label="C#">
     ```csharp
-    using PWR;
-    using PWR.Models;
     using System;
     using System.Text;
-    using System.Text.Json;
-    using System.Threading.Tasks;
+    using Newtonsoft.Json.Linq;
+    using PWR;
+    using PWR.Models;
 
     class Program
     {
-        static async Task Main()
+        public static async Task Main()
         {
-            var pwr = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
-
+            var rpc = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
             ulong vidaId = 1; // Replace with your VIDA's ID
 
-            /*Since our VIDA is global chat room and we don't care about historical messages,
-            we will start reading transactions startng from the latest PWR Chain block*/
-            ulong startingBlock = await pwr.GetLatestBlockNumber();
+            // Since our VIDA is global chat room and we don't care about historical messages,
+            // we will start reading transactions startng from the latest PWR Chain block
+            ulong startingBlock = await rpc.GetLatestBlockNumber();
 
-            IvaTransactionSubscription subscription = pwr.SubscribeToIvaTransactions(vidaId, startingBlock, (transaction) =>
-            {
-                try
-                {
-                    // Get the address of the transaction sender
-                    string sender = transaction.Sender;
-                    // Get the data sent in the transaction (In Hex Format)
-                    string data = transaction.Data;
+            IvaTransactionSubscription subscription = rpc.SubscribeToIvaTransactions(vidaId, startingBlock, (transaction) => {
+                // Get the address of the transaction sender
+                string sender = transaction.Sender;
+                // Get the data sent in the transaction (In Hex Format)
+                string data = transaction.Data;
 
-                    if (data.StartsWith("0x"))
-                    {
-                        data = data.Substring(2);
-                    }
-                    // Decode the data from Hex to byte array
-                    byte[] dataBytes = Convert.FromHexString(data);
-                    
-                    // Convert the byte array to a JSON Object
-                    using JsonDocument doc = JsonDocument.Parse(dataBytes);
-                    JsonElement root = doc.RootElement;
-
-                    // Check the action and execute the necessary code
-                    if (root.TryGetProperty("action", out JsonElement actionElement) && 
-                        actionElement.GetString() == "send-message-v1")
-                    {
-                        if (root.TryGetProperty("message", out JsonElement messageElement))
-                        {
-                            string message = messageElement.GetString();
-                            Console.WriteLine($"Message from {sender}: {message}");
-                        }
-                    }
-                    else
-                    {
-                        //ignore
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error processing transaction: {ex.Message}");
+                // Convert data string to bytes
+                if (data.StartsWith("0x")) data = data.Substring(2);
+                byte[] dataBytes = data.HexStringToByteArray();
+            
+                var jsonObject = JObject.Parse(Encoding.UTF8.GetString(dataBytes));
+                string action = jsonObject["action"]?.ToString();
+                
+                // Check the action and execute the necessary code
+                if (string.Equals(action, "send-message-v1", StringComparison.OrdinalIgnoreCase)) {
+                    string message = jsonObject["message"]?.ToString();
+                    Console.WriteLine($"Message from {sender}: {message}");
                 }
             });
 
             // To pause, resume, and stop the subscription
             subscription.Pause();
             subscription.Resume();
-            subscription.Stop();
+            // subscription.Stop();
 
-            // To get the block number of the latest checked PWR Chain block
-            subscription.GetLatestCheckedBlock();
-
-            while (true)
-            {
-                await Task.Delay(TimeSpan.FromMilliseconds(1));
-            }
+            // To get the latest checked block
+            Console.WriteLine(subscription.GetLatestCheckedBlock());
         }
     }
     ```
@@ -752,8 +765,7 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
     //To pause, resume, and stop the subscription
     vidaTransactionSubscription.pause();
     vidaTransactionSubscription.resume();
-    vidaTransactionSubscription.stop();
-    vidaTransactionSubscription.start();
+    // vidaTransactionSubscription.stop();
 
     //To get the block number of the latest checked PWR Chain block
     vidaTransactionSubscription.getLatestCheckedBlock();
