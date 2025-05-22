@@ -140,6 +140,16 @@ const config = {
             activeBasePath: 'developers/',
           },
           {
+            href: 'https://x.com/pwrlabs',
+            label: 'X',
+            position: 'right',
+          },
+          {
+            href: 'https://discord.com/invite/YASmBk9EME',
+            label: 'Discord',
+            position: 'right',
+          },
+          {
             href: 'https://community.pwrlabs.io/',
             label: 'Grants',
             position: 'right',
