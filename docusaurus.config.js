@@ -5,8 +5,8 @@ require("dotenv").config();
 const { themes } = require("prism-react-renderer");
 const lightCodeTheme = themes.github;
 const darkCodeTheme = themes.dracula;
-const math = require("remark-math");
-const katex = require("rehype-katex");
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -94,14 +94,13 @@ const config = {
   presets: [
     [
       "classic",
-      /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
+      {
         docs: {
           breadcrumbs: true,
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
-          remarkPlugins: [math],
-          rehypePlugins: [katex],
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
         },
 
         theme: {
@@ -112,7 +111,7 @@ const config = {
           trackingID: 'G-GGGGGGGGGG',
           anonymizeIP: true,
         },
-      }),
+      },
     ],
   ],
 
