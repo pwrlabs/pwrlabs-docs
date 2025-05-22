@@ -25,11 +25,11 @@ export default function Hero() {
 
                     <div className="hero-img">
                         <img 
-                            src="/homepage/hero-light.svg"
+                            src="/homepage/hero-light.png"
                             className='hero-svg-light'
                         />
                         <img 
-                            src="/homepage/hero-dark.svg"
+                            src="/homepage/hero-dark.png"
                             className='hero-svg-dark'
                         />
                     </div>

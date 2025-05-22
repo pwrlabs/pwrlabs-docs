@@ -255,6 +255,7 @@
 
 .hero-svg-light {
     display: block;
+    margin-top: -22.5px;
 }
 [data-theme="dark"] .hero-svg-light {
     display: none;
@@ -265,6 +266,7 @@
 }
 [data-theme="dark"] .hero-svg-dark {
     display: block;
+    margin-top: -22.5px;
 }
 
 .stroke-svg {
