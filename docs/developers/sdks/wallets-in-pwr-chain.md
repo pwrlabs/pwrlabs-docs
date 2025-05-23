@@ -46,15 +46,15 @@ To create a wallet in your software application using the PWR SDK. You can use y
 </TabItem>
 <TabItem value="python" label="Python">
     ```py
-    from pwrpy.pwrwallet import PWRWallet
+    from pwrpy.pwrwallet import Wallet
 
-    # Create a wallet with a new randomly generated private key
-    random_wallet = PWRWallet()
+    # Create a wallet with a new randomly generated seed phrase
+    random_wallet = Wallet.new_random(12)
 
-    # Create a wallet from an existing private key (String || ByteArray || Int)
-    # in this example we will store the private key as a string
-    private_key = "YOUR_PRIVATE_KEY_HERE";
-    wallet = PWRWallet(private_key)
+    # Create a wallet from an existing seed phrase (str)
+    # in this example we will store the seed phrase
+    seed_phrase = "YOUR_SEED_PHRASE_HERE"
+    wallet = Wallet.new(seed_phrase)
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -62,27 +62,14 @@ To create a wallet in your software application using the PWR SDK. You can use y
     use pwr_rs::Wallet;
 
     fn main() {
-        // Create a wallet with a new randomly generated private key
-        let random_wallet = Wallet::random();
+        // Create a wallet with a new randomly generated seed phrase
+        let random_wallet = Wallet::new_random(12);
 
-        // Create a wallet from an existing private key (String || str || ByteArray || Int)
-        // in this example we will store the private key as a string (&str)
-        let private_key = "YOUR_PRIVATE_KEY_HERE";
-        let wallet = Wallet::from_hex(&private_key).unwrap();
+        // Create a wallet from an existing seed phrase (str)
+        // in this example we will store the seed phrase
+        let seed_phrase = "your seed phrase here";
+        let wallet = Wallet::new(seed_phrase);
     }
-    ```
-</TabItem>
-<TabItem value="csharp" label="C#">
-    ```csharp
-    using PWR;
-
-    // Create a wallet with a new randomly generated private key
-    var randomWallet = new PwrWallet();
-
-    // Create a wallet from an existing private key
-    // in this example we will store the private key as a string
-    string privateKey = "YOUR_PRIVATE_KEY_HERE";
-    var wallet = new PwrWallet(privateKey);
     ```
 </TabItem>
 <TabItem value="go" label="Go">
@@ -94,14 +81,27 @@ To create a wallet in your software application using the PWR SDK. You can use y
     )
 
     func main() {
-        // Create a wallet with a new randomly generated private key
-        var randomWallet = wallet.NewWallet()
+        // Create a wallet with a new randomly generated seed phrase
+        randomWallet, _ := wallet.NewRandom(12)
 
-        // Create a wallet from an existing private key
-        // in this example we will store the private key as a string
-        privateKey := "YOUR_PRIVATE_KEY_HERE"
-        wallet := wallet.FromPrivateKey(PrivateKey)
+        // Create a wallet from an existing seed phrase
+        // in this example we will store the seed phrase
+        seedPhrase := "YOUR_SEED_PHRASE_HERE"
+        wallet, _ := wallet.New(seedPhrase)
     }
+    ```
+</TabItem>
+<TabItem value="csharp" label="C#">
+    ```csharp
+    using PWR;
+
+    // Create a wallet with a new randomly generated seed phrase
+    var randomWallet = new Wallet(12);
+
+    // Create a wallet from an existing seed phrase
+    // in this example we will store the seed phrase
+    string seedPhrase = "YOUR_SEED_PHRASE_HERE";
+    var wallet = new Wallet(seedPhrase);
     ```
 </TabItem>
 <TabItem value="java" label="Java">
@@ -136,8 +136,8 @@ In this example we will fetch the wallet data:
 </TabItem>
 <TabItem value="python" label="Python">
     ```py
-    from pwrpy.pwrwallet import PWRWallet
-    random_wallet = PWRWallet()
+    from pwrpy.pwrwallet import Wallet
+    random_wallet = Wallet.new_random(12)
 
     # Get the wallet address
     address = random_wallet.get_address()
@@ -146,6 +146,10 @@ In this example we will fetch the wallet data:
     # Get the wallet's private key
     private_key = random_wallet.get_private_key()
     print("PrivateKey:", private_key)
+
+    # Get the wallet's seed phrase
+    seed_phrase = random_wallet.get_seed_phrase()
+    print("Seed Phrase:", seed_phrase)
 
     # Get the wallet balance
     balance = random_wallet.get_balance()
@@ -162,15 +166,20 @@ In this example we will fetch the wallet data:
 
     #[tokio::main]
     async fn main() {
-        let random_wallet = Wallet::random();
+        // Create a new wallet
+        let random_wallet = Wallet::new_random(12);
 
         // Get the wallet address
         let address = random_wallet.address();
         println!("Address: {address}");
 
         // Get the wallet's private key
-        let private_key = random_wallet.private_key();
+        let private_key = random_wallet.get_private_key();
         println!("PrivateKey: {private_key}");
+
+        // Get the wallet's seed phrase
+        let seed_phrase = random_wallet.get_seed_phrase();
+        println!("Seed Phrase: {seed_phrase}");
 
         // Get the wallet balance
         let balance = random_wallet.get_balance().await;
@@ -192,13 +201,18 @@ In this example we will fetch the wallet data:
 
     func main() {
         // Create a new wallet
-        randomWallet := wallet.NewWallet()
+        randomWallet, _ := wallet.NewRandom(12)
+
         // Get the wallet address
-        fmt.Println("Address:", random.GetAddress())
+        fmt.Println("Address:", randomWallet.GetAddress())
 
         // Get the wallet's private key
         privateKey := randomWallet.GetPrivateKey()
         fmt.Println("PrivateKey:", privateKey)
+
+        // Get the wallet's seed phrase
+        seedPhrase := randomWallet.GetSeedPhrase()
+        fmt.Println("Seed Phrase:", seedPhrase)
 
         // Get the wallet balance
         balance := randomWallet.GetBalance()
@@ -210,7 +224,7 @@ In this example we will fetch the wallet data:
     }
     ```
 </TabItem>
-<TabItem value="c#" label="C#">
+<TabItem value="csharp" label="C#">
     ```csharp
     using PWR;
 
@@ -218,14 +232,26 @@ In this example we will fetch the wallet data:
     {
         static async Task Main()
         {
-            var randomWallet = new PwrWallet();
+            // Create a new wallet
+            var randomWallet = new Wallet(12);
 
+            // Get the wallet address
             string address = randomWallet.GetAddress();
             Console.WriteLine($"Address: {address}");
 
+            // Get the wallet's private key
+            byte[] privateKey = randomWallet.GetPrivateKey();
+            Console.WriteLine($"PrivateKey: {privateKey}");
+
+            // Get the wallet's seed phrase
+            string seedPhrase = randomWallet.GetSeedPhrase();
+            Console.WriteLine($"Seed Phrase: {seedPhrase}");
+
+            // Get the wallet balance
             ulong balance = await randomWallet.GetBalance();
             Console.WriteLine($"Balance: {balance}");
 
+            // Get the wallet's current nonce
             uint nonce = await randomWallet.GetNonce();
             Console.WriteLine($"Nonce: {nonce}");
         }

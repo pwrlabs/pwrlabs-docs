@@ -112,7 +112,7 @@ The PWR SDK is your toolkit for interacting with the PWR Chain. It allows you to
 <TabItem value="python" label="Python">
     ```py
     from pwrpy.pwrapisdk import PWRPY
-    from pwrpy.pwrwallet import PWRWallet
+    from pwrpy.pwrwallet import Wallet
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -170,7 +170,7 @@ An RPC (Remote Procedure Call) node processes blockchain requests, such as trans
 </TabItem>
 <TabItem value="python" label="Python">
     ```py
-    pwrpy = PWRPY()
+    pwrpy= PWRPY("https://pwrrpc.pwrlabs.io/")
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -180,7 +180,7 @@ An RPC (Remote Procedure Call) node processes blockchain requests, such as trans
 </TabItem>
 <TabItem value="csharp" label="C#">
     ```csharp
-    var pwr = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
+    var pwr = new RPC("https://pwrrpc.pwrlabs.io/");
     ```
 </TabItem>
 <TabItem value="java" label="Java">
@@ -210,24 +210,24 @@ A wallet is essential for signing transactions and paying minimal fees on the PW
     // generate and save wallet
     const wallet = new PWRWallet();
     console.log("Address: " + wallet.getAddress());
-    wallet.storeWallet("wallet.dat", "password");
+    wallet.storeWallet("my_wallet.dat", "password");
 
     //load wallet
-    const wallet = PWRWallet.loadWallet("wallet.dat", "password", pwrjs);
+    const wallet = PWRWallet.loadWallet("my_wallet.dat", "password", pwrjs);
     console.log("Address: " + wallet.getAddress());
     ```
 </TabItem>
 <TabItem value="python" label="Python">
     ```py
-    from pwrpy.pwrwallet import PWRWallet
+    from pwrpy.pwrwallet import Wallet
 
-    # generate and save wallet
-    wallet = PWRWallet()
+    # generate and save a new wallet
+    wallet = Wallet.new_random(12)
     print(f"Address: {wallet.get_address()}")
-    PWRWallet(private_key).store_wallet("wallet.dat", "password")
+    wallet.store_wallet("my_wallet.dat", "password")
 
     # load wallet
-    wallet = PWRWallet.load_wallet("wallet.dat", "password")
+    wallet = Wallet.load_wallet("my_wallet.dat", "password")
     print(f"Address: {wallet.get_address()}")
     ```
 </TabItem>
@@ -237,13 +237,13 @@ A wallet is essential for signing transactions and paying minimal fees on the PW
 
     fn main() {
         // generate and save wallet
-        let wallet = Wallet::random();
+        let wallet = Wallet::new_random(12);
         println!("Address: {:?}", wallet.get_address());
-        wallet.store_wallet("wallet.dat", "password")
+        wallet.store_wallet("my_wallet.dat", "password")
             .expect("Failed to store wallet");
 
         // load wallet
-        let wallet = Wallet::load_wallet("wallet.dat", "password")
+        let wallet = Wallet::load_wallet("my_wallet.dat", "password")
             .expect("Failed to load wallet");
         println!("Address: {:?}", wallet.get_address());
     }
@@ -258,12 +258,12 @@ A wallet is essential for signing transactions and paying minimal fees on the PW
 
     func main() {
         // generate and save wallet
-        var new_wallet = wallet.NewWallet()
+        var new_wallet = wallet.NewRandom(12)
         fmt.Printf("Address: %s\n", new_wallet.GetAddress())
-        new_wallet.StoreWallet("wallet.dat", "password")
+        new_wallet.StoreWallet("my_wallet.dat", "password")
 
         // load wallet
-        var wallet, _ = wallet.LoadWallet("wallet.dat", "password")
+        var wallet, _ = wallet.LoadWallet("my_wallet.dat", "password")
         fmt.Printf("Address: %s\n", wallet.GetAddress())
     }
     ```
@@ -271,17 +271,19 @@ A wallet is essential for signing transactions and paying minimal fees on the PW
 <TabItem value="csharp" label="C#">
     ```csharp
     using PWR;
+    using PWR.Models;
+    using System.Text.Json;
 
     class Program
     {
-        static void Main()
+        static async Task Main()
         {
             // generate and save wallet
-            var new_wallet = new PwrWallet();
+            var new_wallet = new Wallet(12);
             Console.WriteLine($"Address: {new_wallet.GetAddress()}");
             new_wallet.StoreWallet("my_wallet.dat", "password");
 
-            var wallet = PwrWallet.LoadWallet("my_wallet.dat", "password");
+            var wallet = Wallet.LoadWallet("my_wallet.dat", "password");
             Console.WriteLine($"Address: {wallet.GetAddress()}");
         }
     }
@@ -297,10 +299,10 @@ A wallet is essential for signing transactions and paying minimal fees on the PW
     //generate and save wallet
     PWRWallet wallet = new PWRWallet(pwrj);
     System.out.println("Address: " + wallet.getAddress());
-    wallet.storeWallet("wallet.dat", "password");
+    wallet.storeWallet("my_wallet.dat", "password");
 
     //load wallet
-    PWRWallet wallet = PWRWallet.loadWallet("wallet.dat", "password", pwrj);
+    PWRWallet wallet = PWRWallet.loadWallet("my_wallet.dat", "password", pwrj);
     System.out.println("Address: " + wallet.getAddress());
     ```
 </TabItem>
@@ -366,14 +368,15 @@ After defining your transaction's data structure, you can start sending transact
         "message": "Hello World!"
     }
     data = json.dumps(json_object).encode("utf-8")
+    fee_per_byte = wallet.get_rpc().get_fee_per_byte()
 
     # Send transaction
-    response = wallet.send_vm_data_transaction(vidaId, data)
+    response = wallet.send_vida_data(vida_id, data, fee_per_byte)
     if response.success:
         print("Transaction sent successfully!")
-        print(f"Transaction hash: 0x{response.data.hex()}")
+        print(f"Transaction hash: 0x{response.hash.hex()}")
     else:
-        print(f"Transaction failed: {response.message}")
+        print(f"Transaction failed: {response.error}")
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -384,9 +387,10 @@ After defining your transaction's data structure, you can start sending transact
         "message": "Hello World!"
     });
     let data: Vec<u8> = serde_json::to_string(&json_object).unwrap().into_bytes();
+    let fee_per_byte = (wallet.get_rpc().await).get_fee_per_byte().await.unwrap();
 
     // Send transaction
-    let response = wallet.send_vm_data(1, data).await;
+    let response = wallet.send_vida_data(veda_id, data, fee_per_byte).await;
     if response.success {
         println!("Transaction sent successfully!");
         println!("Transaction hash: {:?}", response.data.unwrap());
@@ -403,12 +407,13 @@ After defining your transaction's data structure, you can start sending transact
         "message": "Hello World!",
     }
     data, _ := json.Marshal(jsonObject)
+    feePerByte := wallet.GetRpc().GetFeePerByte()
 
     // Send transaction
-    response := wallet.SendVMData(vidaId, data)
+    response := wallet.SendVidaData(vidaId, data, feePerByte)
     if response.Success {
         fmt.Println("Transaction sent successfully!")
-        fmt.Printf("Transaction hash: %s\n", response.TxHash)
+        fmt.Printf("Transaction hash: %s\n", response.Hash)
     } else {
         fmt.Printf("Transaction failed: %s\n", response.Error)
     }
@@ -421,11 +426,13 @@ After defining your transaction's data structure, you can start sending transact
         message = "Hello World!" 
     });
 
-    WalletResponse response = await wallet.SendVMData(123, data);
+    ulong feePerByte = await wallet.GetRpc().GetFeePerByte();
+
+    WalletResponse response = await wallet.SendVidaData(vidaId, data, feePerByte);
     if (response.Success)
     {
         Console.WriteLine("Transaction sent successfully!");
-        Console.WriteLine($"Transaction hash: {response.TxnHash}");
+        Console.WriteLine($"Transaction hash: {response.Hash}");
     }
     else
     {
@@ -514,18 +521,18 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
 <TabItem value="python" label="Python">
     ```py
     from pwrpy.pwrsdk import PWRPY
-    from pwrpy.models.Transaction import VmDataTransaction
+    from pwrpy.models.Transaction import VidaDataTransaction
     import json
     import time
 
-    rpc = PWRPY()
+    rpc = PWRPY("https://pwrrpc.pwrlabs.io/")
     vida_id = 1 # Replace with your VIDA's ID
 
     # Since our VIDA is global chat room and we don't care about historical messages,
     # we will start reading transactions startng from the latest PWR Chain block
     starting_block = rpc.get_latest_block_number()
 
-    def handle_transaction(txn: VmDataTransaction):
+    def handle_transaction(txn: VidaDataTransaction):
         try:
             # Get the address of the transaction sender
             sender = txn.sender
@@ -556,11 +563,11 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
     ```rust
     use pwr_rs::{
         RPC,
-        transaction::types::VMDataTransaction,
+        transaction::types::VidaDataTransaction,
     };
     use std::sync::Arc;
 
-    fn handler(txn: VMDataTransaction) {
+    fn handler(txn: VidaDataTransaction) {
         // Get the address of the transaction sender
         let sender = txn.sender;
         // Get the data sent in the transaction (In Hex Format)
@@ -621,7 +628,7 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
         "github.com/pwrlabs/pwrgo/rpc"
     )
 
-    func handler(transaction rpc.VMDataTransaction) {
+    func handler(transaction rpc.VidaDataTransaction) {
         // Get the address of the transaction sender
         sender := transaction.Sender
         // Get the data sent in the transaction (In Hex Format)
@@ -642,6 +649,7 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
     }
 
     func main() {
+        rpc := rpc.SetRpcNodeUrl("https://pwrrpc.pwrlabs.io")
         vidaId := 1  // Replace with your VIDA's ID
 
         // Since our VIDA is global chat room and we don't care about historical messages,
@@ -677,19 +685,20 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
     using Newtonsoft.Json.Linq;
     using PWR;
     using PWR.Models;
+    using PWR.Utils;
 
     class Program
     {
         public static async Task Main()
         {
-            var rpc = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
+            var rpc = new RPC("https://pwrrpc.pwrlabs.io/");
             ulong vidaId = 1; // Replace with your VIDA's ID
 
             // Since our VIDA is global chat room and we don't care about historical messages,
             // we will start reading transactions startng from the latest PWR Chain block
             ulong startingBlock = await rpc.GetLatestBlockNumber();
 
-            IvaTransactionSubscription subscription = rpc.SubscribeToIvaTransactions(vidaId, startingBlock, (transaction) => {
+            VidaTransactionSubscription subscription = rpc.SubscribeToVidaTransactions(vidaId, startingBlock, (transaction) => {
                 // Get the address of the transaction sender
                 string sender = transaction.Sender;
                 // Get the data sent in the transaction (In Hex Format)
@@ -697,7 +706,7 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
 
                 // Convert data string to bytes
                 if (data.StartsWith("0x")) data = data.Substring(2);
-                byte[] dataBytes = data.HexStringToByteArray();
+                byte[] dataBytes = PWR.Utils.Extensions.HexStringToByteArray(data);
             
                 var jsonObject = JObject.Parse(Encoding.UTF8.GetString(dataBytes));
                 string action = jsonObject["action"]?.ToString();

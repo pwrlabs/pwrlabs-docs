@@ -97,7 +97,7 @@ After you have installed sdks, you can import them in your project:
 <TabItem value="python" label="Python">
     ```py
     from pwrpy.pwrapisdk import PWRPY
-    from pwrpy.pwrwallet import PWRWallet
+    from pwrpy.pwrwallet import Wallet
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">

@@ -56,24 +56,25 @@ To claim a VIDA on the PWR Chain, follow these steps:
 </TabItem>
 <TabItem value="python" label="Python">
     ```py
-    from pwrpy.pwrwallet import PWRWallet
+    from pwrpy.pwrwallet import Wallet
 
     # Setting up your wallet in the SDK
-    private_key = "YOUR_PRIVATE_KEY_HERE"
-    wallet = PWRWallet(private_key)
+    seed_phrase = "YOUR_SEED_PHRASE_HERE"
+    wallet = Wallet.new(seed_phrase)
 
     def claim():
         # Add a unique VIDA
         vida_id = 102030
+        fee_per_byte = wallet.get_rpc().get_fee_per_byte()
 
         # Claim the VIDA
-        tx = wallet.claim_vm_id(vida_id)
+        tx = wallet.claim_vida_id(vida_id, fee_per_byte)
 
         # Error handling
         if tx.success:
-            print("Transaction Hash:", tx.data)
+            print("Transaction Hash:", tx.hash.hex())
         else:
-            print("Error:", tx.message)
+            print("Error:", tx.error)
     claim()
     ```
 </TabItem>
@@ -83,14 +84,15 @@ To claim a VIDA on the PWR Chain, follow these steps:
 
     async fn claim() {
         // Setting up your wallet in the SDK
-        let private_key = "YOUR_PRIVATE_KEY_HERE";
-        let wallet = Wallet::from_hex(&private_key).unwrap();
+        let seed_phrase = "YOUR_SEED_PHRASE_HERE";
+        let wallet = Wallet::new(seed_phrase);
 
         // Add a unique VIDA ID
         let vida_id = 102030;
+        let fee_per_byte = (wallet.get_rpc().await).get_fee_per_byte().await.unwrap();
 
         // Claim the VIDA ID
-        let tx = wallet.claim_vm_id(vida_id).await;
+        let tx = wallet.claim_vida_id(vida_id, fee_per_byte).await;
 
         // Error handling
         if tx.success {
@@ -110,22 +112,23 @@ To claim a VIDA on the PWR Chain, follow these steps:
         "fmt"
     )
 
-    // Add your private key here
-    var privateKey = "YOUR_PRIVATE_KEY_HERE"
+    // Add your seed phrase here
+    var seedPhrase = "YOUR_SEED_PHRASE_HERE"
 
-    func ClaimVmId() {
+    func Claim() {
         // Setting up your wallet in the SDK
-        wallet := wallet.FromPrivateKey(privateKey)
+        wallet := wallet.New(seedPhrase)
 
         // Add a unique VIDA ID
         vidaId := 102030
+        feePerByte := wallet.GetRpc().GetFeeBerByte()
 
         // Claim the VIDA ID
-        tx := wallet.ClaimVMId(vidaId)
+        tx := wallet.ClaimVidaId(vidaId, feePerByte)
 
         // Error handling
         if tx.Success {
-            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+            fmt.Printf("Transaction Hash: %s\n", tx.Hash)
         } else {
             fmt.Println("Error:", tx.Error)
         }
@@ -141,20 +144,21 @@ To claim a VIDA on the PWR Chain, follow these steps:
     {
         static async Task Main()
         {
-            // Add your private key here
-            string privateKey = "YOUR_PRIVATE_KEY_HERE";
+            // Add your seed phrase here
+            string seedPhrase = "YOUR_SEED_PHRASE_HERE";
             // Setting up your wallet in the SDK
-            var wallet = new PwrWallet(privateKey);
+            var wallet = new Wallet(seedPhrase);
 
             // Add a unique VIDA ID
             ulong vidaId = 102030;
+            ulong feePerByte = await wallet.GetRpc().GetFeePerByte();
 
             // Claim the VIDA ID
-            WalletResponse tx = await wallet.ClaimVMId(vidaId);
+            WalletResponse tx = await wallet.ClaimVidaId(vidaId, feePerByte);
 
             // Error handling
             if (tx.Success) {
-                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
+                Console.WriteLine($"Transaction Hash: {tx.Hash}");
             } else {
                 Console.WriteLine($"Error: {tx.Error}");
             }

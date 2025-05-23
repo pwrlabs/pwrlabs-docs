@@ -45,7 +45,7 @@ To retrieve the PWR balance or nonce of a specific account.
     from pwrpy.pwrsdk import PWRPY
 
     # Setting up the rpc api
-    pwr = PWRPY()
+    pwr= PWRPY("https://pwrrpc.pwrlabs.io/")
 
     def account():
         address = "0x3b3b69093879e7b6f28366fa3c32762590ff547e"
@@ -86,6 +86,8 @@ To retrieve the PWR balance or nonce of a specific account.
     )
 
     func account() {
+        // Setting up the rpc api
+        rpc := rpc.SetRpcNodeUrl("https://pwrrpc.pwrlabs.io")
         address := "0x3b3b69093879e7b6f28366fa3c32762590ff547e"
 
         // get balance of address
@@ -107,7 +109,7 @@ To retrieve the PWR balance or nonce of a specific account.
         static async Task Main()
         {
             // Setting up the rpc api
-            var rpc = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
+            var rpc = new RPC("https://pwrrpc.pwrlabs.io/");
 
             string address = "0x3b3b69093879e7b6f28366fa3c32762590ff547e";
 
@@ -157,7 +159,7 @@ Blocks will help us access a lot of data through the set of transactions they co
     from pwrpy.pwrsdk import PWRPY
 
     # Setting up the rpc api
-    pwr = PWRPY()
+    pwr= PWRPY("https://pwrrpc.pwrlabs.io/")
 
     def get_block():
         # the block number we want fetch
@@ -167,7 +169,8 @@ Blocks will help us access a lot of data through the set of transactions they co
         
         # prints the sender address from every transaction in the block
         for index, txs in enumerate(block.transactions):
-            print(f"Sender {index}: {txs.sender}")
+            transaction = pwr.get_transaction_by_hash(txs.transaction_hash)
+            print(f"Sender {index}: {transaction.sender}")
     get_block()
     ```
 </TabItem>
@@ -185,7 +188,8 @@ Blocks will help us access a lot of data through the set of transactions they co
 
         // prints the sender address from every transaction in the block
         for (index, txs) in block.transactions.iter().enumerate() {
-            println!("Sender {}: {}", index, txs.sender);
+            let tx = rpc.get_transaction_by_hash(&txs.transaction_hash).await.unwrap();
+            println!("Sender {}: {}", index, tx.sender);
         }
     }
     ```
@@ -200,13 +204,16 @@ Blocks will help us access a lot of data through the set of transactions they co
     )
 
     func getBlock() {
+        // Setting up the rpc api
+        rpc := rpc.SetRpcNodeUrl("https://pwrrpc.pwrlabs.io")
         // the block number we want fetch
         blockNumber := 100
 
         // get the block by number
         block := rpc.GetBlockByNumber(blockNumber)
 
-        for i, transaction := range block.Transactions {
+        for i, txs := range block.Transactions {
+            transaction := pwr.GetTransactionByHash(txs.TransactionHash)
             fmt.Printf("Sender %d: %s\n", i, transaction.Sender)
         }
     }
@@ -221,8 +228,7 @@ Blocks will help us access a lot of data through the set of transactions they co
         static async Task Main()
         {
             // Setting up the rpc api
-            var rpc = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
-
+            var rpc = new RPC("https://pwrrpc.pwrlabs.io/");
             // the block number we want fetch
             uint blockNumber = 100;
 
@@ -231,7 +237,8 @@ Blocks will help us access a lot of data through the set of transactions they co
             
             for (int i = 0; i < block.Transactions.Count; i++)
             {
-                Console.WriteLine($"Sender {i}: {block.Transactions[i].Sender}");
+                var tx = await rpc.GetTransactionByHash(block.Transactions[i].TransactionHash);
+                Console.WriteLine($"Sender {i}: {tx.Sender}");
             }
         }
     }
@@ -260,8 +267,8 @@ In this example, we retrieve all VIDA data transactions sent to a specific VIDA 
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
 
     async function getVmData() {
-        const startBlock = 146809;
-        const endBlock = 146945;
+        const startBlock = 85411;
+        const endBlock = 85420;
         const vidaId = 123;
 
         // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
@@ -280,38 +287,38 @@ In this example, we retrieve all VIDA data transactions sent to a specific VIDA 
     from pwrpy.pwrsdk import PWRPY
 
     # Setting up the rpc api
-    pwr = PWRPY()
+    pwr= PWRPY("https://pwrrpc.pwrlabs.io/")
 
-    def get_vm_data():
-        start_block = 146809
-        end_block = 146945
+    def get_vida_data():
+        start_block = 85411
+        end_block = 85420
         vida_id = 123
 
         # fetch the transactions sent from `start_block` to `end_block` in `vida_id`
-        transactions = pwr.get_vm_data_txns(start_block, end_block, vida_id)
+        transactions = pwr.get_vida_data_transactions(start_block, end_block, vida_id)
         # prints the trasnactions data
         for txs in transactions:
             print("Data:", txs.data)
-    get_vm_data()
+    get_vida_data()
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
     ```rust
     use pwr_rs::RPC;
 
-    async fn get_vm_data() {
+    async fn get_vida_data() {
         // Setting up the rpc api
         let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
 
-        let start_block = 146809;
-        let end_block = 146945;
+        let start_block = 85411;
+        let end_block = 85420;
         let vida_id = 123;
 
         // fetch the transactions sent from `start_block` to `end_block` in `vida_id`
-        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vida_id).await.unwrap();
+        let transactions = rpc.get_vida_data_transactions(start_block, end_block, vida_id).await.unwrap();
         // prints the trasnactions data
         for txs in transactions {
-            println!("Data: {:?}", txs.data);
+            println!("Data: {:?}", hex::encode(&txs.data));
         }
     }
     ```
@@ -325,13 +332,15 @@ In this example, we retrieve all VIDA data transactions sent to a specific VIDA 
         "github.com/pwrlabs/pwrgo/rpc"
     )
 
-    func getVmData() {
-        startBlock := 146809
-        endBlock := 146945
+    func getVidaData() {
+        // Setting up the rpc api
+        rpc := rpc.SetRpcNodeUrl("https://pwrrpc.pwrlabs.io")
+        startBlock := 85411
+        endBlock := 85420
         vidaId := 123
 
         // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
-        transactions := rpc.GetVmDataTransactions(startBlock, endBlock, vidaId)
+        transactions := rpc.GetVidaDataTransactions(startBlock, endBlock, vidaId)
 
         for _, tx := range transactions {
             fmt.Println("Data:", tx.Data)
@@ -348,14 +357,14 @@ In this example, we retrieve all VIDA data transactions sent to a specific VIDA 
         static async Task Main()
         {
             // Setting up the rpc api
-            var rpc = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
+            var rpc = new RPC("https://pwrrpc.pwrlabs.io/");
 
-            ulong startBlock = 146809;
-            ulong endBlock = 146945;
+            ulong startBlock = 85411;
+            ulong endBlock = 85420;
             ulong vidaId = 123;
 
             // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
-            var transactions = await rpc.GetVmDataTransactions(startBlock, endBlock, vidaId);
+            var transactions = await rpc.GetVidaDataTransactions(startBlock, endBlock, vidaId);
             foreach (var txn in transactions)
             {
                 Console.WriteLine($"Data: {txn.Data}");
@@ -485,8 +494,8 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
 
     async function getVmDataActive() {
-        const startBlock = 146809;
-        const endBlock = 146945;
+        const startBlock = 85411;
+        const endBlock = 85420;
         const vidaId = 123;
 
         // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
@@ -519,14 +528,14 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
     from pwrpy.pwrsdk import PWRPY
 
     # Setting up the rpc api
-    pwr = PWRPY()
+    pwr= PWRPY("https://pwrrpc.pwrlabs.io/")
 
-    def get_vm_data_active():
-        start_block = 146809
-        end_block = 146945
+    def get_vida_data_active():
+        start_block = 85411
+        end_block = 85420
         vida_id = 123
         # fetch the transactions sent from `start_block` to `end_block` in `vida_id`
-        transactions = pwr.get_vm_data_txns(start_block, end_block, vida_id)
+        transactions = pwr.get_vida_data_transactions(start_block, end_block, vida_id)
 
         for txs in transactions:
             sender = txs.sender
@@ -543,22 +552,22 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
             elif string_data.startswith("Hello"):
                 word = string_data[6:]
                 print(f'{sender}: {word}')
-    get_vm_data_active()
+    get_vida_data_active()
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
     ```rust
     use pwr_rs::RPC;
 
-    async fn get_vm_data_active() {
+    async fn get_vida_data_active() {
         // Setting up the rpc api
         let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
-        let start_block = 146809;
-        let end_block = 146945;
+        let start_block = 85411;
+        let end_block = 85420;
         let vida_id = 123;
 
         // fetch the transactions sent from `start_block` to `end_block` in `vida_id`
-        let transactions = rpc.get_vm_data_transactions(start_block, end_block, vida_id).await.unwrap();
+        let transactions = rpc.get_vida_data_transactions(start_block, end_block, vida_id).await.unwrap();
 
         for txs in transactions {
             let sender = txs.sender;
@@ -590,13 +599,16 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
         "strings"
     )
 
-    func getVmDataActive() {
-        startBlock := 146809
-        endBlock := 146945
+    func getVidaDataActive() {
+        // Setting up the rpc api
+        rpc := rpc.SetRpcNodeUrl("https://pwrrpc.pwrlabs.io")
+
+        startBlock := 85411
+        endBlock := 85420
         vidaId := 123
 
         // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
-        transactions := rpc.GetVmDataTransactions(startBlock, endBlock, vidaId)
+        transactions := rpc.GetVidaDataTransactions(startBlock, endBlock, vidaId)
 
         for _, tx := range transactions {
             sender := tx.Sender
@@ -626,6 +638,7 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
 <TabItem value="csharp" label="C#">
     ```csharp
     using PWR;
+    using PWR.Utils;
     using System.Text;
 
     class Program
@@ -633,14 +646,14 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
         static async Task Main()
         {
             // Setting up the rpc api
-            var rpc = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
+            var rpc = new RPC("https://pwrrpc.pwrlabs.io/");
 
-            ulong startBlock = 146809;
-            ulong endBlock = 146945;
+            ulong startBlock = 85411;
+            ulong endBlock = 85420;
             ulong vidaId = 123;
 
             // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
-            var transactions = await rpc.GetVmDataTransactions(startBlock, endBlock, vidaId);
+            var transactions = await rpc.GetVidaDataTransactions(startBlock, endBlock, vidaId);
 
             foreach (var txn in transactions)
             {
