@@ -67,7 +67,7 @@ To create a wallet in your software application using the PWR SDK. You can use y
 
         // Create a wallet from an existing seed phrase (str)
         // in this example we will store the seed phrase
-        let seed_phrase = "your seed phrase here";
+        let seed_phrase = "YOUR_SEED_PHRASE_HERE";
         let wallet = Wallet::new(seed_phrase);
     }
     ```

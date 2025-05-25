@@ -38,7 +38,7 @@ Create a new project in your preferred programming language, and add the necessa
     mkdir conduits && cd conduits
     python3 -m venv venv
     source venv/bin/activate
-    pip3 install pwrpy python-dotenv Flask
+    pip3 install pwrpy python-dotenv flask
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
@@ -63,10 +63,10 @@ Create a new project in your preferred programming language, and add the necessa
 
 ## Step 2: ENV setup to load the wallet
 
-Create a `.env` file in your project folder and add your wallet's **`PRIVATE_KEY`** in the file.
+Create a `.env` file in your project folder and add your wallet's **`SEED_PHRASE`** in the file.
 
 ```bash
-PRIVATE_KEY="ADD_YOUR_PRIVATE_KEY_HERE"
+SEED_PHRASE="ADD_YOUR_SEED_PHRASE_HERE"
 ```
 
 ## Step 3: Send Messages
@@ -99,24 +99,28 @@ Create a `send_message` file in your project and add the following code:
 </TabItem>
 <TabItem value="python" label="Python">
     ```py
-    from pwrpy.pwrwallet import PWRWallet
+    from pwrpy.pwrwallet import Wallet
     from dotenv import load_dotenv
     import json
     import os
     load_dotenv()
 
     # Setting up your wallet in the SDK
-    private_key = os.getenv("PRIVATE_KEY")
-    wallet = PWRWallet(private_key)
+    seed_phrase = os.getenv("SEED_PHRASE")
+    wallet = Wallet.new(seed_phrase)
 
     def send_message():
+        vida_id = 123
         obj = {"message": "please send me pwr"}
         data = json.dumps(obj).encode('utf-8') # Serialize to JSON bytes
-        vida_id = 123
+        fee_per_byte = wallet.get_rpc().get_fee_per_byte()
 
         # Sending the VIDA data transaction
-        res = wallet.send_vm_data_transaction(vida_id, data)
-        print(res.data)
+        res = wallet.send_vida_data(vida_id, data, fee_per_byte)
+        if res.success:
+            print(f"Transaction hash: 0x{res.hash.hex()}")
+        else:
+            print(f"Transaction failed: {res.error}")
     send_message()
     ```
 </TabItem>
@@ -130,15 +134,21 @@ Create a `send_message` file in your project and add the following code:
     pub async fn send_message() {
         dotenv().ok();
         // Setting up your wallet in the SDK
-        let private_key = env::var("PRIVATE_KEY").unwrap();
-        let wallet = Wallet::from_hex(&private_key).unwrap();
+        let seed_phrase = env::var("SEED_PHRASE").unwrap();
+        let wallet = Wallet::new(&seed_phrase);
 
+        let vida_id = 123;
         let obj = json!({ "message": "please send me pwr" });
         let data = serde_json::to_vec(&obj).unwrap(); // Serialize to JSON bytes
-        let vida_id = 123;
+        let fee_per_byte = (wallet.get_rpc().await).get_fee_per_byte().await.unwrap();
+
         // Sending the VIDA data transaction
-        let res = wallet.send_vm_data(vida_id, data).await;
-        println!("{}", res);
+        let res = wallet.send_vida_data(vida_id, data, fee_per_byte).await;
+        if res.success {
+            println!("Transaction hash: {:?}", res.data.unwrap());
+        } else {
+            println!("Transaction failed: {:?}", res.error);
+        }
     }
     ```
 </TabItem>
@@ -157,17 +167,18 @@ Create a `send_message` file in your project and add the following code:
     func SendMessage() {
         // Setting up your wallet in the SDK
         godotenv.Load()
-        privateKey := os.Getenv("PRIVATE_KEY")
-        wallet := wallet.FromPrivateKey(privateKey)
+        seedPhrase := os.Getenv("SEED_PHRASE")
+        wallet := wallet.New(seedPhrase)
 
         vidaId := 123
         data, _ := json.Marshal(map[string]string{"message": "please send me pwr"})
+        feePerByte := wallet.GetRpc().GetFeePerByte()
 
         // Sending the VIDA data transaction
-        tx := wallet.SendVMData(vidaId, data)
+        tx := wallet.SendVidaData(vidaId, data, feePerByte)
 
         if tx.Success {
-            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+            fmt.Printf("Transaction Hash: %s\n", tx.Hash)
         } else {
             fmt.Printf("Failed to send transaction: %s\n", tx.Error)
         }
@@ -236,33 +247,34 @@ Create a `transaction` file in your project and add the following code:
     ```rust
     use std::sync::{Mutex, Arc};
     use serde_json::Value;
+    use lazy_static::lazy_static;
 
-    pub struct Transactions {
-        transactions_awaiting_approval: Arc<Mutex<Vec<Value>>>,
+    lazy_static! {
+        static ref TRANSACTIONS: Arc<Mutex<Vec<Value>>> = Arc::new(Mutex::new(Vec::new()));
     }
+
+    pub struct Transactions;
 
     impl Transactions {
         pub fn new() -> Self {
-            Transactions {
-                transactions_awaiting_approval: Arc::new(Mutex::new(Vec::new())),
-            }
+            Transactions
         }
 
-        pub fn add(&self, txn: Value) {
-            let mut txns = self.transactions_awaiting_approval.lock().unwrap();
+        pub fn add(txn: Value) {
+            let mut txns = TRANSACTIONS.lock().unwrap();
             txns.push(txn);
         }
 
-        pub fn remove(&self, txn: &Value) {
-            let mut txns = self.transactions_awaiting_approval.lock().unwrap();
+        pub fn remove(txn: &Value) {
+            let mut txns = TRANSACTIONS.lock().unwrap();
             *txns = txns.iter()
-                .filter(|&tx| tx != txn) // Comparing JSON values directly
+                .filter(|&tx| tx != txn)
                 .cloned()
                 .collect();
         }
 
-        pub fn get_pending_transactions(&self) -> Vec<Value> {
-            let txns = self.transactions_awaiting_approval.lock().unwrap();
+        pub fn get_pending_transactions() -> Vec<Value> {
+            let txns = TRANSACTIONS.lock().unwrap();
             txns.clone()
         }
     }
@@ -387,7 +399,8 @@ Create a `sync_messages` file in your project and add the following code:
 <TabItem value="python" label="Python">
     ```py
     from pwrpy.pwrsdk import PWRPY
-    from pwrpy.pwrwallet import PWRWallet
+    from pwrpy.pwrwallet import Wallet
+    from pwrpy.models.Transaction import VidaDataTransaction
     from pwrpy.TransactionBuilder import TransactionBuilder
     from transaction import Transactions
     from dotenv import load_dotenv
@@ -397,121 +410,101 @@ Create a `sync_messages` file in your project and add the following code:
     load_dotenv()
 
     # Setting up your wallet in the SDK
-    private_key = os.getenv("PRIVATE_KEY")
-    wallet = PWRWallet(private_key)
+    seed_phrase = os.getenv("SEED_PHRASE")
+    wallet = Wallet.new(seed_phrase)
     # Setting up the rpc api
-    pwr = PWRPY()
+    rpc = PWRPY("https://pwrrpc.pwrlabs.io/")
+
+    def handler_messages(txn: VidaDataTransaction):
+        try:
+            sender = txn.sender
+            data_hex = txn.data
+            # Assuming data_hex is a hex string starting with '0x'
+            data_bytes = bytes.fromhex(data_hex)
+            # Converting the hex data to a buffer and then to a UTF-8 string
+            data_str = data_bytes.decode('utf-8')
+            # Parsing the JSON string into a Python dictionary
+            obj = json.loads(data_str)
+            # Checking if the transaction contains a "message" field with the specified value
+            if 'message' in obj and obj['message'].lower() == "please send me pwr":
+                fee_per_byte = rpc.get_fee_per_byte()
+                # Building a transfer transaction to send PWR tokens
+                transfer_txn = TransactionBuilder.get_transfer_pwr_transaction(
+                    sender, 1000000000, wallet.get_nonce(), rpc.get_chainId(), wallet.get_address(), fee_per_byte
+                )
+                # Adding the transfer transaction to the Transactions list for later execution
+                Transactions.add(transfer_txn)
+                # Printing a message to the console showing the sender and the message content
+                print(f"\nMessage from {sender}: {obj['message']}")
+        except Exception as e:
+            print('Error in sync:', e)
+            time.sleep(1)
 
     def sync():
-        starting_block = 876040 # Adjust starting block as needed
+        starting_block = rpc.get_latest_block_number()
         vida_id = 123
-
-        # Starting an infinite loop to continuously fetch and process transactions
-        while True:
-            # Fetching the latest block number from the blockchain via the RPC API
-            latest_block = pwr.get_latest_block_number()
-            # Setting the effective block range to fetch, with a limit of 1000 blocks per iteration
-            effective_latest_block = min(latest_block, starting_block + 1000)
-
-            # Checking if there are new blocks to process
-            if effective_latest_block >= starting_block:
-                # Fetching the latest block number from the blockchain
-                txns = pwr.get_vm_data_txns(starting_block, effective_latest_block, vida_id)
-                # Looping through the transactions fetched from the blockchain
-                for txn in txns:
-                    sender = txn.sender
-                    data_hex = txn.data
-                    # Assuming data_hex is a hex string starting with '0x'
-                    data_bytes = bytes.fromhex(data_hex[2:])
-                    # Converting the hex data to a buffer and then to a UTF-8 string
-                    data_str = data_bytes.decode('utf-8')
-                    # Parsing the JSON string into a Python dictionary
-                    obj = json.loads(data_str)
-                    # Checking if the transaction contains a "message" field with the specified value
-                    if 'message' in obj and obj['message'].lower() == "please send me pwr":
-                        # Building a transfer transaction to send PWR tokens
-                        transfer_txn = TransactionBuilder.get_transfer_pwr_transaction(
-                            sender, 100, wallet.get_nonce(), pwr.get_chainId()
-                        )
-                        # Adding the transfer transaction to the Transactions list for later execution
-                        Transactions.add(transfer_txn)
-                        # Printing a message to the console showing the sender and the message content
-                        print(f"\nMessage from {sender}: {obj['message']}")
-                # Updating the starting block number for the next loop iteration
-                starting_block = effective_latest_block + 1
-            time.sleep(1) # Wait 1 second before the next loop
+        rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler=handler_messages)
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
     ```rust
-    use pwr_rs::{RPC, Wallet, transaction::NewTransactionData};
-    use std::time::Duration;
-    use tokio::time::sleep;
+    use pwr_rs::{RPC, Wallet, transaction::{NewTransactionData, VidaDataTransaction}};
     use serde_json::{Value, json};
     use crate::transaction::Transactions;
     use dotenvy::dotenv;
     use std::env;
+    use std::sync::Arc;
 
-    pub async fn sync(transactions: &Transactions) {
+    const FEE_PER_BYTE: u64 = 1000;
+    const CHAIN_ID: u8 = 0;
+
+    fn handler_messages(txn: VidaDataTransaction) {
         dotenv().ok();
         // Setting up your wallet in the SDK
-        let private_key = env::var("PRIVATE_KEY").unwrap();
-        let wallet = Wallet::from_hex(&private_key).unwrap();
+        let seed_phrase = env::var("SEED_PHRASE").unwrap();
+        let wallet = Wallet::new(&seed_phrase);
+
+        // Spawn a new async task to handle the async operations
+        tokio::spawn(async move {
+            let sender = txn.sender;
+            let data = txn.data;
+            // Convert data bytes to UTF-8 string without explicit error handling
+            let data_str = String::from_utf8(data).unwrap();
+            // Parse JSON data without explicit error handling
+            let object: Value = serde_json::from_str(&data_str).unwrap();
+            // Converting the parsed JSON object into a map of key-value pairs
+            let obj_map = object.as_object().unwrap();
+            // Iterating through the key-value pairs in the parsed JSON object
+            for (key, value) in obj_map {
+                // Converting the value to a string (assuming it's a string value)
+                let message_str = value.as_str().unwrap();
+                if key.to_lowercase() == "message" && message_str == "please send me pwr" {
+                    // Constructing a transfer transaction using the NewTransactionData::Transfer variant
+                    let transfer_tx = NewTransactionData::Transfer { 
+                        amount: 100, receiver: sender[2..].to_string()
+                    }.serialize_for_broadcast(wallet.get_nonce().await, CHAIN_ID, FEE_PER_BYTE, &wallet);
+                    // Checking if the transaction was successfully serialized, then adding it to the transactions
+                    if let Ok(txn_hex) = transfer_tx.map_err(|e| e.to_string()) {
+                        // Convert each transaction (assumed to be a Buffer or Uint8Array) to a hexadecimal string
+                        let hex_string = format!("0x{}", txn_hex.iter().map(|byte| format!("{:02x}", byte)).collect::<String>());
+                        Transactions::add(json!(hex_string));
+                    }
+                    // Printing the sender and message to the console
+                    println!("\nMessage from {}: {}", sender, message_str);
+                }
+            }
+        });
+    }
+
+    pub async fn sync() {
         // Setting up the rpc api
         let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
-        
-        let mut starting_block: u64 = 876040; // Adjust starting block as needed
+        let rpc = Arc::new(rpc);
+
+        let starting_block: u64 = rpc.get_latest_block_number().await.unwrap();
         let vida_id: u64 = 123;
 
-        // Starting an infinite loop to continuously fetch and process transactions
-        loop {
-            // Fetch the latest block number without explicit error handling
-            let latest_block = rpc.get_latest_block_number().await.unwrap();
-            // Defining the effective block range for the next batch of transactions, limiting to 1000 blocks at a time
-            let effective_latest_block = if latest_block > starting_block + 1000 {
-                starting_block + 1000
-            } else {
-                latest_block
-            };
-            // Checking if there are new blocks to process
-            if effective_latest_block >= starting_block {
-                // Fetching VIDA data transactions between the starting block and the effective latest block for a given VIDA ID
-                let txns = rpc.get_vm_data_transactions(starting_block, effective_latest_block, vida_id).await.unwrap();
-                // Iterating through each transaction
-                for txn in txns {
-                    let sender = txn.sender;
-                    let data = txn.data; // Assuming txn.data is Vec<u8>
-                    // Convert data bytes to UTF-8 string without explicit error handling
-                    let data_str = String::from_utf8(data).unwrap();
-                    // Parse JSON data without explicit error handling
-                    let object: Value = serde_json::from_str(&data_str).unwrap();
-                    // Converting the parsed JSON object into a map of key-value pairs
-                    let obj_map = object.as_object().unwrap();
-                    // Iterating through the key-value pairs in the parsed JSON object
-                    for (key, value) in obj_map {
-                        // Converting the value to a string (assuming it's a string value)
-                        let message_str = value.as_str().unwrap();
-                        if key.to_lowercase() == "message" && message_str == "please send me pwr" {
-                            // Constructing a transfer transaction using the NewTransactionData::Transfer variant
-                            let transfer_tx = NewTransactionData::Transfer { 
-                                amount: 100, recipient: sender[2..].to_string()
-                            }.serialize_for_broadcast(wallet.get_nonce().await, rpc.chain_id, &wallet);
-                            // Checking if the transaction was successfully serialized, then adding it to the transactions
-                            if let Ok(txn_hex) = transfer_tx.map_err(|e| e.to_string()) {
-                                // Convert each transaction (assumed to be a Buffer or Uint8Array) to a hexadecimal string
-                                let hex_string = format!("0x{}", txn_hex.iter().map(|byte| format!("{:02x}", byte)).collect::<String>());
-                                transactions.add(json!(hex_string));
-                            }
-                            // Printing the sender and message to the console
-                            println!("\nMessage from {}: {}", sender, message_str);
-                        }
-                    }
-                }
-                // Updating the starting block number for the next loop iteration
-                starting_block = effective_latest_block + 1;
-            }
-            sleep(Duration::from_secs(1)).await; // Wait 1 second before the next loop
-        }
+        rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler_messages);
     }
     ```
 </TabItem>
@@ -524,73 +517,53 @@ Create a `sync_messages` file in your project and add the following code:
         "encoding/json"
         "fmt"
         "os"
-        "log"
-        "time"
         "github.com/joho/godotenv"
         "github.com/pwrlabs/pwrgo/rpc"
         "github.com/pwrlabs/pwrgo/wallet"
         "github.com/pwrlabs/pwrgo/encode"
     )
 
-    func Sync() {
-        // Setting up your wallet in the SDK
+    func handlerMessages(transaction rpc.VidaDataTransaction) {
         godotenv.Load()
-        privateKey := os.Getenv("PRIVATE_KEY")
-        wallet := wallet.FromPrivateKey(privateKey)
+        seedPhrase := os.Getenv("SEED_PHRASE")
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error getting the wallet:", err)
+            return
+        }
 
-        startingBlock := 876040 // Adjust starting block as needed
+        sender := transaction.Sender
+        dataHex := transaction.Data
+        nonce := wallet.GetNonce()
+
+        // Converting the hex data to a buffer and then to a UTF-8 string
+        dataBytes, _ := hex.DecodeString(dataHex)
+        var obj map[string]interface{}
+        if err := json.Unmarshal(dataBytes, &obj); err != nil {
+            fmt.Println("Error parsing JSON:", err)
+        }
+
+        // Iterating over each key in the object to check for specific conditions
+        if message, ok := obj["message"].(string); ok && message == "please send me pwr" {
+            var buffer []byte
+            // Building a transfer transaction to send PWR tokens
+            buffer, err := encode.TransferTxBytes(100, sender, nonce, wallet.Address, wallet.GetRpc().GetFeePerByte())
+            if err != nil {
+                fmt.Println("Error encoding transaction:", err)
+            }
+            // Adding the transaction to the Transactions struct
+            PendingTransactions.Add(buffer)
+            // Logging the message and the sender to the console
+            fmt.Printf("\nMessage from %s: %s\n", sender, message)
+        }
+    }
+
+    func Sync() {
+        rpc := rpc.SetRpcNodeUrl("https://pwrrpc.pwrlabs.io")
+        startingBlock := rpc.GetLatestBlockNumber()
         vidaId := 123
 
-        // Defining an asynchronous loop function that fetches and processes new transactions
-        go func() {
-            for {
-                // Fetching the latest block number from the blockchain via the RPC API
-                latestBlock := rpc.GetLatestBlockNumber()
-                // Defining the effective block range for the next batch of transactions, limiting to 1000 blocks at a time
-                effectiveLatestBlock := latestBlock
-                if latestBlock > startingBlock+1000 {
-                    effectiveLatestBlock = startingBlock + 1000
-                }
-
-                // Checking if there are new blocks to process
-                if effectiveLatestBlock > startingBlock {
-                    // Fetching VIDA data transactions between the starting block and the effective latest block for a given VIDA ID
-                    txns := rpc.GetVmDataTransactions(startingBlock, effectiveLatestBlock, vidaId)
-                    // Looping through the transactions fetched from the blockchain
-                    for _, txn := range txns {
-                        sender := txn.Sender
-                        dataHex := txn.Data
-                        nonce := wallet.GetNonce()
-
-                        // Converting the hex data to a buffer and then to a UTF-8 string
-                        dataBytes, _ := hex.DecodeString(dataHex[2:])
-                        var obj map[string]interface{}
-                        if err := json.Unmarshal(dataBytes, &obj); err != nil {
-                            log.Println("Error parsing JSON:", err)
-                            continue
-                        }
-
-                        // Iterating over each key in the object to check for specific conditions
-                        if message, ok := obj["message"].(string); ok && message == "please send me pwr" {
-                            var buffer []byte
-                            // Building a transfer transaction to send PWR tokens
-                            buffer, err := encode.TransferTxBytes(100, sender, nonce)
-                            if err != nil {
-                                log.Println("Error encoding transaction:", err)
-                                continue
-                            }
-                            // Adding the transaction to the Transactions struct
-                            PendingTransactions.Add(buffer)
-                            // Logging the message and the sender to the console
-                            fmt.Printf("\nMessage from %s: %s\n", sender, message)
-                        }
-                    }
-                    // Updating the starting block number for the next loop iteration
-                    startingBlock = effectiveLatestBlock + 1
-                }
-                time.Sleep(1 * time.Second) // Wait 1 second before the next loop
-            }
-        }()
+        rpc.SubscribeToVidaTransactions(vidaId, startingBlock, handlerMessages)
     }
     ```
 </TabItem>
@@ -650,7 +623,7 @@ Create a `app` file in your project and add the following code:
     ```py
     from flask import Flask, jsonify
     from transaction import Transactions
-    from conduit import sync
+    from sync_messages import sync
     import threading
 
     app = Flask(__name__)
@@ -658,9 +631,9 @@ Create a `app` file in your project and add the following code:
     # Add sync to fetch messages and add it to the pending txs
     threading.Thread(target=sync, daemon=True).start()
 
-    # Define an HTTP GET route at '/pendingVmTransactions'
+    # Define an HTTP GET route at '/pending-vida-transactions'
     # When accessed, this route will return the list of pending transactions
-    @app.route('/pendingVmTransactions/', methods=['GET'])
+    @app.route('/pending-vida-transactions', methods=['GET'])
     def pending_vm_transactions():
         # Retrieve the list of pending transactions using the getPendingTransactions method
         pending_transactions = Transactions.get_pending_transactions()
@@ -691,30 +664,24 @@ Create a `app` file in your project and add the following code:
     use sync_messages::sync;
     use warp::Filter;
     use tokio;
-    use std::sync::Arc;
 
     #[tokio::main]
     pub async fn main() {
-        let txs = Arc::new(Transactions::new());
-
         // Add sync to fetch messages and add it to the pending txs
-        tokio::spawn({
-            let txs = txs.clone();
-            async move {
-                sync(&txs).await;
-            }
+        tokio::spawn(async move {
+            sync().await;
         });
 
-        // Define an HTTP GET route at '/pendingVmTransactions'
+        // Define an HTTP GET route at '/pending-vida-transactions'
         // When accessed, this route will return the list of pending transactions
-        let user_route = warp::path("pendingVmTransactions")
+        let user_route = warp::path("pending-vida-transactions")
             .map(move || {
                 // Retrieve the list of pending transactions using the getPendingTransactions method
-                let tx = txs.get_pending_transactions();
+                let tx = Transactions::get_pending_transactions();
                 // Map through each transaction in the pendingTransactions array
                 for txn in tx.clone() {
                     // Return the hexadecimal representation of the transaction
-                    txs.remove(&txn);
+                    Transactions::remove(&txn);
                 }
                 // Send the resulting array of hex strings as a JSON response
                 warp::reply::json(&tx)
@@ -740,13 +707,13 @@ Create a `app` file in your project and add the following code:
         "net/http"
     )
 
-    func App() {
+    func main() {
         // Add sync to fetch messages and add it to the pending txs
         go Sync()
 
-        // Define an HTTP GET route at '/pendingVmTransactions'
+        // Define an HTTP GET route at '/pending-vida-transaction'
         // When accessed, this route will return the list of pending transactions
-        http.HandleFunc("/pendingVmTransactions", func(w http.ResponseWriter, r *http.Request) {
+        http.HandleFunc("/pending-vida-transactions", func(w http.ResponseWriter, r *http.Request) {
             // Set the response header to ensure the response is sent as JSON data
             w.Header().Set("Content-Type", "application/json")
             // Retrieve the list of pending transactions using the getPendingTransactions method
@@ -785,17 +752,17 @@ Create a `app` file in your project and add the following code:
 </TabItem>
 </Tabs>
 
-Conduit nodes will call the `/pendingVmTransactions` endpoint and retrieve the application's transactions as hex strings in a JSON array.
+Conduit nodes will call the `/pending-vida-transactions` endpoint and retrieve the application's transactions as hex strings in a JSON array.
 
 **Example API request:**:
 
 ```bash
-curl -X GET http://localhost:8000/pendingVmTransactions/ -H "Content-Type: application/json"
+curl -X GET http://localhost:8000/pending-vida-transactions -H "Content-Type: application/json"
 ```
 
 **Example API response:**:
 
-```js
+```json
 [
   "0x1234567890abcdef...",
   "0x0987654321fedcba..."
@@ -807,6 +774,8 @@ In the code above, we remove the transactions once they have been retrieved by t
 ## Step 7: Set Conduit Nodes
 
 To set the conduit nodes for your application, use the `Set Conduits` method provided by the PWR SDK.
+
+> [!NOTE] WE ARE STILL UPDATING THE DOCS TO INCLUDE MORE EXAMPLES FOR THE SDKs.
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
@@ -833,23 +802,24 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
 </TabItem>
 <TabItem value="python" label="Python">
     ```py
-    from pwrpy.pwrwallet import PWRWallet
+    from pwrpy.pwrwallet import Wallet
     from dotenv import load_dotenv
     import os
     load_dotenv()
 
     # Setting up your wallet in the SDK
-    private_key = os.getenv("PRIVATE_KEY")
-    wallet = PWRWallet(private_key)
+    seed_phrase = os.getenv("SEED_PHRASE")
+    wallet = Wallet.new(seed_phrase)
 
     def conduits():
         conduits = [
             bytes.fromhex("conduit_node_address"),
         ]
         vida_id = "your_vida_id"
+        fee_per_byte = wallet.get_rpc().get_fee_per_byte()
 
-        res = wallet.set_conduits(vida_id, conduits)
-        print(res.data)
+        res = wallet.set_conduit_mode(vida_id, 1, 1, conduits, fee_per_byte)
+        print(f"Transaction hash: 0x{res.hash.hex()}")
 
     conduits()
     ```
@@ -863,8 +833,8 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
     async fn conduits() {
         dotenv().ok();
         // Setting up your wallet in the SDK
-        let private_key = env::var("PRIVATE_KEY").unwrap();
-        let wallet = Wallet::from_hex(&private_key).unwrap();
+        let seed_phrase = env::var("SEED_PHRASE").unwrap();
+        let wallet = Wallet::new(&seed_phrase);
 
         let conduits: Vec<String> = vec![
             "conduit_node_address".to_string(),

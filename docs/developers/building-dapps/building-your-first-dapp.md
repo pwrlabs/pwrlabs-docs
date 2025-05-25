@@ -69,166 +69,17 @@ Create a new project in your preferred programming language, and add the necessa
 
 ## Step 2: ENV setup to load the wallet
 
-Create a `.env` file in your project folder and add your wallet's **`PRIVATE_KEY`** in the file.
+Create a `.env` file in your project folder and add your wallet's **`SEED_PHRASE`** in the file.
 
 ```bash
-PRIVATE_KEY="ADD_YOUR_PRIVATE_KEY_HERE"
+SEED_PHRASE="ADD_YOUR_SEED_PHRASE_HERE"
 ```
 
-## Step 3: Send Messages
-
-To send a message, we'll use the method provided by the PWR SDK to send a transaction with the message data.
-
-Create a `send_message` file in your project and add the following code:
-
-<Tabs>
-<TabItem value="javascript" label="JavaScript">
-    ```js
-    const { PWRWallet } = require("@pwrjs/core");
-    require('dotenv').config();
-
-    // Setting up your wallet in the SDK
-    const privateKey = process.env.PRIVATE_KEY;
-    const wallet = new PWRWallet(privateKey);
-
-    async function sendMessage() {
-        const obj = { message: "Hello World!" };
-        const data = Buffer.from(JSON.stringify(obj), 'utf8');
-        const vidaId = 1234;
-
-        const res = await wallet.sendVMDataTxn(vidaId, data);
-        console.log(res.transactionHash);
-    }
-    sendMessage();
-    ```
-</TabItem>
-<TabItem value="python" label="Python">
-    ```py
-    from pwrpy.pwrwallet import PWRWallet
-    from dotenv import load_dotenv
-    import json
-    import os
-    load_dotenv()
-
-    # Setting up your wallet in the SDK
-    private_key = os.getenv("PRIVATE_KEY")
-    wallet = PWRWallet(private_key)
-
-    def send_message():
-        obj = {"message": "cool"}
-        data = json.dumps(obj).encode('utf-8')
-        vida_id = 1234
-
-        # Sending the VIDA data transaction
-        res = wallet.send_vm_data_transaction(vida_id, data)
-        print(res.data)
-    send_message()
-    ```
-</TabItem>
-<TabItem value="rust" label="Rust">
-    ```rust
-    use pwr_rs::Wallet;
-    use dotenvy::dotenv;
-    use std::env;
-    use serde_json::json;
-
-    async fn send_message() {
-        dotenv().ok();
-        // Setting up your wallet in the SDK
-        let private_key = env::var("PRIVATE_KEY").unwrap();
-        let wallet = Wallet::from_hex(&private_key).unwrap();
-
-        let obj = json!({ "message": "lfg" });
-        let data = serde_json::to_vec(&obj).unwrap(); // Serialize to JSON bytes
-        let vida_id = 1234;
-        let res = wallet.send_vm_data(vida_id, data).await;
-        println!("{}", res);
-    }
-
-    #[tokio::main]
-    pub async fn main() {
-        send_message().await;
-    }
-    ```
-</TabItem>
-<TabItem value="go" label="Go">
-    ```go
-    package main
-
-    import (
-        "fmt"
-        "os"
-        "encoding/json"
-        "github.com/joho/godotenv"
-        "github.com/pwrlabs/pwrgo/wallet"
-    )
-
-    func SendMessage() {
-        // Setting up your wallet in the SDK
-        godotenv.Load()
-        privateKey := os.Getenv("PRIVATE_KEY")
-        wallet := wallet.FromPrivateKey(privateKey)
-
-        vidaId := 123
-        data, _ := json.Marshal(map[string]string{"message": "Hello World!"})
-
-        tx := wallet.SendVMData(vidaId, data)
-
-        if tx.Success {
-            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
-        } else {
-            fmt.Printf("Failed to send transaction: %s\n", tx.Error)
-        }
-    }
-    ```
-</TabItem>
-<TabItem value="csharp" label="C#">
-    ```csharp
-    using System;
-    using System.Text.Json;
-    using System.Threading.Tasks;
-    using PWR;
-    using PWR.Models;
-    using DotNetEnv;
-
-    public class MessageSender
-    {
-        static async Task Main()
-        {
-            // Setting up your wallet in the SDK
-            Env.Load();
-            string privateKey = Environment.GetEnvironmentVariable("PRIVATE_KEY");
-            var wallet = new PwrWallet(privateKey);
-            
-            const int vidaId = 123;
-            var data = new { message = "Hello World!" };
-            byte[] dataBytes = JsonSerializer.SerializeToUtf8Bytes(data);
-            
-            WalletResponse tx = await wallet.SendVMData(vidaId, dataBytes);
-            
-            if (tx.Success)
-            {
-                Console.WriteLine($"Transaction Hash: {tx.TxnHash}");
-            }
-            else
-            {
-                Console.WriteLine($"Failed to send transaction: {tx.Error}");
-            }
-        }
-    }
-    ```
-</TabItem>
-<TabItem value="java" label="Java">
-    ```java
-    ```
-</TabItem>
-</Tabs>
-
-## Step 4: Fetch Messages
+## Step 3: Fetch Messages
 
 To fetch messages from the PWR Chain, we'll use the method provided by the PWR SDK to retrieve transactions within a range of blocks.
 
-Create a `sync_messages` file in your project and add the following code:
+Create a file in your project and add the following code:
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
@@ -281,89 +132,70 @@ Create a `sync_messages` file in your project and add the following code:
 <TabItem value="python" label="Python">
     ```py
     from pwrpy.pwrsdk import PWRPY
+    from pwrpy.models.Transaction import VidaDataTransaction
     import json
     import time
 
     # Setting up the rpc api
-    pwr = PWRPY()
+    rpc = PWRPY("https://pwrrpc.pwrlabs.io/")
+
+    vida_id = 1234 # Replace with your VIDA's ID
+    starting_block = rpc.get_latest_block_number()
+
+    def handler_messages(txn: VidaDataTransaction):
+        try:
+            sender = txn.sender
+            data_hex = txn.data
+            # Remove the '0x' prefix and decode the hexadecimal data to bytes data
+            data_bytes = bytes.fromhex(data_hex)
+            # Convert the bytes data to UTF-8 string as json
+            obj = json.loads(data_bytes.decode('utf-8'))
+            if 'message' in obj:
+                print(f"\nMessage from {sender}: {obj['message']}")
+        except Exception as e:
+            print('Error in sync:', e)
+            time.sleep(1)
 
     def sync():
-        starting_block = 880920 
-        vida_id = 1234
-
-        while True:
-            try:
-                latest_block = pwr.get_latest_block_number()
-                effective_latest_block = min(latest_block, starting_block + 1000)
-
-                if effective_latest_block >= starting_block:
-                    # Fetch the transactions in `vidaId = 1234`
-                    txns = pwr.get_vm_data_txns(starting_block, effective_latest_block, vida_id)
-                    for txn in txns:
-                        sender = txn.sender
-                        data_hex = txn.data
-                        # Remove the '0x' prefix and decode the hexadecimal data to bytes data
-                        data_bytes = bytes.fromhex(data_hex[2:])
-                        # Convert the bytes data to UTF-8 string as json
-                        obj = json.loads(data_bytes.decode('utf-8'))
-                        if 'message' in obj:
-                            print(f"\nMessage from {sender}: {obj['message']}")
-
-                    starting_block = effective_latest_block + 1
-                time.sleep(1) # Wait 1 second before the next loop
-            except Exception as e:
-                print('Error in sync:', e)
-                time.sleep(1)
-    # sync()
+        rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler=handler_messages)
     ```
 </TabItem>
 <TabItem value="rust" label="Rust">
     ```rust
     use pwr_rs::RPC;
-    use std::time::Duration;
-    use tokio::time::sleep;
-    use serde_json::Value;
+    use pwr_rs::transaction::types::VidaDataTransaction;
+    use std::sync::Arc;
+
+    fn handler_messages(txn: VidaDataTransaction) {
+        // Get the address of the transaction sender
+        let sender = txn.sender;
+        // Get the data sent in the transaction (In Hex Format)
+        let data = txn.data;
+        // Convert data string to bytes
+        let data_str = String::from_utf8(data).unwrap();
+        let object: serde_json::Value = serde_json::from_str(&data_str).unwrap();
+        let obj_map = object.as_object().unwrap();
+
+        // Check the action and execute the necessary code
+        for (key, value) in obj_map {
+            if key.to_lowercase() == "message" {
+                let message_str = value.as_str().unwrap();
+                println!("\nMessage from {}: {}", sender, message_str);
+            } else {
+                // Handle other data fields if needed
+            }
+        }
+    }
 
     pub async fn sync() {
         // Setting up the rpc api
         let rpc = RPC::new("https://pwrrpc.pwrlabs.io/").await.unwrap();
+        let rpc = Arc::new(rpc);
 
-        let mut starting_block: u64 = 880920;
+        let starting_block = rpc.get_latest_block_number().await.unwrap();
         let vida_id: u64 = 1234;
 
-        loop {
-            let latest_block = rpc.get_latest_block_number().await.unwrap();
-            let effective_latest_block = if latest_block > starting_block + 1000 {
-                starting_block + 1000
-            } else {
-                latest_block
-            };
-
-            if effective_latest_block >= starting_block {
-                // Fetch the transactions in `vidaId = 1234`
-                let txns = rpc.get_vm_data_transactions(starting_block, effective_latest_block, vida_id).await.unwrap();
-                for txn in txns {
-                    let sender = txn.sender;
-                    let data = txn.data; // txn.data is Vec<u8>
-                    // Convert data bytes to UTF-8 string without explicit error handling
-                    let data_str = String::from_utf8(data).unwrap();
-                    // Parse JSON data without explicit error handling
-                    let object: Value = serde_json::from_str(&data_str).unwrap();
-                    let obj_map = object.as_object().unwrap();
-
-                    for (key, value) in obj_map {
-                        if key.to_lowercase() == "message" {
-                            let message_str = value.as_str().unwrap();
-                            println!("\nMessage from {}: {}", sender, message_str);
-                        } else {
-                            // Handle other data fields if needed
-                        }
-                    }
-                }
-                starting_block = effective_latest_block + 1;
-            }
-            sleep(Duration::from_secs(1)).await; // Wait 1 second before the next loop
-        }
+        rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler_messages);
     }
     ```
 </TabItem>
@@ -374,56 +206,40 @@ Create a `sync_messages` file in your project and add the following code:
     import (
         "fmt"
         "log"
-        "time"
         "encoding/json"
         "encoding/hex"
         "github.com/pwrlabs/pwrgo/rpc"
     )
 
-    func Sync() {
-        startingBlock := 880920
-        vidaId := 1234
 
-        loop := func() {
-            for {
-                latestBlock := rpc.GetLatestBlockNumber()
-
-                effectiveLatestBlock := latestBlock
-                if latestBlock > startingBlock+1000 {
-                    effectiveLatestBlock = startingBlock + 1000
-                }
-
-                if effectiveLatestBlock > startingBlock {
-                    // fetch the transactions in `vidaId = 1234`
-                    transactions := rpc.GetVmDataTransactions(startingBlock, effectiveLatestBlock, vidaId)
-
-                    for _, txn := range transactions {
-                        sender := txn.Sender
-                        dataHex := txn.Data
-                        // Remove the '0x' prefix and decode the hexadecimal data to bytes data
-                        dataBytes, _ := hex.DecodeString(dataHex[2:])
-                        // convert the bytes data to UTF-8 string as json
-                        var obj map[string]interface{}
-                        if err := json.Unmarshal(dataBytes, &obj); err != nil {
-                            log.Println("Error parsing JSON:", err)
-                            continue
-                        }
-
-                        if message, ok := obj["message"]; ok {
-                            fmt.Printf("\nMessage from %s: %s\n", sender, message)
-                        } else {
-                            // Handle other data fields if needed
-                        }
-                    }
-
-                    startingBlock = effectiveLatestBlock + 1
-                }
-
-                time.Sleep(1 * time.Second) // Wait 1 second before the next loop
-            }
+    func handlerMessages(transaction rpc.VidaDataTransaction) {
+        sender := transaction.Sender
+        dataHex := transaction.Data
+        // Remove the '0x' prefix and decode the hexadecimal data to bytes data
+        dataBytes, _ := hex.DecodeString(dataHex)
+        // convert the bytes data to UTF-8 string as json
+        var obj map[string]interface{}
+        if err := json.Unmarshal(dataBytes, &obj); err != nil {
+            log.Println("Error parsing JSON:", err)
         }
 
-        go loop()
+        if message, ok := obj["message"]; ok {
+            fmt.Printf("\nMessage from %s: %s\n", sender, message)
+        } else {
+            // Handle other data fields if needed
+        }
+    }
+
+    func Sync() {
+        rpc := rpc.SetRpcNodeUrl("https://pwrrpc.pwrlabs.io")
+        startingBlock := rpc.GetLatestBlockNumber()
+        vidaId := 1234 // Replace with your VIDA's ID
+
+        _ = rpc.SubscribeToVidaTransactions(
+            vidaId,
+            startingBlock,
+            handlerMessages,
+        )
     }
     ```
 </TabItem>
@@ -431,66 +247,36 @@ Create a `sync_messages` file in your project and add the following code:
     ```csharp
     using System.Text.Json;
     using PWR;
+    using PWR.Utils;
 
     namespace MyApp;
 
     public class Syncer
     {
-        private static ulong _startingBlock = 254154;
-        private const ulong vidaId = 123;
-        private static readonly PwrApiSdk _sdk = new PwrApiSdk("https://pwrrpc.pwrlabs.io/");
+        private static readonly RPC _rpc = new RPC("https://pwrrpc.pwrlabs.io/");
+        private const ulong vidaId = 1234;
 
         public static async Task Sync()
         {
-            while (true)
-            {
-                ulong latestBlock = await _sdk.GetLatestBlockNumber();
-                ulong effectiveLatestBlock = latestBlock;
+            ulong startingBlock = await _rpc.GetLatestBlockNumber();
 
-                if (latestBlock > _startingBlock + 1000)
+            VidaTransactionSubscription subscription = _rpc.SubscribeToVidaTransactions(vidaId, startingBlock, (transaction) => {
+                string sender = transaction.Sender;
+                string data = transaction.Data;
+                byte[] dataBytes = Convert.FromHexString(data);
+                var jsonDoc = JsonDocument.Parse(dataBytes);
+                var root = jsonDoc.RootElement;
+
+                if (root.TryGetProperty("message", out var messageElement))
                 {
-                    effectiveLatestBlock = _startingBlock + 1000;
+                    string message = messageElement.GetString();
+                    Console.WriteLine($"\nMessage from {sender}: {message}");
                 }
-
-                if (effectiveLatestBlock > _startingBlock)
+                else
                 {
-                    // fetch the transactions in `vidaId = 123`
-                    var transactions = await _sdk.GetVmDataTransactions(
-                        _startingBlock, 
-                        effectiveLatestBlock, 
-                        vidaId
-                    );
-
-                    foreach (var transaction in transactions)
-                    {
-                        string data = transaction.Data;
-                        // Remove the '0x' prefix and decode the hexadecimal data to bytes data
-                        if (data.StartsWith("0x"))
-                        {
-                            data = data[2..];
-                        }
-                        byte[] dataBytes = Convert.FromHexString(data);
-                        // convert the bytes data to UTF-8 string as json
-                        var jsonDoc = JsonDocument.Parse(dataBytes);
-                        var root = jsonDoc.RootElement;
-
-                        if (root.TryGetProperty("message", out var messageElement))
-                        {
-                            string sender = transaction.Sender;
-                            string message = messageElement.GetString();
-                            Console.WriteLine($"\nMessage from {sender}: {message}");
-                        }
-                        else
-                        {
-                            // Handle other data fields if needed
-                        }
-                    }
-
-                    _startingBlock = effectiveLatestBlock + 1;
+                    // Handle other data fields if needed
                 }
-
-                await Task.Delay(TimeSpan.FromSeconds(1)); // Wait 1 second before the next loop
-            }
+            });
         }
     }
     ```
@@ -501,7 +287,7 @@ Create a `sync_messages` file in your project and add the following code:
 </TabItem>
 </Tabs>
 
-## Step 5: Build the DApp
+## Step 4: Build the DApp
 
 Now that we have the individual components for sending messages, and fetching messages, let's put them all together in a complete application.
 
@@ -512,7 +298,7 @@ The final implementation should look like this:
 3. Write a message and click `Enter` to send.
 4. Fetch the message to you.
 
-Create a `dapp` file in your project and add the following code:
+Create a file in your project and add the following code:
 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
@@ -552,7 +338,7 @@ Create a `dapp` file in your project and add the following code:
 </TabItem>
 <TabItem value="python" label="Python">
     ```py
-    from pwrpy.pwrwallet import PWRWallet
+    from pwrpy.pwrwallet import Wallet
     from sync_messages import sync
     from dotenv import load_dotenv
     import json
@@ -561,8 +347,8 @@ Create a `dapp` file in your project and add the following code:
     load_dotenv()
 
     # Setting up your wallet in the SDK
-    private_key = os.getenv("PRIVATE_KEY")
-    wallet = PWRWallet(private_key)
+    seed_phrase = os.getenv("SEED_PHRASE")
+    wallet = Wallet.new(seed_phrase)
     vida_id = 1234
 
     def main():
@@ -574,7 +360,7 @@ Create a `dapp` file in your project and add the following code:
             data = json.dumps(obj).encode('utf-8')
             
             # Send the VIDA data
-            response = wallet.send_vm_data_transaction(vida_id, data)
+            response = wallet.send_vida_data(vida_id, data)
             if response.success==False:
                 print('FAILED!')
     main()
@@ -594,8 +380,8 @@ Create a `dapp` file in your project and add the following code:
     pub async fn main() -> Result<(), Box<dyn std::error::Error>> {
         dotenv().ok();
         // Setting up your wallet in the SDK
-        let private_key = env::var("PRIVATE_KEY").unwrap();
-        let wallet = Wallet::from_hex(&private_key).unwrap();
+        let seed_phrase = env::var("SEED_PHRASE").unwrap();
+        let wallet = Wallet::new(&seed_phrase);
         let vida_id: u64 = 1234;
         let stdin = io::stdin();
         let reader = BufReader::new(stdin);
@@ -606,9 +392,10 @@ Create a `dapp` file in your project and add the following code:
         while let Some(message) = lines.next_line().await? {
             let obj = serde_json::json!({ "message": message });
             let data = serde_json::to_vec(&obj)?;
+            let fee_per_byte = (wallet.get_rpc().await).get_fee_per_byte().await.unwrap();
 
             // Send the VIDA data
-            wallet.send_vm_data(vida_id, data).await;
+            wallet.send_vida_data(vida_id, data, fee_per_byte).await;
         }
         Ok(())
     }
@@ -623,16 +410,20 @@ Create a `dapp` file in your project and add the following code:
         "bufio"
         "os"
         "encoding/json"
-        "github.com/joho/godotenv"
         "github.com/pwrlabs/pwrgo/wallet"
+        "github.com/joho/godotenv"
     )
 
     func main() {
         // Setting up your wallet in the SDK
         godotenv.Load()
-        privateKey := os.Getenv("PRIVATE_KEY")
-        wallet := wallet.FromPrivateKey(privateKey)
-        vidaId := 1234
+        seedPhrase := os.Getenv("SEED_PHRASE")
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error getting the wallet:", err)
+            return
+        }
+        vidaId := 1234 // Replace with your VIDA's ID
 
         go Sync()
 
@@ -649,11 +440,12 @@ Create a `dapp` file in your project and add the following code:
                 fmt.Println("Failed to encode message:", err)
                 continue
             }
+            feePerByte := wallet.GetRpc().GetFeePerByte()
 
             // Send the VIDA data
-            tx := wallet.SendVMData(vidaId, jsonData)
+            tx := wallet.SendVidaData(vidaId, jsonData, feePerByte)
             if tx.Success {
-                fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
+                fmt.Printf("Transaction Hash: %s\n", tx.Hash)
             } else {
                 fmt.Println("Error:", tx.Error)
             }
@@ -672,33 +464,34 @@ Create a `dapp` file in your project and add the following code:
 
     public class Program
     {
-        private const ulong vidaId = 123;
+        private const ulong vidaId = 1234;
 
         public static async Task Main()
         {
             // Setting up your wallet in the SDK
             Env.Load();
-            string privateKey = Environment.GetEnvironmentVariable("PRIVATE_KEY");
-            var wallet = new PwrWallet(privateKey);
+            string seedPhrase = Environment.GetEnvironmentVariable("SEED_PHRASE");
+            var wallet = new Wallet(seedPhrase);
 
             _ = Task.Run(async () => await Syncer.Sync());
 
             while (true)
             {
-                Console.Write("Enter your message: ");
+                Console.Write("\nEnter your message: ");
                 string message = Console.ReadLine();
 
                 try
                 {
                     var messageData = new { message = message };
                     byte[] dataBytes = JsonSerializer.SerializeToUtf8Bytes(messageData);
+                    ulong feePerByte = await wallet.GetRpc().GetFeePerByte();
 
                     // Send the VIDA data
-                    WalletResponse response = await wallet.SendVMData(vidaId, dataBytes);
+                    WalletResponse response = await wallet.SendVidaData(vidaId, dataBytes, feePerByte);
 
                     if (response.Success)
                     {
-                        Console.WriteLine($"Transaction Hash: {response.TxnHash}");
+                        Console.WriteLine($"Transaction Hash: {response.Hash}");
                     }
                     else
                     {
@@ -722,7 +515,7 @@ Create a `dapp` file in your project and add the following code:
 
 Finally, we enter a loop where the user can input messages, and each message is sent as a transaction to the PWR Chain using the `sendVmDataTransaction` method.
 
-## Step 6: Run the Application
+## Step 5: Run the Application
 
 To run the messaging application, add the following command:
 
@@ -744,7 +537,8 @@ To run the messaging application, add the following command:
 </TabItem>
 <TabItem value="go" label="Go">
     ```bash
-    go run dapp.go
+    go mod tidy
+    go run .
     ```
 </TabItem>
 <TabItem value="csharp" label="C#">

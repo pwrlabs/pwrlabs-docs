@@ -133,7 +133,7 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
         recipientAddress := "RECIPIENT_ADDRESS"
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         amount := int(1e3)
-        feePerByte := wallet.GetRpc().GetFeeBerByte()
+        feePerByte := wallet.GetRpc().GetFeePerByte()
 
         // Transfer pwr tokens from the wallet
         tx := wallet.TransferPWR(recipientAddress, amount, feePerByte)
@@ -291,7 +291,7 @@ Sends data to a specific virtual machine for storage and processing purposes.
         vidaId := 123
         // Buffer data to be included in the transaction
         data := []byte("Hello world")
-        feePerByte := wallet.GetRpc().GetFeeBerByte()
+        feePerByte := wallet.GetRpc().GetFeePerByte()
 
         // Send the data at vidaId 123 to the chain
         tx := wallet.SendVidaData(vidaId, data, feePerByte)
@@ -460,7 +460,7 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
         amount := 10
         // Buffer data to be included in the transaction
         data := []byte("Hello world")
-        feePerByte := wallet.GetRpc().GetFeeBerByte()
+        feePerByte := wallet.GetRpc().GetFeePerByte()
 
         // Send the data at vidaId 919 and pay 1e3
         tx := wallet.SendPayableVidaData(vidaId, data, amount, feePerByte)
@@ -621,7 +621,7 @@ Delegates a specified amount of PWR tokens to a validator, contributing to their
         validator := "VALIDATOR_ADDRESS"
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         amount := int(1e9)
-        feePerByte := wallet.GetRpc().GetFeeBerByte()
+        feePerByte := wallet.GetRpc().GetFeePerByte()
 
         // Delegate the validator
         tx := wallet.Delegate(validator, amount, feePerByte)
@@ -779,7 +779,7 @@ Withdraws PWR tokens that were previously delegated to a validator, returning th
         validator := "VALIDATOR_ADDRESS"
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         amount := int(1e9)
-        feePerByte := wallet.GetRpc().GetFeeBerByte()
+        feePerByte := wallet.GetRpc().GetFeePerByte()
 
         // Withdraw the delegated pwr tokens
         tx := wallet.Withdraw(amount, validator, feePerByte)
@@ -937,7 +937,7 @@ To move delegated stake from one validator to another.
         toValidator := "TO_VALIDATOR_ADDRESS"
         // Tokens amount - 1 PWR = 1e9 = 1000000000
         amount := int(1e9)
-        feePerByte := wallet.GetRpc().GetFeeBerByte()
+        feePerByte := wallet.GetRpc().GetFeePerByte()
 
         // Move stake token from validator to another
         tx := wallet.MoveStake(amount, fromValidator, toValidator, feePerByte)
@@ -1121,7 +1121,7 @@ Here's how the guardian process works:
         // Guardian validity period - 30 minutes
         futureDate := time.Now().Add(30 * time.Minute) // 30 minutes from now
         expiryDate := int(futureDate.Unix()) // Get the Unix timestamp in seconds
-        feePerByte := wallet.GetRpc().GetFeeBerByte()
+        feePerByte := wallet.GetRpc().GetFeePerByte()
 
         // Set your wallet guardian
         tx := wallet.SetGuardian(expiryDate, guardianAddress, feePerByte)
@@ -1264,7 +1264,7 @@ Remove the guardian assigned to the wallet, removing their access or control.
     func removeGuardian() {
         // Setting up your wallet in the SDK
         wallet := wallet.New(seedPhrase)
-        feePerByte := wallet.GetRpc().GetFeeBerByte()
+        feePerByte := wallet.GetRpc().GetFeePerByte()
 
         // Remove your wallet guardian
         tx := wallet.RemoveGuardian(feePerByte)

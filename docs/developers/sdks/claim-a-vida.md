@@ -121,7 +121,7 @@ To claim a VIDA on the PWR Chain, follow these steps:
 
         // Add a unique VIDA ID
         vidaId := 102030
-        feePerByte := wallet.GetRpc().GetFeeBerByte()
+        feePerByte := wallet.GetRpc().GetFeePerByte()
 
         // Claim the VIDA ID
         tx := wallet.ClaimVidaId(vidaId, feePerByte)
