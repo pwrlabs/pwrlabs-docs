@@ -89,9 +89,11 @@ After you have installed sdks, you can import them in your project:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRJS, PWRWallet } from '@pwrjs/core';
+    import PWRJS from '@pwrjs/core';
+    import PWRWallet from '@pwrjs/core/wallet';
     // or
-    const { PWRJS, PWRWallet } = require('@pwrjs/core');
+    const PWRJS = require('@pwrjs/core');
+    const PWRWallet = require('@pwrjs/core/wallet');
     ```
 </TabItem>
 <TabItem value="python" label="Python">

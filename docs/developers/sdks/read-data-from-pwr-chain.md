@@ -22,10 +22,10 @@ To retrieve the PWR balance or nonce of a specific account.
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRJS } = require('@pwrjs/core');
+    const PWRJS = require('@pwrjs/core/wallet');
 
     // Setting up the rpc api
-    const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
+    const rpc = new PWRJS("https://pwrrpc.pwrlabs.io");
 
     async function account() {
         const address = "0x3b3b69093879e7b6f28366fa3c32762590ff547e";
@@ -136,10 +136,10 @@ Blocks will help us access a lot of data through the set of transactions they co
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRJS } = require('@pwrjs/core');
+    const PWRJS = require('@pwrjs/core/wallet');
 
     // Setting up the rpc api
-    const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
+    const rpc = new PWRJS("https://pwrrpc.pwrlabs.io");
 
     async function getBlock() {
         // the block number we want fetch
@@ -261,10 +261,10 @@ In this example, we retrieve all VIDA data transactions sent to a specific VIDA 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRJS } = require('@pwrjs/core');
+    const PWRJS = require('@pwrjs/core/wallet');
 
     // Setting up the rpc api
-    const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
+    const rpc = new PWRJS("https://pwrrpc.pwrlabs.io");
 
     async function getVmData() {
         const startBlock = 85411;
@@ -488,10 +488,10 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRJS } = require('@pwrjs/core');
+    const PWRJS = require('@pwrjs/core/wallet');
 
     // Setting up the rpc api
-    const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
+    const rpc = new PWRJS("https://pwrrpc.pwrlabs.io");
 
     async function getVmDataActive() {
         const startBlock = 85411;

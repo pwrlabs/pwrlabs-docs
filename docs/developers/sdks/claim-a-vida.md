@@ -31,15 +31,15 @@ To claim a VIDA on the PWR Chain, follow these steps:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet } = require('@pwrjs/core');
+    const PWRWallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
-    const privateKey = "YOUR_PRIVATE_KEY_HERE";
-    const wallet = new PWRWallet(privateKey);
+    const seedPhrase = "YOUR_SEED_PHRASE_HERE";
+    const wallet = PWRWallet.new(seedPhrase);
 
     async function claim() {
         // Add a unique VIDA ID
-        const vidaId = 102030;
+        const vidaId = 102030n;
 
         // Claim the VIDA ID
         const txHash = await wallet.claimVmId(vidaId);

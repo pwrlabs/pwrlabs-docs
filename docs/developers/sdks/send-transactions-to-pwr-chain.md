@@ -37,17 +37,17 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet } = require('@pwrjs/core');
+    const PWRWallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
-    const privateKey = "YOUR_PRIVATE_KEY_HERE";
-    const wallet = new PWRWallet(privateKey);
+    const seedPhrase = "YOUR_SEED_PHRASE_HERE";
+    const wallet = PWRWallet.new(seedPhrase);
 
     async function transfer() {
         // Tokens recipient address
         const recipientAddress = "RECIPIENT_ADDRESS";
         // Tokens amount - 1 PWR = 1e9 = 1000000000
-        const amount = 1e3;
+        const amount = BigInt(1e9);
         // Transfer pwr tokens from the wallet
         const tx = await wallet.transferPWR(recipientAddress, amount);
         
@@ -193,20 +193,20 @@ Sends data to a specific virtual machine for storage and processing purposes.
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet } = require('@pwrjs/core');
+    const PWRWallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
-    const privateKey = "YOUR_PRIVATE_KEY_HERE";
-    const wallet = new PWRWallet(privateKey);
+    const seedPhrase = "YOUR_SEED_PHRASE_HERE";
+    const wallet = PWRWallet.new(seedPhrase);
 
     async function sendData() {
         // VIDA used to send the transaction to
-        const vidaId = 123;
+        const vidaId = 123n;
         // Buffer data to be included in the transaction
-        const data = Buffer.from('Hello World!');
+        const data = new TextEncoder().encode('Hello World!');
         
         // Send the data at vidaId 123 to the chain
-        const tx = await wallet.sendVMDataTxn(vidaId, data);
+        const tx = await wallet.sendVidaData(vidaId, data);
 
         // Error handling
         if (tx.success) {
@@ -354,19 +354,19 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet } = require('@pwrjs/core');
+    const PWRWallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
-    const privateKey = "YOUR_PRIVATE_KEY_HERE";
-    const wallet = new PWRWallet(privateKey);
+    const seedPhrase = "YOUR_SEED_PHRASE_HERE";
+    const wallet = PWRWallet.new(seedPhrase);
 
     async function sendPayableData() {
         // VIDA used to send the transaction to
-        const vidaId = 919;
+        const vidaId = 919n;
         // Tokens amount - 1 PWR = 1e9 = 1000000000
-        const amount = 1000;
+        const amount = 1000n;
         // Buffer data to be included in the transaction
-        const data = Buffer.from('Hello World!');
+        const data = new TextEncoder().encode('Hello World!');
         
         // Send the data at vidaId 919 and pay 1e3
         const tx = await wallet.sendPayableVmDataTransaction(vidaId, amount, data);
@@ -523,17 +523,17 @@ Delegates a specified amount of PWR tokens to a validator, contributing to their
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet } = require('@pwrjs/core');
+    const PWRWallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
-    const privateKey = "YOUR_PRIVATE_KEY_HERE";
-    const wallet = new PWRWallet(privateKey);
+    const seedPhrase = "YOUR_SEED_PHRASE_HERE";
+    const wallet = PWRWallet.new(seedPhrase);
 
     async function delegate() {
         // Validator address
         const validator = "VALIDATOR_ADDRESS";
         // Tokens amount - 1 PWR = 1e9 = 1000000000
-        const amount = 1e9;
+        const amount = BigInt(1e9);
         
         // Delegate the validator
         const tx = await wallet.delegate(validator, amount);
@@ -681,17 +681,17 @@ Withdraws PWR tokens that were previously delegated to a validator, returning th
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet } = require('@pwrjs/core');
+    const PWRWallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
-    const privateKey = "YOUR_PRIVATE_KEY_HERE";
-    const wallet = new PWRWallet(privateKey);
+    const seedPhrase = "YOUR_SEED_PHRASE_HERE";
+    const wallet = PWRWallet.new(seedPhrase);
 
     async function withdraw() {
         // Validator address you delegated
         const validator = "VALIDATOR_ADDRESS";
         // Tokens amount - 1 PWR = 1e9 = 1000000000
-        const amount = 1e9;
+        const amount = BigInt(1e9);
         
         // Withdraw the delegated pwr tokens
         const tx = await wallet.withdraw(validator, amount);
@@ -839,17 +839,17 @@ To move delegated stake from one validator to another.
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet } = require('@pwrjs/core');
+    const PWRWallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
-    const privateKey = "YOUR_PRIVATE_KEY_HERE";
-    const wallet = new PWRWallet(privateKey);
+    const seedPhrase = "YOUR_SEED_PHRASE_HERE";
+    const wallet = PWRWallet.new(seedPhrase);
 
     async function moveStake() {
         const fromValidator = "FROM_VALIDATOR_ADDRESS";
         const toValidator = "TO_VALIDATOR_ADDRESS";
         // Tokens amount - 1 PWR = 1e9 = 1000000000
-        const amount = 1e9;
+        const amount = BigInt(1e9);
         
         // Move stake token from validator to another
         const tx = await wallet.moveStake(amount, fromValidator, toValidator);
@@ -1008,11 +1008,11 @@ Here's how the guardian process works:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet } = require('@pwrjs/core');
+    const PWRWallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
-    const privateKey = "YOUR_PRIVATE_KEY_HERE";
-    const wallet = new PWRWallet(privateKey);
+    const seedPhrase = "YOUR_PHRASE_KEY_HERE";
+    const wallet = PWRWallet.new(seedPhrase);
 
     async function setGuardian() {
         // Guardian address that will verify your transactions
@@ -1184,11 +1184,11 @@ Remove the guardian assigned to the wallet, removing their access or control.
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet } = require('@pwrjs/core');
+    const PWRWallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
-    const privateKey = "YOUR_PRIVATE_KEY_HERE";
-    const wallet = new PWRWallet(privateKey);
+    const seedPhrase = "YOUR_SEED_PHRASE_HERE";
+    const wallet = PWRWallet.new(seedPhrase);
 
     async function removeGuardian() {
         // Remove your wallet guardian
