@@ -41,7 +41,7 @@ You will get options to create your project, select them as follows:
 Once it's done, you'll need to install the [PWRJS library](/developers/sdks/overview) into the project, run the following command:
 
 ```bash
-npm install @pwrjs/core
+npm install @pwrjs/core @pwrjs/browser-wallet uuid
 ```
 
 ## Build fetch posts
@@ -53,84 +53,61 @@ We will filter posts and likes so that:
 - Data with `type === "post"`: We will filter it so that it adds only recent posts.
 - Data with `type === "like"`: We will filter it so that it adds likes related to the post and not duplicates.
 
-Create a file named `impls.js` in a new folder called `components` and add the following code. The code is explained in the comments, take the time to write it yourself and understand it.
+Create a file named `syncPosts.js` in a new folder called `components` and add the following code. The code is explained in the comments, take the time to write it yourself and understand it.
 
 ```js
-import { PWRJS } from "@pwrjs/core";
+import { vidaId } from "@/app/page";
+import PWRJS from "@pwrjs/core";
 
-// Setting up your wallet in the SDK
-const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
-
+// Sync posts and likes from the blockchain
 export async function syncPosts(setPosts) {
-    let startingBlock = "YOUR_STARTING_BLOCK";
-    const vidaId = "YOUR_VIDA_ID";
+  const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
+  const startingBlock = BigInt(await rpc.getLatestBlockNumber());
 
-    const loop = async () => {
-        try {
-            const latestBlock = await rpc.getLatestBlockNumber();
-            let effectiveLatestBlock = latestBlock > startingBlock + 1000 ? startingBlock + 1000 : latestBlock;
+  // Handler function that processes incoming blockchain transactions
+  // It parses transaction data and updates the posts state accordingly
+  // - For post transactions: adds new posts if they don't already exist
+  // - For like transactions: increments like count if user hasn't liked before
+  function handlerTransactions(transaction) {
+    let dataHex = transaction.data;
+    const data = Buffer.from(dataHex, 'hex');
+    const postData = JSON.parse(data.toString('utf8'));
 
-            if (effectiveLatestBlock > startingBlock) {
-                // Fetch the transactions in `vidaId = 1234`
-                const txns = await rpc.getVMDataTransactions(startingBlock, effectiveLatestBlock, vidaId);
-                const likesMap = {}; // Initialize a likes map
-                const likesSet = new Set(); // Initialize a set to track unique likes
-
-                for (let txn of txns) {
-                    const dataHex = txn.data;
-                    // Remove the '0x' prefix and decode the hexadecimal data to bytes data
-                    const data = Buffer.from(dataHex.substring(2), 'hex');
-                    // Convert the bytes data to UTF-8 string as json
-                    const post = JSON.parse(data.toString('utf8'));
-
-                    if (post.type.toLowerCase() === "post" & post.id != null) {
-                        // Create a new post struct
-                        const newPost = {
-                            type: post.type,
-                            post: post.post,
-                            timestamp: post.timestamp,
-                            sender: post.sender,
-                            likes: 0, // Initialize likes to 0
-                            id: post.id,
-                        };
-
-                        // Add the new post to the state
-                        setPosts((prev) => {
-                            const exists = prev.some(prevPost => prevPost.id === newPost.id);
-                            return exists ? prev : [...prev, newPost];
-                        });
-                    } else if (post.type.toLowerCase() === "like") {
-                        // Create a unique identifier for the like
-                        const likeKey = `${post.postId}-${post.sender}`;
-
-                        // Check if the like already exists
-                        if (!likesSet.has(likeKey)) {
-                            // Increment likes in the likesMap
-                            const postId = post.postId;
-                            likesMap[postId] = (likesMap[postId] || 0) + 1; // Increment like count
-                            likesSet.add(likeKey); // Add the like to the set
-                        }
-                    }
-                }
-
-                // Update posts with the total likes from likesMap
-                setPosts((prevPosts) => {
-                    return prevPosts.map(post => {
-                        return {
-                            ...post,
-                            likes: likesMap[post.id] || post.likes // Update likes count or keep existing
-                        };
-                    });
-                });
-
-                startingBlock = effectiveLatestBlock + 1;
+    if (postData.type.toLowerCase() === "post" && postData.id != null) {
+      // Add new post if it doesn't exist
+      setPosts(prev => {
+        const exists = prev.some(p => p.id === postData.id);
+        if (exists) return prev;
+        return [
+          ...prev,
+          {
+            ...postData,
+            likes: 0,
+            likedBy: []
+          }
+        ];
+      });
+    } else if (postData.type.toLowerCase() === "like") {
+      setPosts(prev =>
+        prev.map(post => {
+          if (post.id === postData.postId) {
+            // Only increment if this sender hasn't liked before
+            if (!post.likedBy?.includes(postData.sender)) {
+              return {
+                ...post,
+                likes: post.likes + 1,
+                likedBy: [...(post.likedBy || []), postData.sender]
+              };
             }
-            setTimeout(loop, 1000); // Wait 1 second before the next loop
-        } catch (e) {
-            console.error(e);
-        }
-    };
-    loop();
+          }
+          return post;
+        })
+      );
+    }
+  }
+
+  // Subscribe to vidaId transactions
+  rpc.subscribeToVidaTransactions(vidaId, startingBlock, handlerTransactions);
 }
 ```
 
@@ -142,16 +119,15 @@ Building the homepage (`src/app/page.js`) which will show everything. The code i
 
 ```jsx
 "use client";
-
 import { useState, useEffect } from "react";
 import { 
-  PWRWallet, connect, disconnect, 
+  BrowserWallet, connect, disconnect, 
   getEvent, getConnection, isInstalled 
-} from "@pwrjs/core";
-import { syncPosts } from "../components/getPosts";
+} from "@pwrjs/browser-wallet";
+import { syncPosts } from "@/components/syncPosts";
+import { v4 as uuidv4 } from 'uuid';
 
-const vidaId = 5544;
-const timestamp = new Date().getTime();
+export const vidaId = 5544;
 
 // Format post timestamp
 const formatTimestamp = (t) => {
@@ -165,11 +141,11 @@ const formatTimestamp = (t) => {
 
 export default function Home() {
   // Create a new pwr wallet
-  const pwr = new PWRWallet();
+  const pwr = new BrowserWallet();
   // Check if the user's wallet is connected
   const [connected, setConnected] = useState(false);
   // State variable to store wallet address connected
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(null);
   // State variable to store post content
   const [content, setContent] = useState("");
   // State variable to store all posts fetched
@@ -180,6 +156,13 @@ export default function Home() {
     const res = await connect();
     // Check if the connect completed
     res && setConnected(true);
+    if (!res && isInstalled()) {
+      const connections = await getConnection();
+      if (connections.length > 0) {
+        setConnected(true);
+        setAddress(connections);
+      }
+    }
   }
 
   // Disconnect wallet from the website
@@ -195,16 +178,16 @@ export default function Home() {
     const data = {
       type: "post",
       post: content,
-      timestamp: timestamp,
+      timestamp: new Date().getTime(),
       sender: address,
-      id: posts[posts.length-1].id + 1,
+      id: uuidv4(),
     };
     // Convert data type to `Buffer`
     const post = Buffer.from(JSON.stringify(data), 'utf8');
 
     try {
       // Send `post` to our vidaId
-      const tx = await pwr.sendVMDataTxn2(vidaId, post, true);
+      const tx = await pwr.sendVidaData(vidaId, post, true);
       alert(`SENT POST! ${tx.slice(0, 6)}...${tx.slice(-6)}`);
     } catch (err) {
       console.error(err);
@@ -221,79 +204,79 @@ export default function Home() {
             type: "like",
             likes: posts[i]?.likes + 1,
             postId: postId,
-            timestamp: timestamp,
+            timestamp: new Date().getTime(),
             sender: address,
           };
           // Convert data type to `Buffer`
           const likes = Buffer.from(JSON.stringify(data), 'utf8');
 
           // Send `like` to our vidaId
-          const tx = await pwr.sendVMDataTxn2(vidaId, likes, true);
+          const tx = await pwr.sendVidaData(vidaId, likes, true);
           alert(`SENT LIKE! ${tx.slice(0, 6)}...${tx.slice(-6)}`);
         }
       }
     } catch (err) {
       console.error(err);
     }
-  }
+    }
 
   // Piece of code that runs everytime the user's wallet changes or disconnected
   useEffect(() => {
+    syncPosts(setPosts);
+
     // Check if pwr wallet already installed
     if (isInstalled()) {
       // Used to re-fetch the connected user's account every time
       // the website is refreshed.
-      getConnection().then(address => {
-        if (address) {
+      getConnection().then(addressConnected => {
+        if (addressConnected && address == null) {
           setConnected(true);
-          setAddress(address);
+          setAddress(addressConnected);
         }
       });
 
       // Used to listen to any account changes that occur in the wallet.
-      getEvent("onAccountChange", (accounts) => {
-        setAddress(accounts[0]);
-        setConnected(accounts.length > 0);
-      })
-
-      // Fetch the posts from `syncPosts` to our state variable `posts`
-      syncPosts(setPosts);
+      getEvent("onAccountChange", (addresses) => {
+        setAddress(addresses[0]);
+        console.log("Account changed to: ", addresses[0]);
+        setConnected(addresses.length > 0);
+      });
     }
-  }, [posts]);
+  }, [address]);
 
   return (
     <div>
       <nav className="relative z-2 w-full md:static md:text-sm md:border-none">
         <div className="items-center gap-x-14 px-4 max-w-screen-xl mx-auto md:flex md:px-8">
-          <div className="flex items-center justify-between py-3 md:py-5 md:block text-lg text-white">
-            <a>
-              Social Fi
-            </a>
+        <div className="flex items-center justify-between py-3 md:py-5 md:block text-lg text-white">
+          <a>
+          Social Fi
+          </a>
+        </div>
+        <div className="nav-menu flex-1 pb-3 mt-8 md:block md:pb-0 md:mt-0">
+          <ul className="items-center space-y-6 md:flex md:space-x-6 md:space-x-reverse md:space-y-0">
+          <div className='flex-1 items-center justify-end gap-x-6 space-y-3 md:flex md:space-y-0'>
+            
+            <li>
+            {connected ? (
+              <button
+              onClick={disconnectWallet}
+              className="block py-3 px-4 font-medium text-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 active:shadow-none rounded-lg shadow md:inline"
+              >
+              {address?.slice(0, 7)}...{address?.slice(-6)}
+              </button>
+            ) : (
+              <button 
+              onClick={connectWallet} 
+              className="block py-3 px-4 font-medium text-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 active:shadow-none rounded-lg shadow md:inline"
+              >
+              Connect Wallet
+              </button>
+            )}
+            </li>
           </div>
-          <div className="nav-menu flex-1 pb-3 mt-8 md:block md:pb-0 md:mt-0">
-            <ul className="items-center space-y-6 md:flex md:space-x-6 md:space-x-reverse md:space-y-0">
-              <div className='flex-1 items-center justify-end gap-x-6 space-y-3 md:flex md:space-y-0'>
-                
-                <li>
-                  {connected ? (
-                    <button
-                      onClick={disconnectWallet}
-                      className="block py-3 px-4 font-medium text-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 active:shadow-none rounded-lg shadow md:inline"
-                    >
-                      {address.slice(0, 7)}...{address.slice(-6)}
-                    </button>
-                  ) : (
-                    <button 
-                      onClick={connectWallet} 
-                      className="block py-3 px-4 font-medium text-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 active:shadow-none rounded-lg shadow md:inline"
-                    >
-                      Connect Wallet
-                    </button>
-                  )}
-                </li>
-              </div>
-            </ul>
-          </div>
+          </ul>
+        </div>
         </div>
       </nav>
 
@@ -313,7 +296,9 @@ export default function Home() {
         </div>
 
         <div className="flex flex-col bg-[#0c1012] p-5 mt-6">
-          {posts.map(post => (
+        {[...posts]
+          .sort((a, b) => b.timestamp - a.timestamp)
+          .map(post => (
             <div className="flex flex-col" key={post?.id}>
               <p className="pl-2 font-semibold">
                 {post?.sender.slice(0, 5)}...{post?.sender.slice(-3)} - {formatTimestamp(post?.timestamp)}

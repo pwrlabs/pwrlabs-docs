@@ -41,7 +41,7 @@ You will get options to create your project, select them as follows:
 Once it's done, you'll need to install the [PWRJS library](/developers/sdks/overview) into the project, run the following command:
 
 ```bash
-npm install @pwrjs/core
+npm install @pwrjs/core @pwrjs/browser-wallet
 ```
 
 ## Build the homepage
@@ -52,16 +52,15 @@ Building the homepage (`src/app/page.js`) which will show everything. The code i
 
 ```jsx
 "use client";
-
 import { useState, useEffect } from "react";
 import { 
-  PWRWallet, connect, disconnect, 
+  BrowserWallet, connect, disconnect, 
   isInstalled, getConnection, getEvent,
-} from "@pwrjs/core";
+} from "@pwrjs/browser-wallet";
 
 export default function Home() {
   // Create a new pwr wallet
-  const pwr = new PWRWallet();
+  const pwr = new BrowserWallet();
   // Check if the user's wallet is connected
   const [connected, setConnected] = useState(false);
   // State variable to store recipient address input
@@ -90,7 +89,7 @@ export default function Home() {
     if (connected && recipient.length==42) {
       // send the transfer tx to pwr chain
       // the `true` parameter means send the transaction from the browser user's wallet
-      const tx = await pwr.transferPWR(recipient, amount.toString(), true);
+      const tx = await pwr.transferPWR(recipient, amount.toString());
 
       if (tx) {
         setTxHash(tx);

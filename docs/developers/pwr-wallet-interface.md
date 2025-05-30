@@ -22,25 +22,28 @@ interface Window {
         version: string;
 
         // actions
-        restablishConnection: () => Promise<string>;
+        getConnections: () => Promise<string[]>;
         connect: () => Promise<any>;
         disconnect: (data: object) => Promise<any>;
-        getConnections: () => Promise<any>;
-        areAutomatedTransactionsEnabled: () => Promise<any>;
-        getFingerprints: () => Promise<any>;
+        getFingerprints: () => Promise<string>;
+
+        // sign message function
+        signMessage: (data: object) => Promise<any>;
+
+        // automated transactions
+        enableAutomatedTxns: () => Promise<any>;
+        areAutomatedTransactionsEnabled: () => Promise<boolean>;
+        disableAutomatedTxns: () => Promise<any>;
 
         // transactions
-        transferPwr: (txnData: { to: string; amount: string }) => Promise<any>;
         transferPwr: (txnData: object) => Promise<string>;
-        dataTransaction: (txnData: object) => Promise<string>;
-        bytesDataTransaction: (txnData: object) => Promise<string>;
-        payableVmDataTransaction: (txnData: object) => Promise<string>;
-        claimIdVm: (txnData: object) => Promise<string>;
+        payableVidaDataTransaction: (txnData: object) => Promise<string>;
+        claimVidaId: (txnData: object) => Promise<string>;
         delegate: (txnData: object) => Promise<string>;
         withdraw: (txnData: object) => Promise<string>;
         moveStake: (txnData: object) => Promise<string>;
-        earlyWithdrawPenalty: (txnData: object) => Promise<string>;
-        feePerByte: (txnData: object) => Promise<string>;
+        proposeEarlyWithdrawPenalty: (txnData: object) => Promise<string>;
+        proposeChangefeePerByte: (txnData: object) => Promise<string>;
         otherProposal: (txnData: object) => Promise<string>;
         overallBurnPercentage: (txnData: object) => Promise<string>;
         rewardPerYear: (txnData: object) => Promise<string>;
@@ -51,16 +54,16 @@ interface Window {
         voteOnProposal: (txnData: object) => Promise<string>;
         maxBlockSize: (txnData: object) => Promise<string>;
         maxTransactionSize: (txnData: object) => Promise<string>;
-
         // events
+
+        onAccountChange: {
+            addListener: (callback: (accounts: string[]) => void) => void;
+        };
         onConnect: {
-            addListener: (callback: (address: string) => void) => void;
+            addListener: (callback: (address: string[]) => void) => void;
         };
         onDisconnect: {
             addListener: (callback: () => void) => void;
-        };
-        onAccountChange: {
-            addListener: (callback: (accounts: string[]) => void) => void;
         };
     };
 }
@@ -68,10 +71,11 @@ interface Window {
 
 - **connect**: This method prompts a window that allows the user to connect the wallet to the website, the user can reject the request or accept it. After correctly calling this method it will return the addresses of the connected wallets
 - **disconnect**: This method is similar to connect method, it prompts a window that allows the user to disconnect a wallet, unlike other wallets, pwr can be disconnected programmatically, but it will first require the user to confirm this was an intended action.
-- **restablishConnection**: when the user connects the wallet and after reloading the page, the connection to it will get lost, this method was created to allow devs to recover previous sessions (in the case that the wallet is still connected to the website). After calling this method it will return the addresses connected
-- **isConnected**: this function will return a boolean representing whether the wallet is connected to the website or not
-- **transactions**: All functions to send a transaction to PWR Chain - you can check [Send Transactions to PWR Chain](/developers/sdks/send-transactions-to-pwr-chain).
-
+- **getConnections**: this function will return an array of strings representing the addresses of the connected wallets
+- **signMessage**: this function will return a string representing the signed message
+- **enableAutomatedTxns**: this function will enable automated transactions
+- **areAutomatedTransactionsEnabled**: this function will return a boolean representing whether the automated transactions are enabled or not
+- **disableAutomatedTxns**: this function will disable automated transactions
 
 ## Event listeners
 
@@ -81,18 +85,19 @@ In order to subscribe to wallet events, like the wallet connection, account chan
 - **onDisconnect.addListener**: This event will be fired each time the wallet is disconnected manually or programmatically, it won’t pas any argument to the callback function
 - **onAccountChange.addListener**: This event will return an array of all the accounts that are connected at the request moment, the selected account will be the first element of the array.
 
-## PWR JS
+## PWRJS Browser Wallet
 
-You will install the PWR JS SDK as we did in previous guides - [Installing & Importing PWR SDK](/developers/sdks/overview) and [Wallets in PWR Chain](/developers/sdks/wallets-in-pwr-chain). 
+You will install the PWRJS Browser Wallet as we did in previous guides - [Installing & Importing PWR SDK](/developers/sdks/overview). 
 
 ### Connections
 
-You can connect to the wallet and disconnect via PWR SDK.
+You can connect to the wallet and disconnect via PWRJS Browser Wallet.
 
 ```js
-const { 
-  connect, disconnect, getConnection, isInstalled, getEvent 
-} = require('@pwrjs/core');
+import { 
+  BrowserWallet, connect, disconnect, 
+  getEvent, getConnection, isInstalled 
+} from "@pwrjs/browser-wallet";
 
 // connect wallet with the website
 connect().then(console.log); // you will use `await` instead of `.then()`
@@ -113,44 +118,34 @@ getEvent("onAccountChange", (accounts) => {
 })
 ```
 
-### Send Transaction
+### Send Transactions
 
 The difference from the way we send transactions to PWR Wallet using `private key` is that we will add `true` to the functions mentioned above and present in PWRWallet to send transactions from the `PWR Wallet`.
 
 ```js
-const { PWRWallet } = require('@pwrjs/core');
-const privateKey = "YOUR_PRIVATE_KEY_HERE";
-const wallet = new PWRWallet(privateKey);
+import { BrowserWallet } from "@pwrjs/browser-wallet";
+const wallet = new BrowserWallet();
 
-// `transferPWR` from your wallet (private key)
-wallet.transferPWR(recipientAddress, amount).then(console.log);
 // `transferPWR` from PWR Wallet in the browser
-wallet.transferPWR(recipientAddress, amount, true).then(console.log);
+wallet.transferPWR(recipientAddress, amount).then(console.log);
 
-// `sendVMDataTxn` from your wallet (private key)
-wallet.sendVMDataTxn(vidaId, data).then(console.log);
-// `sendVMDataTxn` from PWR Wallet in the browser
-wallet.sendVMDataTxn(vidaId, data, true).then(console.log);
+// `sendVidaDataTxn` from PWR Wallet in the browser
+wallet.sendVidaData(vidaId, data).then(console.log);
 
-// `sendPayableVmDataTransaction` from your wallet (private key)
-wallet.sendPayableVmDataTransaction(vidaId, amount, data).then(console.log);
-// `sendPayableVmDataTransaction` from PWR Wallet in the browser
-wallet.sendPayableVmDataTransaction(vidaId, amount, data, true).then(console.log);
+// `sendPayableVidaData` from PWR Wallet in the browser
+wallet.sendPayableVidaData(vidaId, data, amount).then(console.log);
 
-// `delegate` from your wallet (private key)
-wallet.delegate(validator, amount).then(console.log);
 // `delegate` from PWR Wallet in the browser
-wallet.delegate(validator, amount, true).then(console.log);
+wallet.delegate(validator, amount).then(console.log);
 
-// `withdraw` from your wallet (private key)
-wallet.withdraw(validator, amount).then(console.log);
 // `withdraw` from PWR Wallet in the browser
-wallet.withdraw(validator, amount, true).then(console.log);
+wallet.withdraw(validator, amount).then(console.log);
 
-// `moveStake` from your wallet (private key)
-wallet.moveStake(amount, fromValidator, toValidator).then(console.log);
 // `moveStake` from PWR Wallet in the browser
-wallet.moveStake(amount, fromValidator, toValidator, true).then(console.log);
+wallet.moveStake(amount, fromValidator, toValidator).then(console.log);
+
+// `claimVidaId` from PWR Wallet in the browser
+wallet.claimVidaId(vidaId).then(console.log);
 
 // and others...
 ```
