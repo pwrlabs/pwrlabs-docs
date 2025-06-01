@@ -120,7 +120,7 @@ getEvent("onAccountChange", (accounts) => {
 
 ### Send Transactions
 
-The difference from the way we send transactions to PWR Wallet using `private key` is that we will add `true` to the functions mentioned above and present in PWRWallet to send transactions from the `PWR Wallet`.
+When using BrowserWallet, you can directly call the transaction methods on your wallet instance as shown in the examples below. The wallet interface will handle the transaction signing automatically.
 
 ```js
 import { BrowserWallet } from "@pwrjs/browser-wallet";

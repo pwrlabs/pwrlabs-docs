@@ -37,11 +37,11 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRWallet = require('@pwrjs/core/wallet');
+    const Wallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = PWRWallet.new(seedPhrase);
+    const wallet = Wallet.new(seedPhrase);
 
     async function transfer() {
         // Tokens recipient address
@@ -193,11 +193,11 @@ Sends data to a specific virtual machine for storage and processing purposes.
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRWallet = require('@pwrjs/core/wallet');
+    const Wallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = PWRWallet.new(seedPhrase);
+    const wallet = Wallet.new(seedPhrase);
 
     async function sendData() {
         // VIDA used to send the transaction to
@@ -224,7 +224,7 @@ Sends data to a specific virtual machine for storage and processing purposes.
 
     # Setting up your wallet in the SDK
     seed_phrase = "YOUR_SEED_PHRASE_HERE"
-    wallet = PWRWallet(seed_phrase)
+    wallet = Wallet.new(seed_phrase)
 
     def send_data():
         # VIDA used to send the transaction to
@@ -354,11 +354,11 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRWallet = require('@pwrjs/core/wallet');
+    const Wallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = PWRWallet.new(seedPhrase);
+    const wallet = Wallet.new(seedPhrase);
 
     async function sendPayableData() {
         // VIDA used to send the transaction to
@@ -523,11 +523,11 @@ Delegates a specified amount of PWR tokens to a validator, contributing to their
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRWallet = require('@pwrjs/core/wallet');
+    const Wallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = PWRWallet.new(seedPhrase);
+    const wallet = Wallet.new(seedPhrase);
 
     async function delegate() {
         // Validator address
@@ -681,11 +681,11 @@ Withdraws PWR tokens that were previously delegated to a validator, returning th
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRWallet = require('@pwrjs/core/wallet');
+    const Wallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = PWRWallet.new(seedPhrase);
+    const wallet = Wallet.new(seedPhrase);
 
     async function withdraw() {
         // Validator address you delegated
@@ -839,11 +839,11 @@ To move delegated stake from one validator to another.
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRWallet = require('@pwrjs/core/wallet');
+    const Wallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = PWRWallet.new(seedPhrase);
+    const wallet = Wallet.new(seedPhrase);
 
     async function moveStake() {
         const fromValidator = "FROM_VALIDATOR_ADDRESS";
@@ -1008,11 +1008,11 @@ Here's how the guardian process works:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRWallet = require('@pwrjs/core/wallet');
+    const Wallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_PHRASE_KEY_HERE";
-    const wallet = PWRWallet.new(seedPhrase);
+    const wallet = Wallet.new(seedPhrase);
 
     async function setGuardian() {
         // Guardian address that will verify your transactions
@@ -1184,11 +1184,11 @@ Remove the guardian assigned to the wallet, removing their access or control.
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRWallet = require('@pwrjs/core/wallet');
+    const Wallet = require('@pwrjs/core/wallet');
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = PWRWallet.new(seedPhrase);
+    const wallet = Wallet.new(seedPhrase);
 
     async function removeGuardian() {
         // Remove your wallet guardian
