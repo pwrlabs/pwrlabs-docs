@@ -104,9 +104,11 @@ The PWR SDK is your toolkit for interacting with the PWR Chain. It allows you to
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRJS, PWRWallet } from '@pwrjs/core';
+    import PWRJS from '@pwrjs/core';
+    import Wallet from '@pwrjs/core/wallet';
     // or
-    const { PWRJS, PWRWallet } = require('@pwrjs/core');
+    const PWRJS = require('@pwrjs/core');
+    const Wallet = require('@pwrjs/core/wallet');
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -203,17 +205,18 @@ A wallet is essential for signing transactions and paying minimal fees on the PW
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet, PWRJS} = require('@pwrjs/core');
+    import PWRJS from '@pwrjs/core';
+    import Wallet from '@pwrjs/core/wallet';
 
     const pwrjs = new PWRJS("https://pwrrpc.pwrlabs.io/");
 
-    // generate and save wallet
-    const wallet = new PWRWallet();
-    console.log("Address: " + wallet.getAddress());
-    wallet.storeWallet("my_wallet.dat", "password");
+    // generate and save a new wallet
+    const newWallet = Wallet.newRandom(12);
+    console.log("Address: " + newWallet.getAddress());
+    newWallet.storeWallet("my_wallet.dat", "password");
 
     //load wallet
-    const wallet = PWRWallet.loadWallet("my_wallet.dat", "password", pwrjs);
+    const wallet = await Wallet.loadWallet("my_wallet.dat", "password", pwrjs);
     console.log("Address: " + wallet.getAddress());
     ```
 </TabItem>
@@ -347,15 +350,14 @@ After defining your transaction's data structure, you can start sending transact
         action: 'send-message-v1',
         message: 'Hello World!',
     };
-
     const data = new TextEncoder().encode(obj);
 
-    //Send transaction
-    const response = wallet.sendVMDataTxn(vidaId, data);
+    // Send transaction
+    const response = await wallet.sendVidaData(vidaId, data);
 
-    if(response.sucuccess) {
+    if(response.success) {
         console.log("Transaction sent successfully!");
-        console.log("Transaction hash: " + response.transactionHash);
+        console.log("Transaction hash: " + response.hash);
     }
     else console.log("Transaction failed: " + response.message);
     ```
@@ -466,10 +468,10 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRJS } from "@pwrjs/core";
+    import PWRJS from "@pwrjs/core";
     import { hexToBytes } from '@noble/hashes/utils';
 
-    function handler(transaction: VmDataTransaction){
+    function handler(transaction) {
         // Get the address of the transaction sender
         const sender = transaction.sender;
         // Get the data sent in the transaction (In Hex Format)
@@ -477,15 +479,13 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
         
         try {
             // Convert data string to bytes
-            if (data.startsWith("0x")) data = data.substring(2);
             const bytes = hexToBytes(data);
-            const dataStr = new TextDecoder().decode(bytes);
-            const dataJson = JSON.parse(dataStr);
-            
+            // Decode bytes to string and parse JSON
+            const obj = JSON.parse(new TextDecoder().decode(bytes));
+
             // Check the action and execute the necessary code
-            if (dataJson.action === "send-message-v1") {
-                const message = data.message;
-                console.log("Message from " + sender + ": " + message);
+            if (obj.action === "send-message-v1") {
+                console.log(`Message from ${sender}: ${obj.message}`);
             }
         } catch (e) {
             console.error(e)
@@ -498,10 +498,9 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
 
         // Since our VIDA is global chat room and we don't care about historical messages,
         // we will start reading transactions startng from the latest PWR Chain block
-        const startingBlock = await pwrjs.getBlockNumber();
+        const startingBlock = await pwrjs.getLatestBlockNumber();
         
         const subscription = pwrjs.subscribeToVidaTransactions(
-            pwrjs,
             BigInt(vidaId),
             BigInt(startingBlock),
             handler
@@ -523,7 +522,6 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
     from pwrpy.pwrsdk import PWRPY
     from pwrpy.models.Transaction import VidaDataTransaction
     import json
-    import time
 
     rpc = PWRPY("https://pwrrpc.pwrlabs.io/")
     vida_id = 1 # Replace with your VIDA's ID
@@ -532,14 +530,14 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
     # we will start reading transactions startng from the latest PWR Chain block
     starting_block = rpc.get_latest_block_number()
 
-    def handle_transaction(txn: VidaDataTransaction):
+    def handler(txn: VidaDataTransaction):
         try:
             # Get the address of the transaction sender
             sender = txn.sender
             # Get the data sent in the transaction (In Hex Format)
             data_hex = txn.data
             # Convert data string to bytes 
-            data_bytes = bytes.fromhex(data_hex[2:])
+            data_bytes = bytes.fromhex(data_hex)
             obj = json.loads(data_bytes.decode('utf-8'))
 
             # Check the action and execute the necessary code
@@ -550,7 +548,7 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
             print(f"Error processing transaction: {e}")
 
     # To pause, resume, and stop the subscription
-    subscription = rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler=handle_transaction)
+    subscription = rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler)
     subscription.pause()
     subscription.resume()
     # subscription.stop()
@@ -635,7 +633,7 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
         data := transaction.Data
 
         // Convert data string to bytes
-        dataBytes, _ := hex.DecodeString(data[2:])
+        dataBytes, _ := hex.DecodeString(data)
         var obj map[string]interface{}
         if err := json.Unmarshal(dataBytes, &obj); err != nil {
             fmt.Println("Error parsing JSON:", err)
@@ -705,7 +703,6 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
                 string data = transaction.Data;
 
                 // Convert data string to bytes
-                if (data.StartsWith("0x")) data = data.Substring(2);
                 byte[] dataBytes = PWR.Utils.Extensions.HexStringToByteArray(data);
             
                 var jsonObject = JObject.Parse(Encoding.UTF8.GetString(dataBytes));
@@ -750,7 +747,6 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
 
         try {
             //Decode the data from Hex to byte array
-            if (data.startsWith("0x")) data = data.substring(2);
             byte[] dataBytes = Hex.decode(data);
 
             //Convert the byte array to a JSON Object

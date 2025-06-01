@@ -53,7 +53,7 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
         
         // Error handling
         if (tx.success) {
-            console.log("Transaction Hash:", tx.transactionHash);
+            console.log("Transaction Hash:", tx.hash);
         } else {
             console.log("Error:", tx.message);
         }
@@ -210,7 +210,7 @@ Sends data to a specific virtual machine for storage and processing purposes.
 
         // Error handling
         if (tx.success) {
-            console.log("Transaction Hash:", tx.transactionHash);
+            console.log("Transaction Hash:", tx.hash);
         } else {
             console.log("Error:", tx.message);
         }
@@ -373,7 +373,7 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
 
         // Error handling
         if (tx.success) {
-            console.log("Transaction Hash:", tx.transactionHash);
+            console.log("Transaction Hash:", tx.hash);
         } else {
             console.log("Error:", tx.message);
         }
@@ -540,7 +540,7 @@ Delegates a specified amount of PWR tokens to a validator, contributing to their
 
         // Error handling
         if (tx.success) {
-            console.log("Transaction Hash:", tx.transactionHash);
+            console.log("Transaction Hash:", tx.hash);
         } else {
             console.log("Error:", tx.message);
         }
@@ -698,7 +698,7 @@ Withdraws PWR tokens that were previously delegated to a validator, returning th
 
         // Error handling
         if (tx.success) {
-            console.log("Transaction Hash:", tx.transactionHash);
+            console.log("Transaction Hash:", tx.hash);
         } else {
             console.log("Error:", tx.message);
         }
@@ -856,7 +856,7 @@ To move delegated stake from one validator to another.
 
         // Error handling
         if (tx.success) {
-            console.log("Transaction Hash:", tx.transactionHash);
+            console.log("Transaction Hash:", tx.hash);
         } else {
             console.log("Error:", tx.message);
         }
@@ -1028,7 +1028,7 @@ Here's how the guardian process works:
 
         // Error handling
         if (tx.success) {
-            console.log("Transaction Hash:", tx.transactionHash);
+            console.log("Transaction Hash:", tx.hash);
         } else {
             console.log("Error:", tx.message);
         }
@@ -1196,7 +1196,7 @@ Remove the guardian assigned to the wallet, removing their access or control.
 
         // Error handling
         if (tx.success) {
-            console.log("Transaction Hash:", tx.transactionHash);
+            console.log("Transaction Hash:", tx.hash);
         } else {
             console.log("Error:", tx.message);
         }

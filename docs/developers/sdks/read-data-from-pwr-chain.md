@@ -22,7 +22,7 @@ To retrieve the PWR balance or nonce of a specific account.
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRJS = require('@pwrjs/core/wallet');
+    const PWRJS = require('@pwrjs/core');
 
     // Setting up the rpc api
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io");
@@ -37,7 +37,7 @@ To retrieve the PWR balance or nonce of a specific account.
         const nonce = await rpc.getNonceOfAddress(address);
         console.log(`Nonce: ${nonce}`);
     }
-    account()
+    account();
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -136,7 +136,7 @@ Blocks will help us access a lot of data through the set of transactions they co
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRJS = require('@pwrjs/core/wallet');
+    const PWRJS = require('@pwrjs/core');
 
     // Setting up the rpc api
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io");
@@ -148,10 +148,11 @@ Blocks will help us access a lot of data through the set of transactions they co
         const block = await rpc.getBlockByNumber(blockNumber);
 
         for (let i in block.transactions) {
-            console.log(`Sender ${i}: ${block.transactions[i].sender}`);
+            const transaction = await rpc.getTransactionByHash(block.transactions[i].transactionHash);
+            console.log(`Sender ${i}: ${transaction.sender}`);
         }
     }
-    getBlock()
+    getBlock();
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -261,25 +262,25 @@ In this example, we retrieve all VIDA data transactions sent to a specific VIDA 
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRJS = require('@pwrjs/core/wallet');
+    const PWRJS = require('@pwrjs/core');
 
     // Setting up the rpc api
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io");
 
-    async function getVmData() {
+    async function getVidaData() {
         const startBlock = 85411;
         const endBlock = 85420;
         const vidaId = 123;
 
         // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
-        const transactions = await rpc.getVMDataTransactions(startBlock, endBlock, vidaId);
+        const transactions = await rpc.getVidaDataTransactions(startBlock, endBlock, vidaId);
 
         // prints the trasnactions data
         for (let txs of transactions) {
             console.log("Data:", txs.data);
         }
     }
-    getVmData()
+    getVidaData();
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -488,25 +489,25 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const PWRJS = require('@pwrjs/core/wallet');
+    const PWRJS = require('@pwrjs/core');
 
     // Setting up the rpc api
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io");
 
-    async function getVmDataActive() {
+    async function getVidaDataActive() {
         const startBlock = 85411;
         const endBlock = 85420;
         const vidaId = 123;
 
         // fetch the transactions sent from `startBlock` to `endBlock` in `vidaId`
-        const transactions = await rpc.getVMDataTransactions(startBlock, endBlock, vidaId);
+        const transactions = await rpc.getVidaDataTransactions(startBlock, endBlock, vidaId);
 
         for (let txs of transactions) {
             const sender = txs.sender;
             const data = txs.data;
 
-            // Remove the '0x' prefix and decode the hexadecimal data to bytes data
-            const decodedData = Buffer.from(data.slice(2), 'hex');
+            // Decode the hexadecimal data to bytes data
+            const decodedData = Buffer.from(data, 'hex');
             // Convert the bytes data to a UTF-8 string
             const stringData = decodedData.toString('utf8');
             
@@ -520,7 +521,7 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
             }
         }
     }
-    getVmDataActive()
+    getVidaDataActive();
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -541,8 +542,8 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
             sender = txs.sender
             data = txs.data
 
-            # Remove the '0x' prefix and decode the hexadecimal data to bytes data
-            decoded_data = bytes.fromhex(data[2:])
+            # Decode the hexadecimal data to bytes data
+            decoded_data = bytes.fromhex(data)
             # Convert the bytes data to a UTF-8 string
             string_data = decoded_data.decode('utf-8')
 
@@ -614,8 +615,8 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
             sender := tx.Sender
             data := tx.Data
 
-            // Remove the '0x' prefix and decode the hexadecimal data to bytes data
-            decodedData, err := hex.DecodeString(data[2:])
+            // Decode the hexadecimal data to bytes data
+            decodedData, err := hex.DecodeString(data)
             if err != nil {
                 fmt.Println("Error decoding hex:", err)
                 continue
@@ -660,9 +661,8 @@ Once you have retrieved data from the PWR Chain, you can process and handle it a
                 string sender = txn.Sender;
                 string data = txn.Data;
 
-                // Remove the '0x' prefix and decode the hexadecimal data to bytes data
-                string hexWithoutPrefix = data.StartsWith("0x") ? data[2..] : data;
-                byte[] bytes = Extensions.HexStringToByteArray(hexWithoutPrefix);
+                // Decode the hexadecimal data to bytes data
+                byte[] bytes = Extensions.HexStringToByteArray(data);
                 // Convert the bytes data to a UTF-8 string
                 string stringData = Encoding.UTF8.GetString(bytes);
 

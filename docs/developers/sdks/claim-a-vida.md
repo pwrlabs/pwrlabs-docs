@@ -42,13 +42,13 @@ To claim a VIDA on the PWR Chain, follow these steps:
         const vidaId = 102030n;
 
         // Claim the VIDA ID
-        const txHash = await wallet.claimVmId(vidaId);
+        const tx = await wallet.claimVmId(vidaId);
 
         // Error handling
         if (txHash.success) {
-            console.log("Transaction Hash:", txHash.transactionHash);
+            console.log("Transaction Hash:", tx.hash);
         } else {
-            console.log("Error:", txHash.message);
+            console.log("Error:", tx.message);
         }
     }
     claim()

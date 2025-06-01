@@ -41,7 +41,7 @@ You will get options to create your project, select them as follows:
 Once it's done, you'll need to install the [PWRJS library](/developers/sdks/overview) into the project, run the following command:
 
 ```bash
-npm install @pwrjs/core @pwrjs/browser-wallet
+npm install @pwrjs/browser-wallet
 ```
 
 ## Build the homepage
