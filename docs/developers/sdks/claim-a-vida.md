@@ -183,7 +183,7 @@ Once the transaction is confirmed, the VIDA is successfully claimed, and you bec
 When claiming VIDAs on the PWR Chain, consider the following best practices:
 
 1. **Choose a Unique VIDA**: Ensure that the VIDA you generate is unique and not already claimed by another application. Collision of VIDAs can lead to conflicts and unexpected behavior.
-2. **Secure Your Private Key**: Keep your wallet's private key secure and never share it with anyone.
+2. **Secure Your Seed Phrase**: Keep your wallet's seed phrase secure and never share it with anyone.
 3. **Monitor Your VIDA**: Regularly monitor your claimed VIDA for any suspicious activities or unauthorized transactions.
 4. **Update Your Application**: Keep your application up to date with the latest PWR Chain features and security patches.
 

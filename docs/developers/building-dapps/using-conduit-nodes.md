@@ -30,7 +30,7 @@ Create a new project in your preferred programming language, and add the necessa
     ```bash
     mkdir conduits && cd conduits
     npm init --yes
-    npm install @pwrjs/core dotenv readline express
+    npm install @pwrjs/core @noble/hashes express dotenv readline
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -78,21 +78,24 @@ Create a `send_message` file in your project and add the following code:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet } = require("@pwrjs/core");
+    const Wallet = require("@pwrjs/core/wallet");
     require('dotenv').config();
 
-    // Setting up your wallet in the SDK
-    const privateKey = process.env.PRIVATE_KEY;
-    const wallet = new PWRWallet(privateKey);
+   const seedPhrase = process.env.SEED_PHRASE;
+    let wallet = Wallet.new(seedPhrase);
 
     async function sendMessage() {
         const obj = { message: "please send me pwr" };
         const data = Buffer.from(JSON.stringify(obj), 'utf8'); // Serialize to JSON bytes
-        const vidaId = 123;
+        const vidaId = BigInt(123);
 
         // Sending the VIDA data transaction
-        const res = await wallet.sendVMDataTxn(vidaId, data);
-        console.log(res.transactionHash);
+        const res = await wallet.sendVidaData(vidaId, data);
+        if (res.success) {
+            console.log(`Transaction hash: ${res.hash}`);
+        } else {
+            console.log(`Transaction failed: ${res.message}`);
+        }
     }
     sendMessage();
     ```
@@ -195,7 +198,7 @@ Create a `send_message` file in your project and add the following code:
 
 The `Transactions` class manages the list of transactions awaiting approval:
 
-Once the data is fetched from PWR Chain the transactions associated with sending 100 pwr to the user will be stored in the transactionsAwaitingApproval array.
+Once the data is fetched from PWR Chain the transactions associated with sending 1 pwr to the user will be stored in the transactionsAwaitingApproval array.
 
 Create a `transaction` file in your project and add the following code:
 
@@ -338,60 +341,50 @@ Create a `sync_messages` file in your project and add the following code:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRJS, PWRWallet, TransactionBuilder } = require("@pwrjs/core");
+    const PWRJS = require("@pwrjs/core");
+    const Wallet = require("@pwrjs/core/wallet");
+    const { TransactionBuilder } = require("@pwrjs/core/utils");
     const { Transactions } = require("./transaction.js");
+    const { hexToBytes } = require("@noble/hashes/utils");
     require('dotenv').config();
 
-    // Setting up your wallet in the SDK
-    const privateKey = process.env.PRIVATE_KEY;
-    const wallet = new PWRWallet(privateKey);
-    // Setting up the rpc api
+    const seedPhrase = process.env.SEED_PHRASE;
+    const wallet = Wallet.new(seedPhrase);
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
+    const chainId = 0;
+
+    async function handlerMessages(transaction) {
+        const sender = transaction.sender;
+        const dataHex = transaction.data;
+        const feePerByte = BigInt(await rpc.getFeePerByte());
+
+        // Converting the hex data to a buffer and then to a UTF-8 string
+        const data = Buffer.from(dataHex, 'hex');
+        const object = JSON.parse(data.toString('utf8'));
+
+        // Iterating over each key in the object to check for specific conditions
+        Object.keys(object).forEach(async (key) => {
+            if (key.toLowerCase() === "message" && object[key].toLowerCase() === "please send me pwr") {
+                const nonce = await wallet.getNonce();
+                const walletAddress = hexToBytes(wallet.getAddress().substring(2));
+                const senderAddress = hexToBytes(sender);
+                // Building a transfer transaction to send PWR tokens
+                const transferTxn = TransactionBuilder.getTransferPWRTransaction(
+                    senderAddress, BigInt(1000000000), nonce, chainId, walletAddress, feePerByte
+                );
+                // Adding the transaction to the Transactions class
+                Transactions.add(transferTxn)
+                // Logging the message and the sender to the console
+                console.log(`\nMessage from 0x${sender}: ${object[key]}`);
+            }
+        });
+    }
 
     async function sync() {
-        let startingBlock = 876040; // Adjust starting block as needed
-        const vidaId = 123;
+        const startingBlock = BigInt(await rpc.getLatestBlockNumber());
+        const vidaId = BigInt(123);
 
-        // Defining an asynchronous loop function that fetches and processes new transactions
-        const loop = async () => {
-            // Fetching the latest block number from the blockchain via the RPC API
-            const latestBlock = await rpc.getLatestBlockNumber();
-            // Defining the effective block range for the next batch of transactions, limiting to 1000 blocks at a time
-            let effectiveLatestBlock = latestBlock > startingBlock + 1000 ? startingBlock + 1000 : latestBlock;
-
-            // Checking if there are new blocks to process
-            if (effectiveLatestBlock > startingBlock) {
-                // Fetching VIDA data transactions between the starting block and the effective latest block for a given VIDA ID
-                const txns = await rpc.getVMDataTransactions(startingBlock, effectiveLatestBlock, vidaId);
-                // Looping through the transactions fetched from the blockchain
-                for (let txn of txns) {
-                    const sender = txn.sender;
-                    const dataHex = txn.data;
-                    let nonce = await wallet.getNonce();
-                    // Converting the hex data to a buffer and then to a UTF-8 string
-                    const data = Buffer.from(dataHex.substring(2), 'hex');
-                    const object = JSON.parse(data.toString('utf8'));
-
-                    // Iterating over each key in the object to check for specific conditions
-                    Object.keys(object).forEach(async (key) => {
-                        if (key.toLowerCase() === "message" && object[key].toLowerCase() === "please send me pwr") {
-                            // Building a transfer transaction to send PWR tokens
-                            const transferTxn = TransactionBuilder.getTransferPwrTransaction(
-                                rpc.getChainId(), nonce, 100, sender
-                            );
-                            // Adding the transaction to the Transactions class
-                            Transactions.add(transferTxn)
-                            // Logging the message and the sender to the console
-                            console.log(`\nMessage from ${sender}: ${object[key]}`);
-                        }
-                    });
-                }
-                // Updating the starting block number for the next loop iteration
-                startingBlock = effectiveLatestBlock + 1;
-            }
-            setTimeout(loop, 1000); // Wait 1 second before the next loop
-        }
-        loop();
+        rpc.subscribeToVidaTransactions(vidaId, startingBlock, handlerMessages);
     }
     module.exports = { sync };
     ```
@@ -435,7 +428,7 @@ Create a `sync_messages` file in your project and add the following code:
                 # Adding the transfer transaction to the Transactions list for later execution
                 Transactions.add(transfer_txn)
                 # Printing a message to the console showing the sender and the message content
-                print(f"\nMessage from {sender}: {obj['message']}")
+                print(f"\nMessage from 0x{sender}: {obj['message']}")
         except Exception as e:
             print('Error in sync:', e)
             time.sleep(1)
@@ -481,7 +474,7 @@ Create a `sync_messages` file in your project and add the following code:
                 if key.to_lowercase() == "message" && message_str == "please send me pwr" {
                     // Constructing a transfer transaction using the NewTransactionData::Transfer variant
                     let transfer_tx = NewTransactionData::Transfer { 
-                        amount: 100, receiver: sender[2..].to_string()
+                        amount: 1000000000, receiver: sender[2..].to_string()
                     }.serialize_for_broadcast(wallet.get_nonce().await, CHAIN_ID, FEE_PER_BYTE, &wallet);
                     // Checking if the transaction was successfully serialized, then adding it to the transactions
                     if let Ok(txn_hex) = transfer_tx.map_err(|e| e.to_string()) {
@@ -490,7 +483,7 @@ Create a `sync_messages` file in your project and add the following code:
                         Transactions::add(json!(hex_string));
                     }
                     // Printing the sender and message to the console
-                    println!("\nMessage from {}: {}", sender, message_str);
+                    println!("\nMessage from 0x{}: {}", sender, message_str);
                 }
             }
         });
@@ -547,14 +540,14 @@ Create a `sync_messages` file in your project and add the following code:
         if message, ok := obj["message"].(string); ok && message == "please send me pwr" {
             var buffer []byte
             // Building a transfer transaction to send PWR tokens
-            buffer, err := encode.TransferTxBytes(100, sender, nonce, wallet.Address, wallet.GetRpc().GetFeePerByte())
+            buffer, err := encode.TransferTxBytes(1000000000, sender, nonce, wallet.Address, wallet.GetRpc().GetFeePerByte())
             if err != nil {
                 fmt.Println("Error encoding transaction:", err)
             }
             // Adding the transaction to the Transactions struct
             PendingTransactions.Add(buffer)
             // Logging the message and the sender to the console
-            fmt.Printf("\nMessage from %s: %s\n", sender, message)
+            fmt.Printf("\nMessage from 0x%s: %s\n", sender, message)
         }
     }
 
@@ -592,9 +585,9 @@ Create a `app` file in your project and add the following code:
     // Add sync to fetch messages and add it to the pending txs
     sync();
 
-    // Define an HTTP GET route at '/pendingVmTransactions'
+    // Define an HTTP GET route at '/pending-vida-transactions'
     // When accessed, this route will return the list of pending transactions
-    app.get('/pendingVmTransactions', (req, res) => {
+    app.get('/pending-vida-transactions', (req, res) => {
         // Set the response header to ensure the response is sent as JSON data
         res.header("Content-Type", "application/json");
         // Retrieve the list of pending transactions using the getPendingTransactions method
@@ -780,22 +773,15 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    import { PWRWallet } from "@pwrjs/core";
-    import dotenv from 'dotenv';
-    dotenv.config();
+    const Wallet = require("@pwrjs/core/wallet");
+    require('dotenv').config();
 
     // Setting up your wallet in the SDK
-    const privateKey = process.env.PRIVATE_KEY;
-    const wallet = new PWRWallet(privateKey);
+    const seedPhrase = process.env.SEED_PHRASE;
+    const wallet = Wallet.new(seedPhrase);
 
     async function conduits() {
-        const conduits = [
-            Buffer.from("conduit_node_address", "hex"),
-        ];
-        const vidaId = "your_vida_id";
-
-        const res = await wallet.setConduits(vidaId, conduits);
-        console.log(res.transactionHash);
+        
     }
     conduits();
     ```
@@ -812,14 +798,7 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
     wallet = Wallet.new(seed_phrase)
 
     def conduits():
-        conduits = [
-            bytes.fromhex("conduit_node_address"),
-        ]
-        vida_id = "your_vida_id"
-        fee_per_byte = wallet.get_rpc().get_fee_per_byte()
-
-        res = wallet.set_conduit_mode(vida_id, 1, 1, conduits, fee_per_byte)
-        print(f"Transaction hash: 0x{res.hash.hex()}")
+        pass
 
     conduits()
     ```
@@ -835,14 +814,6 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
         // Setting up your wallet in the SDK
         let seed_phrase = env::var("SEED_PHRASE").unwrap();
         let wallet = Wallet::new(&seed_phrase);
-
-        let conduits: Vec<String> = vec![
-            "conduit_node_address".to_string(),
-        ];
-        let vida_id: u64 = "your_vida_id";
-
-        let res = wallet.set_conduits(vida_id, conduits).await;
-        println!("{}", res);
     }
     ```
 </TabItem>
@@ -862,17 +833,6 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
         godotenv.Load()
         privateKey := os.Getenv("PRIVATE_KEY")
         wallet := wallet.FromPrivateKey(privateKey)
-
-        vidaIds := "your_vida_id"
-        conduits := []string{"conduit_node_address"}
-
-        tx := wallet.SetConduits(vidaIds, conduits)
-
-        if tx.Success {
-            fmt.Printf("Transaction Hash: %s\n", tx.TxHash)
-        } else {
-            fmt.Println("Error:", tx.Error)
-        }
     }
     ```
 </TabItem>

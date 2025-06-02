@@ -84,49 +84,36 @@ Create a file in your project and add the following code:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRJS } = require("@pwrjs/core");
+    const PWRJS = require("@pwrjs/core");
 
-    // Setting up your wallet in the SDK
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
 
-    async function sync() {
-        let startingBlock = 880920;
-        const vidaId = 1234;
+    function handlerMessages(transaction) {
+        // Get the address of the transaction sender
+        const sender = transaction.sender;
+        // Get the data sent in the transaction (In Hex Format)
+        let dataHex = transaction.data;
+        
+        // Decode the hexadecimal data to bytes data
+        const data = Buffer.from(dataHex, 'hex');
+        // convert the bytes data to UTF-8 string as json
+        const object = JSON.parse(data.toString('utf8'));
 
-        const loop = async () => {
-            try {
-                const latestBlock = await rpc.getLatestBlockNumber();
-                let effectiveLatestBlock = latestBlock > startingBlock + 1000 ? startingBlock + 1000 : latestBlock;
-
-                if (effectiveLatestBlock > startingBlock) {
-                    // fetch the transactions in `vidaId = 1234`
-                    const txns = await rpc.getVMDataTransactions(startingBlock, effectiveLatestBlock, vidaId);
-                    for (let txn of txns) {
-                        const sender = txn.sender;
-                        const dataHex = txn.data;
-                        // Remove the '0x' prefix and decode the hexadecimal data to bytes data
-                        const data = Buffer.from(dataHex.substring(2), 'hex');
-                        // convert the bytes data to UTF-8 string as json
-                        const object = JSON.parse(data.toString('utf8'));
-
-                        Object.keys(object).forEach(key => {
-                            if (key.toLowerCase() === "message") {
-                                console.log(`\nMessage from ${sender}: ${object[key]}`);
-                            } else {
-                                // Handle other data fields if needed
-                            }
-                        });
-                    }
-                    startingBlock = effectiveLatestBlock + 1;
-                }
-                setTimeout(loop, 1000); // Wait 1 second before the next loop
-            } catch (e) {
-                console.error(e);
+        Object.keys(object).forEach(key => {
+            if (key.toLowerCase() === "message") {
+                console.log(`\nMessage from ${sender}: ${object[key]}`);
+            } else {
+                // Handle other data fields if needed
             }
-        };
-        loop();
+        });
     }
-    module.exports = { sync };
+
+    async function sync(vidaId) {
+        let startingBlock = await rpc.getLatestBlockNumber();
+
+        rpc.subscribeToVidaTransactions(vidaId, BigInt(startingBlock), handlerMessages);
+    }
+    export { sync };
     ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -146,7 +133,7 @@ Create a file in your project and add the following code:
         try:
             sender = txn.sender
             data_hex = txn.data
-            # Remove the '0x' prefix and decode the hexadecimal data to bytes data
+            # Decode the hexadecimal data to bytes data
             data_bytes = bytes.fromhex(data_hex)
             # Convert the bytes data to UTF-8 string as json
             obj = json.loads(data_bytes.decode('utf-8'))
@@ -215,7 +202,7 @@ Create a file in your project and add the following code:
     func handlerMessages(transaction rpc.VidaDataTransaction) {
         sender := transaction.Sender
         dataHex := transaction.Data
-        // Remove the '0x' prefix and decode the hexadecimal data to bytes data
+        // Decode the hexadecimal data to bytes data
         dataBytes, _ := hex.DecodeString(dataHex)
         // convert the bytes data to UTF-8 string as json
         var obj map[string]interface{}
@@ -303,14 +290,13 @@ Create a file in your project and add the following code:
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const { PWRWallet } = require("@pwrjs/core");
+    const Wallet = require("@pwrjs/core/wallet");
     const { sync } = require("./sync_messages.js");
     const readline = require("readline");
     require('dotenv').config();
 
-    // Setting up your wallet in the SDK
-    const privateKey = process.env.PRIVATE_KEY;
-    const wallet = new PWRWallet(privateKey);
+    const seedPhrase = process.env.SEED_PHRASE;
+    let wallet = Wallet.new(seedPhrase);
 
     const rl = readline.createInterface({
         input: process.stdin,
@@ -318,20 +304,24 @@ Create a file in your project and add the following code:
     });
 
     async function main() {
-        const vidaId = 1234;
-        await sync();
+        const vidaId = BigInt(1234);
+        await sync(vidaId);
 
-        const messageLoop = () => {
-            rl.question("", async (message) => {
-                const object = { message };
-                // Send the VIDA data
-                const response = await wallet.sendVMDataTxn(vidaId, Buffer.from(JSON.stringify(object), 'utf8'));
-                !response.success && console.log('FAILED!');
-                messageLoop(); // Recursively ask for the next message
+        while (true) {
+            const message = await new Promise((resolve) => {
+                rl.question("Enter your message: ", resolve);
             });
-        };
 
-        messageLoop();
+            const object = { message };
+            const jsonData = Buffer.from(JSON.stringify(object), 'utf8');
+
+            const response = await wallet.sendVidaData(vidaId, jsonData);
+            if (response.success) {
+                console.log("Transaction Hash:", response.hash);
+            } else {
+                console.error("Error:", response.message || "Transaction failed");
+            }
+        }
     }
     main();
     ```

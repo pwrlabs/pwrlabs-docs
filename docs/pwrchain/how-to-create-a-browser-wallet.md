@@ -74,10 +74,10 @@ Click on the PWR Wallet icon anytime to open your wallet. You can now send, rece
 
 ## How to Import an Existing Wallet
 
-If you already have a PWR Wallet, you can import it using your secret phrase or private key:
+If you already have a PWR Wallet, you can import it using your seed phrase:
 
 - Open the PWR Wallet extension and select "Import Wallet".
-- Enter your secret phrase or private key.
+- Enter your seed phrase.
 - Set up a new password for the browser wallet.
 - Your wallet will be restored with all its existing balances and transactions.
 

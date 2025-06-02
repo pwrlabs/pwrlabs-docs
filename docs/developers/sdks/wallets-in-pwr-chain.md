@@ -17,16 +17,16 @@ A wallet in the context of blockchain serves several important purposes:
 
 1. **Identity**: Your wallet address acts as your unique identifier on the blockchain network. It's like your account number, allowing you to send and receive transactions.
 2. **Asset Storage**: Wallets securely store your digital assets, such as PWR tokens or other tokens built on the PWR Chain. These assets are associated with your wallet address.
-3. **Transaction Signing**: Wallets are responsible for signing transactions using your private key. This signature proves that you are the owner of the wallet and authorizes the transaction.
+3. **Transaction Signing**: Wallets are responsible for signing transactions using your seed phrase. This signature proves that you are the owner of the wallet and authorizes the transaction.
 4. **Interaction with dApps**: Wallets allow you to interact with decentralized applications (dApps) built on the PWR Chain. You can connect your wallet to a dApp to perform actions like sending transactions or accessing dApp-specific functionality.
 
 ## Creating & Managing Wallets with the SDK
 
-PWR Chain wallets are highly compatible with EVM wallets, allowing you to use the same private key of your wallet to interact with the PWR Chain SDKs.
+PWR Chain wallets are highly compatible with EVM wallets, allowing you to use the same seed phrase of your wallet to interact with the PWR Chain SDKs.
 
-To create a wallet in your software application using the PWR SDK. You can use your private key on Metamask or use [**PWR Wallet**](https://chromewebstore.google.com/detail/pwr-wallet/kennjipeijpeengjlogfdjkiiadhbmjl) to enjoy all the features.
+To create a wallet in your software application using the PWR SDK. You can use [**PWR Wallet**](https://chromewebstore.google.com/detail/pwr-wallet/kennjipeijpeengjlogfdjkiiadhbmjl) to enjoy all the features.
 
-> **Important:** Don't share or send your wallet's **private key**, so that no one can steal your money.
+> **Important:** Don't share or send your wallet's **seed phrase**, so that no one can steal your money.
 
 [Install and import the PWR SDK](/developers/sdks/overview) into your project.
 
@@ -270,9 +270,9 @@ We have learned how to run the wallet on the SDK and fetch current data, in the 
 
 When creating and managing wallets, security is of utmost importance. Here are a few best practices to keep in mind:
 
-- **Secure Private Key Storage**: Never store private keys in plain text or share them with anyone. Use secure storage mechanisms like encrypted databases or key management systems to protect private keys.
+- **Secure Seed Phrase Storage**: Never store seed phrases in plain text or share them with anyone. Use secure storage mechanisms like encrypted databases or key management systems to protect seed phrases.
 - **User Authentication**: Implement proper user authentication mechanisms to ensure that only authorized users can access their wallets.
-- **Backup and Recovery**: Provide mechanisms for users to backup their wallets and recover them in case of loss or device failure. This can include features like mnemonic phrases or private key exporting.
+- **Backup and Recovery**: Provide mechanisms for users to backup their wallets and recover them in case of loss or device failure. This can include features like mnemonic phrases or seed phrase exporting.
 - **Secure Communication**: Ensure that all communication between your application and the PWR Chain is encrypted and secure to prevent unauthorized access or tampering.
 
 By following these security best practices and leveraging the PWR SDK's wallet functionality, you can build secure and user-friendly wallet management within your software application.

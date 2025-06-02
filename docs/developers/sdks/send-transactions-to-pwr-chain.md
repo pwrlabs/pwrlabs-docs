@@ -122,7 +122,7 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
         "fmt"
     )
 
-    // Add your private key here
+    // Add your seed phrase here
     var seedPhrase = "YOUR_SEED_PHRASE_HERE"
 
     func transfer() {
@@ -1001,7 +1001,7 @@ Here's how the guardian process works:
 2. Alice initiates a transaction, sending 1 PWR to Eve.
 3. The transaction is placed in a queue, awaiting Bob's approval. He can either approve it or reject it if something seems suspicious.
 4. Eve will receive the 1 PWR only after Bob approves the transaction.
-5. Mallory has already obtained Alice's wallet's private key and successfully stolen all of her coins.
+5. Mallory has already obtained Alice's wallet's seed phrase and successfully stolen all of her coins.
 6. Mallory's transaction will remain in the queue and can only be executed if Bob approves it.
 7. Since Bob rejects the suspicious transaction, Mallory was unable to steal any of Alice's coins.
 
