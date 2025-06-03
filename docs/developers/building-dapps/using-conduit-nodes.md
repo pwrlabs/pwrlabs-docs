@@ -369,8 +369,8 @@ Create a `sync_messages` file in your project and add the following code:
                 const walletAddress = hexToBytes(wallet.getAddress().substring(2));
                 const senderAddress = hexToBytes(sender);
                 // Building a transfer transaction to send PWR tokens
-                const transferTxn = TransactionBuilder.getTransferPWRTransaction(
-                    senderAddress, BigInt(1000000000), nonce, chainId, walletAddress, feePerByte
+                const transferTxn = TransactionBuilder.getTransferTransaction(
+                    feePerByte, walletAddress, senderAddress, BigInt(1000000000), nonce, chainId
                 );
                 // Adding the transaction to the Transactions class
                 Transactions.add(transferTxn)
