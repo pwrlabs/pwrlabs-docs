@@ -296,7 +296,7 @@ Create a file in your project and add the following code:
     require('dotenv').config();
 
     const seedPhrase = process.env.SEED_PHRASE;
-    let wallet = Wallet.new(seedPhrase);
+    let wallet = Wallet.fromSeedPhrase(seedPhrase);
 
     const rl = readline.createInterface({
         input: process.stdin,

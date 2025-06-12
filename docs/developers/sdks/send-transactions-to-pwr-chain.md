@@ -41,7 +41,7 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = Wallet.new(seedPhrase);
+    const wallet = Wallet.fromSeedPhrase(seedPhrase);
 
     async function transfer() {
         // Tokens recipient address
@@ -197,7 +197,7 @@ Sends data to a specific virtual machine for storage and processing purposes.
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = Wallet.new(seedPhrase);
+    const wallet = Wallet.fromSeedPhrase(seedPhrase);
 
     async function sendData() {
         // VIDA used to send the transaction to
@@ -358,7 +358,7 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = Wallet.new(seedPhrase);
+    const wallet = Wallet.fromSeedPhrase(seedPhrase);
 
     async function sendPayableData() {
         // VIDA used to send the transaction to
@@ -527,7 +527,7 @@ Delegates a specified amount of PWR tokens to a validator, contributing to their
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = Wallet.new(seedPhrase);
+    const wallet = Wallet.fromSeedPhrase(seedPhrase);
 
     async function delegate() {
         // Validator address
@@ -685,7 +685,7 @@ Withdraws PWR tokens that were previously delegated to a validator, returning th
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = Wallet.new(seedPhrase);
+    const wallet = Wallet.fromSeedPhrase(seedPhrase);
 
     async function withdraw() {
         // Validator address you delegated
@@ -843,7 +843,7 @@ To move delegated stake from one validator to another.
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = Wallet.new(seedPhrase);
+    const wallet = Wallet.fromSeedPhrase(seedPhrase);
 
     async function moveStake() {
         const fromValidator = "FROM_VALIDATOR_ADDRESS";
@@ -1012,7 +1012,7 @@ Here's how the guardian process works:
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_PHRASE_KEY_HERE";
-    const wallet = Wallet.new(seedPhrase);
+    const wallet = Wallet.fromSeedPhrase(seedPhrase);
 
     async function setGuardian() {
         // Guardian address that will verify your transactions
@@ -1188,7 +1188,7 @@ Remove the guardian assigned to the wallet, removing their access or control.
 
     // Setting up your wallet in the SDK
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = Wallet.new(seedPhrase);
+    const wallet = Wallet.fromSeedPhrase(seedPhrase);
 
     async function removeGuardian() {
         // Remove your wallet guardian

@@ -82,7 +82,7 @@ Create a `send_message` file in your project and add the following code:
     require('dotenv').config();
 
    const seedPhrase = process.env.SEED_PHRASE;
-    let wallet = Wallet.new(seedPhrase);
+    let wallet = Wallet.fromSeedPhrase(seedPhrase);
 
     async function sendMessage() {
         const obj = { message: "please send me pwr" };
@@ -349,7 +349,7 @@ Create a `sync_messages` file in your project and add the following code:
     require('dotenv').config();
 
     const seedPhrase = process.env.SEED_PHRASE;
-    const wallet = Wallet.new(seedPhrase);
+    const wallet = Wallet.fromSeedPhrase(seedPhrase);
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
     const chainId = 0;
 
@@ -778,7 +778,7 @@ To set the conduit nodes for your application, use the `Set Conduits` method pro
 
     // Setting up your wallet in the SDK
     const seedPhrase = process.env.SEED_PHRASE;
-    const wallet = Wallet.new(seedPhrase);
+    const wallet = Wallet.fromSeedPhrase(seedPhrase);
 
     async function conduits() {
         

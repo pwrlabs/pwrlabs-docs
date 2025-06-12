@@ -33,7 +33,7 @@ To create a wallet in your software application using the PWR SDK. You can use [
 <Tabs>
 <TabItem value="javascript" label="JavaScript">
     ```js
-    const Wallet = require('@pwrjs/core');
+    const Wallet = require('@pwrjs/core/wallet');
 
     // Create a wallet with a new randomly generated seed phrase
     const randomWallet = Wallet.newRandom(12);
@@ -41,7 +41,7 @@ To create a wallet in your software application using the PWR SDK. You can use [
     // Create a wallet from an existing seed phrase (str)
     // in this example we will store the seed phrase
     const seedPhrase = "YOUR_SEED_PHRASE_HERE";
-    const wallet = Wallet.new(seedPhrase);
+    const wallet = Wallet.fromSeedPhrase(seedPhrase);
     ```
 </TabItem>
 <TabItem value="python" label="Python">
