@@ -113,7 +113,7 @@ The PWR SDK is your toolkit for interacting with the PWR Chain. It allows you to
 </TabItem>
 <TabItem value="python" label="Python">
     ```py
-    from pwrpy.pwrapisdk import PWRPY
+    from pwrpy.pwrsdk import PWRPY
     from pwrpy.pwrwallet import Wallet
     ```
 </TabItem>
