@@ -1,6 +1,6 @@
 ---
 title: EVMs on PWR Chain
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # EVMs on PWR Chain
