@@ -59,9 +59,4 @@ Design every feature with this mental split.
 
 ## Avoid unnecessary RPC calls to methods with static responses
 
-* `feePerByte` always returns `1000`
-* `pwrRewardsPerYear` always returns `20000000000`
-* `proposalFee` always returns `1000000000`
-* `validatorSlashingFee` always returns `500`
-* `vidaOwnerTransactionFeeShare` always returns `2500`
-* `vidaIdClaimingFee` always returns `100000000000`
+* `chainId` always returns `0`
