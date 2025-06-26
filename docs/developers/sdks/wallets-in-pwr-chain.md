@@ -87,7 +87,11 @@ To create a wallet in your software application using the PWR SDK. You can use [
         // Create a wallet from an existing seed phrase
         // in this example we will store the seed phrase
         seedPhrase := "YOUR_SEED_PHRASE_HERE"
-        wallet, _ := wallet.New(seedPhrase)
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error:", err)
+            return
+        }
     }
     ```
 </TabItem>

@@ -117,7 +117,11 @@ To claim a VIDA on the PWR Chain, follow these steps:
 
     func Claim() {
         // Setting up your wallet in the SDK
-        wallet := wallet.New(seedPhrase)
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error:", err)
+            return
+        }
 
         // Add a unique VIDA ID
         vidaId := 102030

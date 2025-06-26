@@ -171,7 +171,11 @@ Create a `send_message` file in your project and add the following code:
         // Setting up your wallet in the SDK
         godotenv.Load()
         seedPhrase := os.Getenv("SEED_PHRASE")
-        wallet := wallet.New(seedPhrase)
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error:", err)
+            return
+        }
 
         vidaId := 123
         data, _ := json.Marshal(map[string]string{"message": "please send me pwr"})

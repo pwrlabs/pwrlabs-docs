@@ -127,7 +127,11 @@ To transfer PWR tokens from one wallet to another, use the transfer PWR method:
 
     func transfer() {
         // Setting up your wallet in the SDK
-        wallet := wallet.New(seedPhrase)
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error:", err)
+            return
+        }
 
         // Tokens recipient address
         recipientAddress := "RECIPIENT_ADDRESS"
@@ -286,7 +290,12 @@ Sends data to a specific virtual machine for storage and processing purposes.
 
     func sendData() {
         // Setting up your wallet in the SDK
-        wallet := wallet.New(seedPhrase)
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error:", err)
+            return
+        }
+
         // VIDA used to send the transaction to
         vidaId := 123
         // Buffer data to be included in the transaction
@@ -453,7 +462,12 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
 
     func sendPayableData() {
         // Setting up your wallet in the SDK
-        wallet := wallet.New(seedPhrase)
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error:", err)
+            return
+        }
+
         // VIDA used to send the transaction to
         vidaId := 919
         // Tokens amount - 1 PWR = 1e9 = 1000000000
@@ -615,7 +629,11 @@ Delegates a specified amount of PWR tokens to a validator, contributing to their
 
     func delegate() {
         // Setting up your wallet in the SDK
-        wallet := wallet.New(seedPhrase)
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error:", err)
+            return
+        }
 
         // Validator address
         validator := "VALIDATOR_ADDRESS"
@@ -773,7 +791,11 @@ Withdraws PWR tokens that were previously delegated to a validator, returning th
 
     func withdraw() {
         // Setting up your wallet in the SDK
-        wallet := wallet.New(seedPhrase)
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error:", err)
+            return
+        }
 
         // Validator address
         validator := "VALIDATOR_ADDRESS"
@@ -931,7 +953,11 @@ To move delegated stake from one validator to another.
 
     func moveStake() {
         // Setting up your wallet in the SDK
-        wallet := wallet.New(seedPhrase)
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error:", err)
+            return
+        }
 
         fromValidator := "FROM_VALIDATOR_ADDRESS"
         toValidator := "TO_VALIDATOR_ADDRESS"
@@ -1114,7 +1140,11 @@ Here's how the guardian process works:
 
     func setGuardian() {
         // Setting up your wallet in the SDK
-        wallet := wallet.New(seedPhrase)
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error:", err)
+            return
+        }
 
         // Guardian address that will verify your transactions
         guardianAddress := "GUARDIAN_ADDRESS"
@@ -1263,7 +1293,12 @@ Remove the guardian assigned to the wallet, removing their access or control.
 
     func removeGuardian() {
         // Setting up your wallet in the SDK
-        wallet := wallet.New(seedPhrase)
+        wallet, err := wallet.New(seedPhrase)
+        if err != nil {
+            fmt.Println("Error:", err)
+            return
+        }
+
         feePerByte := wallet.GetRpc().GetFeePerByte()
 
         // Remove your wallet guardian
