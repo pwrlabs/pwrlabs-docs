@@ -501,7 +501,7 @@ Create a `sync_messages` file in your project and add the following code:
         let starting_block: u64 = rpc.get_latest_block_number().await.unwrap();
         let vida_id: u64 = 123;
 
-        rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler_messages);
+        rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler_messages, None);
     }
     ```
 </TabItem>

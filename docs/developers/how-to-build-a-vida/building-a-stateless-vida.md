@@ -597,7 +597,7 @@ The PWR SDK provides functions to easily read and handle data from PWR Chain.
         // we will start reading transactions startng from the latest PWR Chain block
         let starting_block = rpc.get_latest_block_number().await.unwrap();
 
-        let subscription = rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler);
+        let subscription = rpc.subscribe_to_vida_transactions(vida_id, starting_block, handler, None);
 
         // To pause, resume, and stop the subscription
         subscription.pause();
