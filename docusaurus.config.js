@@ -155,7 +155,7 @@ const config = {
             position: 'right',
           },
           {
-            href: "https://github.com/pwrlabs",
+            href: "https://github.com/pwrlabs/pwrlabs-docs",
             className: "header--github-link",
             "aria-label": "GitHub repository",
             position: "right",
