@@ -42,7 +42,7 @@ To claim a VIDA on the PWR Chain, follow these steps:
         const vidaId = 102030n;
 
         // Claim the VIDA ID
-        const tx = await wallet.claimVmId(vidaId);
+        const tx = await wallet.claimVidaId(vidaId);
 
         // Error handling
         if (txHash.success) {
@@ -176,7 +176,7 @@ To claim a VIDA on the PWR Chain, follow these steps:
 </TabItem>
 </Tabs>
 
-Using the wallet's claimVmId method, we claim the VIDA by providing the `VIDA ID`. The SDK will handle the creation and signing of the "Claim VIDA" transaction.
+Using the wallet's claim VIDA ID method, we claim the VIDA by providing the `VIDA ID`. The SDK will handle the creation and signing of the "Claim VIDA" transaction.
 
 If the transaction is successfully sent, we receive a response containing the transaction hash. Otherwise, we handle the error accordingly.
 

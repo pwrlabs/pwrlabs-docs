@@ -503,7 +503,7 @@ Create a file in your project and add the following code:
 </TabItem>
 </Tabs>
 
-Finally, we enter a loop where the user can input messages, and each message is sent as a transaction to the PWR Chain using the `sendVmDataTransaction` method.
+Finally, we enter a loop where the user can input messages, and each message is sent as a transaction to the PWR Chain using the `send VIDA data` method.
 
 ## Step 5: Run the Application
 

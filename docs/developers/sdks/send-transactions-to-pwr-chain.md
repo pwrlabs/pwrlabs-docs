@@ -22,8 +22,8 @@ To send transactions to PWR Chain, all what you need's setup the PWR SDK in your
 Types of PWR Chain transactions - there are many types of PWR SDKs, in this guide we will focus on the following:
 
 - [**`Transfer PWR`**](#transfer-pwr): Transfers PWR tokens from one wallet to another, facilitating token movement within the network.
-- [**`Send VIDA Data`**](#send-vm-data): Sends data to a specific virtual machine for storage and processing purposes.
-- [**`Send Payable VIDA Data`**](#send-payable-vm-data): Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the VIDA as part of the operation.
+- [**`Send VIDA Data`**](#send-vida-data): Sends data to a specific virtual machine for storage and processing purposes.
+- [**`Send Payable VIDA Data`**](#send-payable-vida-data): Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the VIDA as part of the operation.
 - [**`Delegate`**](#delegate-pwr-tokens): Delegates a specified amount of PWR tokens to a validator, contributing to their staking power.
 - [**`Withdraw`**](#withdraw-delegated-pwr-tokens): Withdraws PWR tokens that were previously delegated to a validator, returning them to the user's wallet.
 - [**`Move Stake`**](#move-stake-between-validators): Moves staked PWR tokens from one validator to another, allowing for flexibility in staking management.
@@ -378,7 +378,7 @@ Sends data to a specific virtual machine (VIDA) and transfers PWR tokens to the 
         const data = new TextEncoder().encode('Hello World!');
         
         // Send the data at vidaId 919 and pay 1e3
-        const tx = await wallet.sendPayableVmDataTransaction(vidaId, amount, data);
+        const tx = await wallet.sendPayableVidaData(vidaId, amount, data);
 
         // Error handling
         if (tx.success) {

@@ -631,7 +631,7 @@ Create a `app` file in your project and add the following code:
     # Define an HTTP GET route at '/pending-vida-transactions'
     # When accessed, this route will return the list of pending transactions
     @app.route('/pending-vida-transactions', methods=['GET'])
-    def pending_vm_transactions():
+    def pending_vida_transactions():
         # Retrieve the list of pending transactions using the getPendingTransactions method
         pending_transactions = Transactions.get_pending_transactions()
 
