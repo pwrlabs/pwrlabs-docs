@@ -1,6 +1,6 @@
 ---
 title: Building a Stateful VIDA - Part 1
-sidebar_position: 4
+sidebar_position: 5
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
