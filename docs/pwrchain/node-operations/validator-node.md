@@ -14,7 +14,7 @@ sidebar_position: 1
 - **Open TCP Ports**: 8231, 8085, 9864
 - **Open UDP Ports**: 7621
 
-### Setup on Ubuntu Server:
+### Setup on Ubuntu Server
 
 1. **Update OS**:
 

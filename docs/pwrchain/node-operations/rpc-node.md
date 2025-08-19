@@ -7,13 +7,14 @@ sidebar_position: 2
 
 **Requirements:**
 
-- **CPU**: 1 vCPU
-- **Memory**: 1 GB RAM
-- **Disk**: 25 GB HDD or higher
-- **Open TCP Ports**: 8231, 8085
-- **Open UDP Port**: 7621
+- **CPU**: 2 vCPU
+- **Memory**: 4 GB RAM  
+- **Disk**: 100 GB HDD or higher
+- **Bandwidth**: 400Mbps download or higher. 800Mbps upload or higher
+- **Open TCP Ports**: 8231, 8085, 9864
+- **Open UDP Ports**: 7621
 
-### Setup on Ubuntu Server:
+### Setup on Ubuntu Server
 
 1. **Update OS**:
 
@@ -24,27 +25,49 @@ sudo apt update
 2. **Install Java**:
 
 ```shell
-apt install openjdk-19-jre-headless
+sudo apt install default-jdk
 ```
 
-3. **Install the validator node software and config file**:
+3. **Open Required Ports**:
+
+**For UFW (Uncomplicated Firewall):**
 
 ```shell
-wget https://github.com/pwrlabs/PWR-Validator-Node/raw/main/validator.jar
-wget https://github.com/pwrlabs/PWR-Validator-Node/raw/main/config.json
+sudo ufw allow 8231/tcp
+sudo ufw allow 8085/tcp
+sudo ufw allow 9864/tcp
+sudo ufw allow 7621/udp
+sudo ufw reload
 ```
 
-4. **Set Up your Password**:
+**For iptables:**
+
+```bash
+sudo iptables -A INPUT -p tcp --dport 8231 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 8085 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 9864 -j ACCEPT
+sudo iptables -A INPUT -p udp --dport 7621 -j ACCEPT
+sudo netfilter-persistent save
+```
+
+> **Note**: If you're using a cloud provider, you may also need to configure the ports in their firewall/security group settings.
+
+4. **Install the validator node software and config file**:
 
 ```shell
-sudo nano password
+wget https://github.com/pwrlabs/PWR-Validator/releases/download/15.63.9/validator.jar
+wget https://github.com/pwrlabs/PWR-Validator/raw/refs/heads/main/config.json
 ```
 
-- Enter your desired password.
-- Press `Ctrl + x` to close.
-- Press `Y` to confirm saving the password.
+5. **Setup your password**:
 
-5. Running in the Background: If you wish to run the node in the background, ensuring it remains active after closing the terminal, utilize the `nohup` command:
+```shell
+echo "your password here" > password
+```
+
+6. **Run the Node**:
+
+Running in the Background: If you wish to run the node in the background, ensuring it remains active after closing the terminal, utilize the `nohup` command:
 
 ```shell
 nohup sudo java -jar validator.jar --rpc
