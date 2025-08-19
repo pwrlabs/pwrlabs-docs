@@ -1,6 +1,6 @@
 ---
 title: Building a Lite Stateful VIDA
-sidebar_position: 4
+sidebar_position: 2
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -48,16 +48,16 @@ Unlike stateless VIDAs that process each transaction independently, stateful VID
 ## Prerequisites to Building a Lite Stateful VIDA
 
 - Good knowledge of the coding language you want to use.
-- Completed [Building a Stateless VIDA](./building-a-stateless-vida.md) tutorial.
+- Completed [Building a Stateless VIDA](../building-a-stateless-vida.md) tutorial.
 
 ## Building a Lite Stateful VIDA
 
 In this tutorial we will build a token transfer system.
 
-1. [Import the PWR SDK](../sdks/overview.md).
-2. [Select an ID for Your VIDA](../sdks/claim-a-vida.md).
-3. [Initializing PWR with an RPC Endpoint](../sdks/read-data-from-pwr-chain.md).
-4. [Create and Fund a Wallet](../../pwrchain/how-to-create-a-browser-wallet.md).
+1. [Import the PWR SDK](../../sdks/overview.md).
+2. [Select an ID for Your VIDA](../../sdks/claim-a-vida.md).
+3. [Initializing PWR with an RPC Endpoint](../../sdks/read-data-from-pwr-chain.md).
+4. [Create and Fund a Wallet](../../../pwrchain/how-to-create-a-browser-wallet.md).
 
 ### Define Transaction Data Structure
 

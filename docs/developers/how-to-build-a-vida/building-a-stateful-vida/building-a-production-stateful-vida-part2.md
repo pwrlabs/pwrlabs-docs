@@ -1,13 +1,13 @@
 ---
-title: Building a Stateful VIDA - Part 2
-sidebar_position: 6
+title: Building a Production Stateful VIDA - Part 2
+sidebar_position: 4
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Building a Stateful VIDA - Part 2
+# Building a Production Stateful VIDA - Part 2
 
-In Part 1, we established the foundational components of our stateful VIDA: project setup, database layer with MerkleTree integration, and HTTP API for peer communication. Now we'll implement the core transaction processing logic, orchestrate the main application, and demonstrate how to run the complete system.
+In Part 1, we established the foundational components of our production stateful VIDA: project setup, database layer with MerkleTree integration, and HTTP API for peer communication. Now we'll implement the core transaction processing logic, orchestrate the main application, and demonstrate how to run the complete system.
 
 ## Continuing the Build Process
 
@@ -1836,12 +1836,3 @@ Building stateful VIDAs requires careful consideration of data consistency, cons
 The example token transfer system demonstrates all key concepts you'll need for more complex stateful applications, including financial systems, voting mechanisms, and other use cases where data integrity is paramount.
 
 Remember: stateful VIDAs trade simplicity for consistency and reliability. Choose this architecture when your application requires strong guarantees about data integrity and state consistency across network participants.
-
-## Next Steps
-
-While this guide focuses on conceptual foundations, future resources will include:
-
-- **Video Tutorials**: Step-by-step walkthroughs for designing and deploying stateful VIDAs.
-- **Code Examples**: Templates for root hash generation, cross-validation, and Conduit Node integration.
-
-By combining PWR Chain’s immutable ledger with robust state management, stateful VIDAs empower developers to build decentralized applications that are as reliable as traditional enterprise software—but with unmatched transparency and security.

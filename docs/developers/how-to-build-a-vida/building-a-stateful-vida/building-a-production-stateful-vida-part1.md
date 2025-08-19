@@ -1,11 +1,11 @@
 ---
-title: Building a Stateful VIDA - Part 1
-sidebar_position: 5
+title: Building a Production Stateful VIDA - Part 1
+sidebar_position: 3
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Building a Stateful VIDA - Part 1
+# Building a Production Stateful VIDA - Part 1
 
 Stateful VIDAs are robust, consistent, and reliable applications that maintain and validate persistent state across execution instances. They are essential for critical use cases such as financial applications, token systems, voting mechanisms, or any application where data integrity and consistency are paramount.
 
@@ -25,7 +25,19 @@ This tutorial builds a **token transfer system** that demonstrates all key conce
 - **API Layer**: HTTP endpoints for inter-node communication
 - **Error Recovery**: Robust handling of consensus failures and data inconsistencies
 
-## Steps to Build a Stateful VIDA
+## What Makes a Production Stateful VIDA Different?
+
+While Lite Stateful VIDAs demonstrate core concepts with simplified implementations, production Stateful VIDAs include:
+
+| Feature | Lite Stateful VIDA | Production Stateful VIDA |
+|---------|-------------------|--------------------------|
+| Storage | HashMap (memory) | MerkleTree (persistent database) |
+| State Validation | None | Cryptographic root hashes |
+| Consensus | Single instance | Multi-peer validation |
+| Recovery | Restart from scratch | Checkpoint-based recovery |
+| Production Ready | ❌ | ✅ |
+
+## Steps to Build a Production Stateful VIDA
 
 ### 1. Project Setup and Dependencies
 
