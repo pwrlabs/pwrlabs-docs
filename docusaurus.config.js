@@ -11,6 +11,7 @@ import rehypeKatex from 'rehype-katex';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "PWR Chain",
+  tagline: 'Documentation and Guides',
   favicon: "/img/pwrlabs.avif",
 
   // Set the production url of your site here
@@ -22,7 +23,7 @@ const config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: "pwrlabs", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
+  projectName: "pwrlabs-docs", // Usually your repo name.
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "throw",
@@ -118,7 +119,7 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      image: '/img/pwrlabs.avif',
+      image: '/img/card_bg.png',
 
       navbar: {
         title: "PWR Chain Docs",
