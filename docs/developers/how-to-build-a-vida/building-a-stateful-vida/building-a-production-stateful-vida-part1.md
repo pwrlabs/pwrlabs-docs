@@ -504,7 +504,7 @@ Create a singleton service for managing persistent state using MerkleTree for cr
     ```rust
     // src/database_service.rs
     use std::sync::{Arc, OnceLock};
-    use pwr_rs::merkle_tree::{MerkleTree, MerkleTreeError};
+    use pwr_rs::config::merkle_tree::{MerkleTree, MerkleTreeError};
     use num_bigint::BigUint;
     use std::convert::TryInto;
 
